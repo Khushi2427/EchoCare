@@ -3,14 +3,17 @@ import { Routes, Route } from "react-router-dom";
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
 import Home from "./pages/Home";
+import Book from "./pages/Book";
+import About from "./pages/About";
+import Community from "./pages/Community";
 import Profile from "./pages/student/Profile";
 import ProtectedRoute from "./components/common/ProtectedRoute";
-
+import Resources from "./pages/Resources";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import StudentDashboard from "./pages/student/StudentDashboard";
 import CounsellorDashboard1 from "./pages/counsellor/CounsellorDashboard";
 import Unauthorized from "./pages/Unauthorized";
-
+import AiChat from "./pages/AIChat";
 import AdminResourceUpload from "./pages/admin/ResourceUpload";
 import CounsellorResourceUpload from "./pages/counsellor/ResourceUpload";
 import StudentResources from "./pages/student/Resources";
@@ -37,6 +40,11 @@ function App() {
       <Route path="/register" element={<Register />} />
       <Route path="/login" element={<Login />} />
       <Route path="/counsellor/login" element={<CounsellorLogin />} />
+      <Route path="/ai-chat" element={<AiChat />} />
+      <Route path="/book" element={<Book />} />
+      <Route path="/resources" element={<Resources />} />
+      <Route path="/community" element={<Community />} />
+      <Route path="/about" element={<About />} />
 
       {/* Admin */}
       <Route

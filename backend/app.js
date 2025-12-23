@@ -12,6 +12,7 @@ import aiRoutes from "./routes/aiRoutes.js";
 import profileRoutes from "./routes/profileRoutes.js";
 import communityRoutes from "./routes/communityRoutes.js";
 import messageRoutes from "./routes/messageRoutes.js";
+import adminRoutes from "./routes/adminRoutes.js";
 const app = express();
 
 app.use(cors());
@@ -62,5 +63,7 @@ app.get('/api/debug/messages/:communityId', async (req, res) => {
   }
 });
 app.use("/api/messages", messageRoutes);
+
+app.use("/api/admin", adminRoutes);
 
 export default app;

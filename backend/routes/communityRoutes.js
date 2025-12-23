@@ -21,6 +21,20 @@ router.get("/", verifyUser, async (req, res) => {
   res.json(communities);
 });
 
+// Get user's communities
+router.get("/my", verifyUser, async (req, res) => {
+  const communities = await Community.find({
+    members: req.user._id,
+  });
+  res.json(communities);
+});
+
+// Get single community by ID ✅ MOVE THIS DOWN
+router.get("/:id", verifyUser, async (req, res) => {
+  const community = await Community.findById(req.params.id);
+  res.json(community);
+});
+
 // Join community
 router.post("/:id/join", verifyUser, async (req, res) => {
   await Community.findByIdAndUpdate(req.params.id, {
@@ -37,12 +51,5 @@ router.post("/:id/leave", verifyUser, async (req, res) => {
   res.json({ message: "Left community" });
 });
 
-// Get user's communities
-router.get("/my", verifyUser, async (req, res) => {
-  const communities = await Community.find({
-    members: req.user._id,
-  });
-  res.json(communities);
-});
 
 export default router;

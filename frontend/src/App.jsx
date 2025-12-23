@@ -26,7 +26,8 @@ import AIChatbot from "./pages/ai/AIChatbot";
 import Communities from "./pages/student/Communities";
 import CommunityChat from "./pages/student/CommunityChat";
 import { Toaster } from "@/components/ui/sonner";
-
+import AdminUsers from "./pages/admin/AdminUsers";
+import AdminAnalytics from "./pages/admin/AdminAnalytics";
 function App() {
   return (<>
   <Toaster richColors position="top-center" closeButton />
@@ -63,6 +64,24 @@ function App() {
     </ProtectedRoute>
   }
 />
+
+<Route
+  path="/admin/users"
+  element={
+    <ProtectedRoute roles={["admin"]}>
+      <AdminUsers /> 
+    </ProtectedRoute>
+  }
+/>
+<Route
+  path="/admin/analytics"
+  element={
+    <ProtectedRoute roles={["admin"]}>
+      <AdminAnalytics /> 
+    </ProtectedRoute>
+  }
+/>
+      
 
 
 

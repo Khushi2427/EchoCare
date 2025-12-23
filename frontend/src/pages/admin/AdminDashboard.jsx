@@ -1,86 +1,54 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { useNavigate, Link } from "react-router-dom";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
-  LogOut,
-  Upload,
-  FileText,
-  AlertTriangle,
-  Users,
-  BarChart3,
-  Settings,
-  User,
-  Shield,
-  Bell,
-  Search,
-  ChevronRight,
-  PlusCircle,
-  Eye,
-  Edit,
-  Trash2,
-  Download,
-  Activity,
-  Heart,
-  Brain,
-  Calendar,
-  MessageSquare,
-  TrendingUp,
-  Lock,
-  Globe,
-  Sparkles
+  LogOut, Upload, FileText, AlertTriangle, Users, BarChart3, Settings,
+  User, Shield, Bell, Search, ChevronRight, PlusCircle, Eye, Edit,
+  Trash2, Download, Activity, Brain, Globe, Sparkles, CheckCircle2,
+  LayoutDashboard, Menu, X, Lock as LockIcon, // Fixed import alias
 } from "lucide-react";
 
-// Mock data for dashboard stats and recent activities
-const getDashboardData = () => ({
-  stats: [
-    { id: 1, label: "Total Resources", value: "142", icon: <FileText className="w-5 h-5" />, color: "from-blue-500 to-cyan-500", change: "+12 this month" },
-    { id: 2, label: "Flagged Students", value: "8", icon: <AlertTriangle className="w-5 h-5" />, color: "from-amber-500 to-orange-500", change: "2 new today" },
-    { id: 3, label: "Active Counsellors", value: "15", icon: <Users className="w-5 h-5" />, color: "from-emerald-500 to-teal-500", change: "All available" },
-    { id: 4, label: "Total Sessions", value: "284", icon: <MessageSquare className="w-5 h-5" />, color: "from-violet-500 to-purple-500", change: "+24 this week" },
-    { id: 5, label: "AI Detections", value: "156", icon: <Brain className="w-5 h-5" />, color: "from-pink-500 to-rose-500", change: "98% accuracy" },
-    { id: 6, label: "Avg. Wellness Score", value: "72%", icon: <TrendingUp className="w-5 h-5" />, color: "from-green-500 to-lime-500", change: "+5% from last month" },
-  ],
-  recentActivities: [
-    { id: 1, action: "New student flagged by AI", user: "John Doe", time: "10 min ago", type: "alert" },
-    { id: 2, action: "Resource uploaded", user: "Dr. Smith", time: "1 hour ago", type: "upload" },
-    { id: 3, action: "Counsellor added", user: "Sarah Johnson", time: "2 hours ago", type: "add" },
-    { id: 4, action: "Emergency session booked", user: "Michael Chen", time: "3 hours ago", type: "session" },
-    { id: 5, action: "Report generated", user: "System", time: "5 hours ago", type: "report" },
-  ],
-  quickStats: [
-    { label: "High Risk Students", value: "3", trend: "up" },
-    { label: "Pending Approvals", value: "7", trend: "stable" },
-    { label: "System Health", value: "100%", trend: "stable" },
-    { label: "User Satisfaction", value: "94%", trend: "up" },
-  ]
-});
+// Shadcn UI
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Separator } from "@/components/ui/separator";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 const AdminDashboard = () => {
   const { user, logout, loading } = useAuth();
   const navigate = useNavigate();
   const [dashboardData, setDashboardData] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const [notifications, setNotifications] = useState(3);
   const [activeTab, setActiveTab] = useState("overview");
 
   useEffect(() => {
     if (user) {
-      // Simulate API call
       setTimeout(() => {
-        setDashboardData(getDashboardData());
+        setDashboardData({
+          recentActivities: [
+            { id: 1, action: "New student flagged by AI", user: "John Doe", time: "10 min ago", type: "alert" },
+            { id: 2, action: "Resource uploaded", user: "Dr. Smith", time: "1 hour ago", type: "upload" },
+            { id: 3, action: "Counsellor added", user: "Sarah Johnson", time: "2 hours ago", type: "add" },
+            { id: 4, action: "Emergency session booked", user: "Michael Chen", time: "3 hours ago", type: "session" },
+          ],
+          quickStats: [
+            { label: "High Risk Students", value: "0", trend: "stable" },
+            { label: "Pending Approvals", value: "0", trend: "stable" },
+            { label: "System Health", value: "100%", trend: "stable" },
+          ]
+        });
       }, 300);
     }
   }, [user]);
 
   if (loading || !dashboardData) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-gray-200 border-t-blue-600 rounded-full animate-spin mx-auto mb-4"></div>
-          <h2 className="text-xl font-semibold text-gray-700">Loading Admin Dashboard...</h2>
-          <p className="text-gray-500 mt-2">Preparing your workspace</p>
-        </div>
+      <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center">
+        <Activity className="w-10 h-10 text-blue-600 animate-spin mb-4" />
+        <h2 className="text-lg font-medium text-slate-600">Initializing Admin Environment...</h2>
       </div>
     );
   }
@@ -98,412 +66,246 @@ const AdminDashboard = () => {
   const adminActions = [
     {
       title: "Upload Resources",
-      description: "Add articles, videos, audios for students",
-      icon: <Upload className="w-6 h-6" />,
+      description: "Articles, videos, and audio for students",
+      icon: <Upload className="w-5 h-5" />,
       link: "/admin/resources/upload",
-      color: "from-blue-500 to-cyan-500",
-      bgColor: "bg-blue-50",
-      features: ["Multiple formats", "AI tagging", "Bulk upload"]
+      color: "bg-blue-600",
+      features: ["AI tagging", "Bulk upload"]
     },
     {
       title: "Manage Resources",
-      description: "View, edit or delete uploaded content",
-      icon: <FileText className="w-6 h-6" />,
+      description: "Edit, review, or delete content",
+      icon: <FileText className="w-5 h-5" />,
       link: "/admin/resources",
-      color: "from-emerald-500 to-teal-500",
-      bgColor: "bg-emerald-50",
-      features: ["Search & filter", "Analytics", "Version control"]
+      color: "bg-emerald-600",
+      features: ["Analytics", "Version control"]
     },
     {
       title: "Flagged Students",
-      description: "High-risk students detected by AI",
-      icon: <AlertTriangle className="w-6 h-6" />,
+      description: "High-risk cases detected by AI",
+      icon: <AlertTriangle className="w-5 h-5" />,
       link: "/admin/flagged-students",
-      color: "from-amber-500 to-orange-500",
-      bgColor: "bg-amber-50",
-      features: ["AI insights", "Risk levels", "Action plans"]
+      color: "bg-orange-600",
+      features: ["Risk insights", "Action plans"]
     },
     {
-      title: "Counsellors",
-      description: "Manage counsellor accounts and schedules",
-      icon: <Users className="w-6 h-6" />,
+      title: "Manage Counsellors",
+      description: "Counsellor accounts and schedules",
+      icon: <Users className="w-5 h-5" />,
       link: "/admin/counsellors",
-      color: "from-violet-500 to-purple-500",
-      bgColor: "bg-violet-50",
-      features: ["Availability", "Performance", "Assignments"]
+      color: "bg-violet-600",
+      features: ["Assignments", "Performance"]
     },
-    {
-      title: "Analytics & Reports",
-      description: "Comprehensive analytics & mental health insights",
-      icon: <BarChart3 className="w-6 h-6" />,
-      link: "/admin/reports",
-      color: "from-indigo-500 to-blue-500",
-      bgColor: "bg-indigo-50",
-      features: ["Real-time data", "Trends", "Export options"]
-    },
-    {
-      title: "System Settings",
-      description: "Configure platform settings and permissions",
-      icon: <Settings className="w-6 h-6" />,
-      link: "/admin/settings",
-      color: "from-gray-600 to-gray-700",
-      bgColor: "bg-gray-50",
-      features: ["User roles", "AI settings", "Security"]
-    },
+    // {
+    //   title: "Analytics Reports",
+    //   description: "Platform-wide wellness trends",
+    //   icon: <BarChart3 className="w-5 h-5" />,
+    //   link: "/admin/reports",
+    //   color: "bg-indigo-600",
+    //   features: ["Real-time", "Export PDF"]
+    // },
+    // {
+    //   title: "System Settings",
+    //   description: "Configuration and permissions",
+    //   icon: <Settings className="w-5 h-5" />,
+    //   link: "/admin/settings",
+    //   color: "bg-slate-700",
+    //   features: ["Roles", "Security"]
+    // },
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-      {/* Header */}
-      <header className="sticky top-0 z-10 bg-white/80 backdrop-blur-sm border-b border-gray-200">
-        <div className="px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-600 to-violet-600 flex items-center justify-center">
-                  <Shield className="w-5 h-5 text-white" />
-                </div>
-                <div>
-                  <h1 className="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
-                  <p className="text-sm text-gray-600">Comprehensive administration panel</p>
-                </div>
+    <div className="min-h-screen bg-[#f8fafc] flex flex-col">
+      <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
+        <div className="px-6 h-16 flex items-center justify-between">
+          <div className="flex items-center gap-8">
+            <Link to="/admin" className="flex items-center gap-2">
+              <div className="bg-blue-600 p-1.5 rounded-lg">
+                <Shield className="w-5 h-5 text-white" />
               </div>
-              
-              {/* Navigation Tabs */}
-              <div className="hidden md:flex items-center gap-1 ml-8">
-                {["overview", "analytics", "users", "content", "settings"].map((tab) => (
-                  <button
-                    key={tab}
-                    onClick={() => setActiveTab(tab)}
-                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                      activeTab === tab
-                        ? "bg-blue-50 text-blue-600"
-                        : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
-                    }`}
-                  >
-                    {tab.charAt(0).toUpperCase() + tab.slice(1)}
-                  </button>
-                ))}
-              </div>
+              <span className="font-bold text-xl tracking-tight text-slate-900">EchoCare <span className="text-blue-600">Admin</span></span>
+            </Link>
+
+            <nav className="hidden lg:flex items-center space-x-1">
+  {["overview", "analytics", "users", "resources"].map((tab) => {
+    // Determine the path: 'overview' goes to /admin, others go to /admin/tabName
+    const path = tab === "overview" ? "/admin" : `/admin/${tab}`;
+    
+    return (
+      <Link key={tab} to={path}>
+        <Button
+          variant={activeTab === tab ? "secondary" : "ghost"}
+          onClick={() => setActiveTab(tab)}
+          className="capitalize font-medium text-slate-600"
+        >
+          {tab}
+        </Button>
+      </Link>
+    );
+  })}
+</nav>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <div className="hidden md:flex relative w-64">
+              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-slate-400" />
+              <Input
+                placeholder="Search everything..."
+                className="pl-9 bg-slate-100 border-none focus-visible:ring-1 focus-visible:ring-blue-500"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
             </div>
 
-            <div className="flex items-center gap-4">
-              {/* Search Bar */}
-              <div className="hidden md:block relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                <input
-                  type="text"
-                  placeholder="Search resources, students, reports..."
-                  className="pl-10 pr-4 py-2 w-64 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
-              </div>
+            <Button variant="ghost" size="icon" className="relative">
+              <Bell className="w-5 h-5 text-slate-600" />
+              <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white" />
+            </Button>
 
-              {/* Notifications */}
-              <button className="p-2 rounded-lg hover:bg-gray-100 transition-colors relative">
-                <Bell className="w-5 h-5 text-gray-600" />
-                {notifications > 0 && (
-                  <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
-                    {notifications}
-                  </span>
-                )}
-              </button>
+            <Separator orientation="vertical" className="h-6 mx-2" />
 
-              {/* User Profile */}
-              <div className="flex items-center gap-3">
-                <div className="text-right hidden md:block">
-                  <p className="font-semibold text-gray-900">{user.name}</p>
-                  <p className="text-sm text-gray-600">{user.role}</p>
-                </div>
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-violet-500 flex items-center justify-center">
-                  <span className="text-white font-semibold">
-                    {user.name.charAt(0).toUpperCase()}
-                  </span>
-                </div>
-                
-                {/* Logout Dropdown */}
-                <div className="relative group">
-                  <button className="p-2 rounded-lg hover:bg-gray-100 transition-colors">
-                    <ChevronRight className="w-5 h-5 text-gray-400 group-hover:rotate-90 transition-transform" />
-                  </button>
-                  <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
-                    <button
-                      onClick={handleLogout}
-                      className="w-full flex items-center gap-2 px-4 py-3 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                    >
-                      <LogOut className="w-4 h-4" />
-                      Log Out
-                    </button>
-                  </div>
-                </div>
+            <div className="flex items-center gap-3 pl-2">
+              <div className="text-right hidden sm:block leading-tight">
+                <p className="text-sm font-semibold text-slate-900">{user?.name}</p>
+                <Badge variant="outline" className="text-[10px] uppercase tracking-wider py-0 px-1 border-blue-200 text-blue-700 bg-blue-50">
+                  {user?.role}
+                </Badge>
               </div>
+              
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button variant="ghost" size="icon" className="h-10 w-10 rounded-full bg-slate-100 hover:bg-slate-200 border border-slate-200" onClick={handleLogout}>
+                      <User className="w-5 h-5 text-slate-600" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>Log Out</TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             </div>
           </div>
         </div>
       </header>
 
-      <main className="p-6">
-        {/* Welcome Banner */}
-        <div className="mb-8">
-          <div className="bg-gradient-to-r from-blue-600 to-violet-600 rounded-2xl p-8 text-white">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-2xl font-bold mb-2">
-                  Welcome back, <span className="text-yellow-300">{user.name.split(' ')[0]}!</span>
-                </h2>
-                <p className="opacity-90">Here's what's happening with your platform today</p>
-                <div className="flex items-center gap-4 mt-4">
-                  {dashboardData.quickStats.map((stat, index) => (
-                    <div key={index} className="bg-white/20 backdrop-blur-sm rounded-lg p-3">
-                      <p className="text-sm opacity-90">{stat.label}</p>
-                      <div className="flex items-center gap-2">
-                        <span className="text-xl font-bold">{stat.value}</span>
-                        <span className={`text-xs px-2 py-1 rounded-full ${
-                          stat.trend === 'up' ? 'bg-green-500/20 text-green-300' :
-                          stat.trend === 'down' ? 'bg-red-500/20 text-red-300' :
-                          'bg-gray-500/20 text-gray-300'
-                        }`}>
-                          {stat.trend === 'up' ? '↑' : stat.trend === 'down' ? '↓' : '→'}
-                        </span>
-                      </div>
-                    </div>
-                  ))}
+      <main className="flex-1 p-6 lg:px-10 max-w-[1600px] mx-auto w-full">
+        <section className="mb-10 relative overflow-hidden rounded-3xl bg-slate-900 p-8 text-white shadow-xl">
+          <div className="relative z-10">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+              <div className="space-y-3">
+                <div className="flex items-center gap-2 text-blue-400 font-medium">
+                  <Sparkles className="w-4 h-4" />
+                  <span>Admin Command Center</span>
                 </div>
-              </div>
-              <div className="hidden lg:block">
-                <Sparkles className="w-24 h-24 opacity-50" />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Stats Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 mb-8">
-          {dashboardData.stats.map((stat) => (
-            <motion.div
-              key={stat.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3 }}
-              className="bg-white rounded-xl shadow-sm border border-gray-200 p-5 hover:shadow-md transition-all"
-            >
-              <div className="flex items-start justify-between mb-3">
-                <div className={`p-2.5 rounded-lg bg-gradient-to-br ${stat.color} text-white`}>
-                  {stat.icon}
-                </div>
-                <ChevronRight className="w-5 h-5 text-gray-300" />
-              </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-1">{stat.value}</h3>
-              <p className="text-sm text-gray-600 mb-2">{stat.label}</p>
-              <p className="text-xs text-gray-500">{stat.change}</p>
-            </motion.div>
-          ))}
-        </div>
-
-        {/* Admin Controls Grid */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h3 className="text-xl font-bold text-gray-900">Administration Controls</h3>
-              <p className="text-gray-600">Manage all aspects of the wellness platform</p>
-            </div>
-            <div className="flex items-center gap-2">
-              <button className="px-4 py-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors font-medium flex items-center gap-2">
-                <Download className="w-4 h-4" />
-                Export Data
-              </button>
-              <button className="px-4 py-2 bg-gray-50 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors font-medium flex items-center gap-2">
-                <Activity className="w-4 h-4" />
-                Live Monitor
-              </button>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {adminActions.map((action, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: index * 0.1 }}
-                whileHover={{ y: -5, scale: 1.02 }}
-              >
-                <Link
-                  to={action.link}
-                  className="block group"
-                >
-                  <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-xl transition-all duration-300">
-                    <div className="flex items-start justify-between mb-4">
-                      <div className={`p-3 rounded-xl bg-gradient-to-br ${action.color} text-white`}>
-                        {action.icon}
-                      </div>
-                      <div className="flex items-center gap-1">
-                        {action.features.map((feature, i) => (
-                          <span key={i} className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">
-                            {feature}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                    
-                    <h4 className="text-lg font-semibold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
-                      {action.title}
-                    </h4>
-                    <p className="text-gray-600 mb-4">{action.description}</p>
-                    
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium text-blue-600">Manage →</span>
-                      <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <button className="p-1.5 hover:bg-blue-50 rounded-lg">
-                          <Eye className="w-4 h-4 text-gray-400" />
-                        </button>
-                        <button className="p-1.5 hover:bg-blue-50 rounded-lg">
-                          <Edit className="w-4 h-4 text-gray-400" />
-                        </button>
-                        <button className="p-1.5 hover:bg-red-50 rounded-lg">
-                          <Trash2 className="w-4 h-4 text-gray-400" />
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </Link>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-
-        {/* Recent Activity & Quick Access */}
-        <div className="grid lg:grid-cols-3 gap-6">
-          {/* Recent Activity */}
-          <div className="lg:col-span-2">
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-              <div className="flex items-center justify-between mb-6">
-                <h4 className="text-lg font-semibold text-gray-900">Recent Activity</h4>
-                <button className="text-blue-600 hover:text-blue-700 text-sm font-medium">
-                  View All →
-                </button>
+                <h1 className="text-3xl font-bold tracking-tight">
+                  Welcome back, <span className="text-blue-400">{user?.name?.split(' ')[0]}</span>
+                </h1>
+                <p className="text-slate-400 text-lg max-w-xl">
+                  Platform oversight and student wellness management. System integrity is currently at 100%.
+                </p>
               </div>
               
-              <div className="space-y-4">
-                {dashboardData.recentActivities.map((activity) => (
-                  <div key={activity.id} className="flex items-center justify-between p-4 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors group">
-                    <div className="flex items-center gap-4">
-                      <div className={`p-2 rounded-lg ${
-                        activity.type === 'alert' ? 'bg-red-100 text-red-600' :
-                        activity.type === 'upload' ? 'bg-blue-100 text-blue-600' :
-                        activity.type === 'add' ? 'bg-green-100 text-green-600' :
-                        activity.type === 'session' ? 'bg-purple-100 text-purple-600' :
-                        'bg-gray-100 text-gray-600'
-                      }`}>
-                        {activity.type === 'alert' && <AlertTriangle className="w-4 h-4" />}
-                        {activity.type === 'upload' && <Upload className="w-4 h-4" />}
-                        {activity.type === 'add' && <PlusCircle className="w-4 h-4" />}
-                        {activity.type === 'session' && <MessageSquare className="w-4 h-4" />}
-                        {activity.type === 'report' && <BarChart3 className="w-4 h-4" />}
-                      </div>
-                      <div>
-                        <h5 className="font-medium text-gray-900">{activity.action}</h5>
-                        <p className="text-sm text-gray-500">
-                          By {activity.user} • {activity.time}
-                        </p>
-                      </div>
+              <div className="flex flex-wrap gap-3">
+                {dashboardData?.quickStats.map((stat, i) => (
+                  <div key={i} className="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/10 min-w-[140px]">
+                    <p className="text-xs font-medium text-slate-400 uppercase tracking-wider mb-1">{stat.label}</p>
+                    <div className="flex items-end gap-2">
+                      <span className="text-2xl font-bold">{stat.value}</span>
+                      <Badge className={stat.trend === 'up' ? 'bg-emerald-500/20 text-emerald-400 border-none' : 'bg-slate-500/20 text-slate-400 border-none'}>
+                        {stat.trend === 'up' ? '↑' : '—'}
+                      </Badge>
                     </div>
-                    <button className="opacity-0 group-hover:opacity-100 transition-opacity p-2 hover:bg-white rounded-lg">
-                      <ChevronRight className="w-5 h-5 text-gray-400" />
-                    </button>
                   </div>
                 ))}
               </div>
             </div>
           </div>
+          <div className="absolute top-0 right-0 w-64 h-64 bg-blue-600/20 blur-[100px] -mr-32 -mt-32 rounded-full" />
+        </section>
 
-          {/* Quick Actions & System Status */}
-          <div>
-            {/* System Status */}
-            <div className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-xl border border-blue-100 p-6 mb-6">
-              <h4 className="text-lg font-semibold text-gray-900 mb-4">System Status</h4>
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 bg-white rounded-lg">
-                      <Globe className="w-4 h-4 text-green-600" />
-                    </div>
-                    <div>
-                      <p className="font-medium text-gray-900">API Services</p>
-                      <p className="text-sm text-gray-500">All systems operational</p>
-                    </div>
-                  </div>
-                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                </div>
-                
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 bg-white rounded-lg">
-                      <Brain className="w-4 h-4 text-blue-600" />
-                    </div>
-                    <div>
-                      <p className="font-medium text-gray-900">AI Engine</p>
-                      <p className="text-sm text-gray-500">Processing data</p>
-                    </div>
-                  </div>
-                  <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
-                </div>
-                
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 bg-white rounded-lg">
-                      <Lock className="w-4 h-4 text-emerald-600" />
-                    </div>
-                    <div>
-                      <p className="font-medium text-gray-900">Security</p>
-                      <p className="text-sm text-gray-500">All checks passed</p>
-                    </div>
-                  </div>
-                  <div className="w-2 h-2 bg-emerald-500 rounded-full"></div>
-                </div>
-              </div>
-              
-              <button className="w-full mt-6 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-lg hover:opacity-90 transition-opacity font-medium">
-                Run System Diagnostic
-              </button>
-            </div>
-
-            {/* Quick Actions */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-              <h4 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h4>
-              <div className="space-y-3">
-                <button className="w-full flex items-center justify-between p-3 bg-gray-50 hover:bg-blue-50 rounded-lg border border-gray-200 hover:border-blue-200 transition-all group">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 bg-white rounded-lg group-hover:bg-blue-100">
-                      <PlusCircle className="w-4 h-4 text-gray-600 group-hover:text-blue-600" />
-                    </div>
-                    <span className="font-medium">Add New Counsellor</span>
-                  </div>
-                  <ChevronRight className="w-4 h-4 text-gray-400" />
-                </button>
-                
-                <button className="w-full flex items-center justify-between p-3 bg-gray-50 hover:bg-amber-50 rounded-lg border border-gray-200 hover:border-amber-200 transition-all group">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 bg-white rounded-lg group-hover:bg-amber-100">
-                      <AlertTriangle className="w-4 h-4 text-gray-600 group-hover:text-amber-600" />
-                    </div>
-                    <span className="font-medium">Review Alerts</span>
-                  </div>
-                  <ChevronRight className="w-4 h-4 text-gray-400" />
-                </button>
-                
-                <button className="w-full flex items-center justify-between p-3 bg-gray-50 hover:bg-emerald-50 rounded-lg border border-gray-200 hover:border-emerald-200 transition-all group">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 bg-white rounded-lg group-hover:bg-emerald-100">
-                      <BarChart3 className="w-4 h-4 text-gray-600 group-hover:text-emerald-600" />
-                    </div>
-                    <span className="font-medium">Generate Report</span>
-                  </div>
-                  <ChevronRight className="w-4 h-4 text-gray-400" />
-                </button>
+        <div className="grid lg:grid-cols-3 gap-8">
+          <div className="lg:col-span-2 space-y-6">
+            <div className="flex items-center justify-between mb-2">
+              <div>
+                <h2 className="text-xl font-bold text-slate-900">Service Directory</h2>
+                <p className="text-slate-500 text-sm">Access core management modules</p>
               </div>
             </div>
+
+            <div className="grid sm:grid-cols-2 gap-4">
+              {adminActions.map((action, index) => (
+                <motion.div key={index} whileHover={{ y: -4 }}>
+                  <Link to={action.link} className="block group">
+                    <Card className="h-full border-slate-200 transition-all group-hover:shadow-lg group-hover:border-blue-200">
+                      <CardContent className="p-5">
+                        <div className="flex items-start justify-between mb-4">
+                          <div className={`p-3 rounded-2xl text-white shadow-md ${action.color}`}>
+                            {action.icon}
+                          </div>
+                        </div>
+                        <h3 className="font-bold text-slate-900 mb-1 group-hover:text-blue-600 transition-colors">
+                          {action.title}
+                        </h3>
+                        <p className="text-sm text-slate-500 line-clamp-2">
+                          {action.description}
+                        </p>
+                      </CardContent>
+                    </Card>
+                  </Link>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+
+          <div className="space-y-6">
+            <Card className="bg-white shadow-sm border-slate-200 overflow-hidden">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-lg">Platform Status</CardTitle>
+                <CardDescription>Real-time system health</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {[
+                  { label: "API Services", icon: <Globe className="w-4 h-4 text-emerald-500" />, status: "Operational" },
+                  { label: "AI Engine", icon: <Brain className="w-4 h-4 text-blue-500" />, status: "Processing" },
+                  { label: "Data Security", icon: <LockIcon className="w-4 h-4 text-indigo-500" />, status: "Secure" }, // Corrected to LockIcon
+                ].map((s, i) => (
+                  <div key={i} className="flex items-center justify-between p-3 bg-slate-50 rounded-xl">
+                    <div className="flex items-center gap-3">
+                      {s.icon}
+                      <span className="text-sm font-medium text-slate-700">{s.label}</span>
+                    </div>
+                    <Badge variant="outline" className="bg-white text-emerald-600 border-emerald-100">
+                      {s.status}
+                    </Badge>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+
+            <Card className="bg-white shadow-sm border-slate-200">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-lg">Recent Events</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {/* <div className="space-y-5">
+                  {dashboardData.recentActivities.map((activity, i) => (
+                    <div key={activity.id} className="flex gap-3 relative">
+                      {i !== dashboardData.recentActivities.length - 1 && (
+                        <div className="absolute left-[15px] top-8 bottom-[-20px] w-px bg-slate-100" />
+                      )}
+                      <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 z-10 ${
+                        activity.type === 'alert' ? 'bg-red-50 text-red-600' : 'bg-blue-50 text-blue-600'
+                      }`}>
+                        {activity.type === 'alert' ? <AlertTriangle size={14} /> : <CheckCircle2 size={14} />}
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="text-sm font-semibold text-slate-900 leading-none mb-1">{activity.action}</span>
+                        <span className="text-xs text-slate-500">{activity.user} • {activity.time}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div> */}
+              </CardContent>
+            </Card>
           </div>
         </div>
       </main>

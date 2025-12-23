@@ -1,44 +1,39 @@
 import React, { useState } from "react";
-import { useAuth } from "../../context/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
+import { useAuth } from "../../context/AuthContext";
+
+// Shadcn UI Components (Assuming standard path)
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Separator } from "@/components/ui/separator";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+
+// Icons
 import {
-  Menu,
-  X,
-  Home,
-  User,
-  Brain,
-  Calendar,
-  BookOpen,
-  Users,
-  Shield,
-  LogOut,
-  Bell,
-  Settings,
-  TrendingUp,
-  MessageSquare,
-  ChevronRight,
-  AlertCircle,
-  Sparkles,
-  Heart,
-  Zap,
-  Target,
-  Star
+  Menu, Home, User, Brain, Calendar, BookOpen, Users, LogOut,
+  Bell, Settings, ChevronRight, AlertCircle, Sparkles, Heart,
+  Zap, Target, Star, Search
 } from "lucide-react";
 
 const StudentDashboard = () => {
   const { user, loading, logout } = useAuth();
   const navigate = useNavigate();
-  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("overview");
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-gray-200 border-t-blue-600 rounded-full animate-spin mx-auto mb-4"></div>
-          <h2 className="text-xl font-semibold text-gray-700">Loading your dashboard...</h2>
-          <p className="text-gray-500 mt-2">Please wait a moment</p>
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="flex flex-col items-center gap-4">
+          <div className="relative">
+            <div className="w-16 h-16 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
+            <Sparkles className="w-6 h-6 text-primary absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
+          </div>
+          <h2 className="text-xl font-medium animate-pulse">Loading Wellness Portal...</h2>
         </div>
       </div>
     );
@@ -49,498 +44,247 @@ const StudentDashboard = () => {
     navigate("/login");
   };
 
-  // Navigation items
   const navItems = [
-    { name: "Overview", icon: <Home className="w-5 h-5" />, id: "overview", link: "#" },
-    { name: "Profile", icon: <User className="w-5 h-5" />, id: "profile", link: "/student/profile" },
-    { name: "Counselling", icon: <Brain className="w-5 h-5" />, id: "counselling", link: "/student/counsellors" },
-    { name: "Appointments", icon: <Calendar className="w-5 h-5" />, id: "appointments", link: "/student/appointments" },
-    { name: "Resources", icon: <BookOpen className="w-5 h-5" />, id: "resources", link: "/student/resources" },
-    { name: "AI Chat", icon: <Users className="w-5 h-5" />, id: "ai-chat", link: "/student/ai-chat" },
-    { name: "Communities", icon: <Settings className="w-5 h-5" />, id: "settings", link: "/student/communities" },
+    { name: "Overview", icon: Home, id: "overview", link: "#" },
+    { name: "Profile", icon: User, id: "profile", link: "/student/profile" },
+    { name: "Counselling", icon: Brain, id: "counselling", link: "/student/counsellors" },
+    { name: "Appointments", icon: Calendar, id: "appointments", link: "/student/appointments" },
+    { name: "Resources", icon: BookOpen, id: "resources", link: "/student/resources" },
+    { name: "AI Chat", icon: Zap, id: "ai-chat", link: "/student/ai-chat" },
+    { name: "Communities", icon: Users, id: "communities", link: "/student/communities" },
   ];
 
-  // Services Grid
   const services = [
     {
-      icon: <Brain className="w-6 h-6" />,
+      icon: Brain,
       title: "Counselling",
-      description: "Access professional mental health support",
+      description: "Professional mental health support.",
       link: "/student/counsellors",
-      color: "from-purple-500 to-pink-500",
-      suggestion: "Feeling overwhelmed? Talk to a professional counsellor"
+      color: "bg-purple-500",
+      suggestion: "Talk to a professional today."
     },
     {
-      icon: <Calendar className="w-6 h-6" />,
+      icon: Calendar,
       title: "Appointments",
-      description: "Schedule and manage your counselling sessions",
+      description: "Manage your upcoming sessions.",
       link: "/student/appointments",
-      color: "from-green-500 to-teal-500",
-      suggestion: "Book a session to start your wellness journey"
+      color: "bg-emerald-500",
+      suggestion: "You have no sessions today."
     },
     {
-      icon: <BookOpen className="w-6 h-6" />,
+      icon: BookOpen,
       title: "Resources",
-      description: "Access educational materials and guides",
+      description: "Educational self-help guides.",
       link: "/student/resources",
-      color: "from-orange-500 to-red-500",
-      suggestion: "Explore articles and videos for self-help"
+      color: "bg-orange-500",
+      suggestion: "New: Mindfulness Guide 2024"
     },
     {
-      icon: <Users className="w-6 h-6" />,
-      title: "AI Chat",
-      description: "Talk to our AI-powered mental health assistant",
-      link: "/student/ai-chat",
-      color: "from-blue-500 to-cyan-500",
-      suggestion: "Need immediate support? Chat with our AI assistant"
-    },
-    {
-      icon: <Shield className="w-6 h-6" />,
-      title: "Emergency Help",
-      description: "Get immediate assistance when you need it",
-      link: "/student/emergency",
-      color: "from-red-500 to-rose-500",
-      suggestion: "Urgent support available 24/7"
-    },
-    {
-      icon: <Heart className="w-6 h-6" />,
-      title: "Communities",
-      description: "Connect with peers in support communities",
-      link: "/student/communities",
-      color: "from-indigo-500 to-violet-500",
-      suggestion: "Join others on similar journeys"
-    },
+        icon: Users,
+        title: "AI Chat",
+        description: "Instant AI-powered assistant.",
+        link: "/student/ai-chat",
+        color: "bg-blue-500",
+        suggestion: "Available 24/7 for you."
+    }
   ];
 
-  // Suggestions for Services
-  const suggestions = [
-    {
-      title: "Start Your Wellness Journey",
-      description: "Take your first step towards better mental health",
-      action: "Book First Session",
-      icon: <Zap className="w-5 h-5" />,
-      link: "/student/counsellors"
-    },
-    {
-      title: "Explore Resources",
-      description: "Learn coping strategies and mindfulness techniques",
-      action: "Browse Library",
-      icon: <BookOpen className="w-5 h-5" />,
-      link: "/student/resources"
-    },
-    {
-      title: "Try AI Chat",
-      description: "Get instant support from our AI assistant",
-      action: "Start Chat",
-      icon: <Brain className="w-5 h-5" />,
-      link: "/student/ai-chat"
-    },
-  ];
+  const SidebarContent = () => (
+    <div className="flex flex-col h-full">
+      <div className="p-6 flex items-center gap-3">
+        <div className="p-2 bg-primary rounded-xl">
+          <Sparkles className="w-6 h-6 text-primary-foreground" />
+        </div>
+        <span className="text-xl font-bold tracking-tight text-foreground">Wellness</span>
+      </div>
+
+      <ScrollArea className="flex-1 px-4">
+        <div className="space-y-1 py-2">
+          {navItems.map((item) => (
+            <Link key={item.id} to={item.link} onClick={() => setActiveTab(item.id)}>
+              <Button
+                variant={activeTab === item.id ? "secondary" : "ghost"}
+                className={`w-full justify-start gap-3 transition-all ${activeTab === item.id ? "bg-secondary font-semibold" : ""}`}
+              >
+                <item.icon className={`w-5 h-5 ${activeTab === item.id ? "text-primary" : "text-muted-foreground"}`} />
+                {item.name}
+              </Button>
+            </Link>
+          ))}
+        </div>
+
+        <Separator className="my-6" />
+
+        <div className="px-4 py-2">
+          <h4 className="text-xs font-semibold uppercase text-muted-foreground mb-4">Quick Tips</h4>
+          <div className="space-y-4">
+            <div className="flex gap-3 items-start text-sm">
+              <Target className="w-4 h-4 text-primary shrink-0" />
+              <p className="text-muted-foreground">Set one small goal for today.</p>
+            </div>
+            <div className="flex gap-3 items-start text-sm">
+              <Heart className="w-4 h-4 text-destructive shrink-0" />
+              <p className="text-muted-foreground">Self-care is not selfish.</p>
+            </div>
+          </div>
+        </div>
+      </ScrollArea>
+
+      <div className="p-4 border-t">
+        <Button variant="ghost" className="w-full justify-start gap-3 text-destructive hover:text-destructive hover:bg-destructive/10" onClick={handleLogout}>
+          <LogOut className="w-5 h-5" />
+          Logout
+        </Button>
+      </div>
+    </div>
+  );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
-      {/* Mobile Header */}
-      <header className="md:hidden sticky top-0 z-50 bg-white shadow-sm">
-        <div className="flex items-center justify-between px-4 py-3">
+    <div className="flex min-h-screen bg-slate-50/50 dark:bg-zinc-950">
+      {/* Desktop Sidebar */}
+      <aside className="hidden md:flex w-72 flex-col fixed inset-y-0 z-50 bg-card border-r shadow-sm">
+        <SidebarContent />
+      </aside>
+
+      {/* Main Content Area */}
+      <main className="flex-1 md:pl-72 flex flex-col">
+        {/* Navbar */}
+        <header className="h-16 border-b bg-card/80 backdrop-blur-md sticky top-0 z-40 px-6 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="icon" className="md:hidden">
+                  <Menu className="w-6 h-6" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="left" className="p-0 w-72">
+                <SidebarContent />
+              </SheetContent>
+            </Sheet>
+            <div className="hidden sm:flex items-center bg-secondary/50 rounded-full px-3 py-1.5 border">
+              <Search className="w-4 h-4 text-muted-foreground mr-2" />
+              <input 
+                placeholder="Search resources..." 
+                className="bg-transparent border-none text-sm focus:outline-none w-48"
+              />
+            </div>
+          </div>
+
           <div className="flex items-center gap-3">
-            <button
-              onClick={() => setSidebarOpen(true)}
-              className="p-2 rounded-lg text-gray-600 hover:bg-gray-100"
-            >
-              <Menu className="w-6 h-6" />
-            </button>
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-600 to-violet-600 flex items-center justify-center">
-                <Sparkles className="w-4 h-4 text-white" />
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button variant="ghost" size="icon" className="relative">
+                    <Bell className="w-5 h-5" />
+                    <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-destructive rounded-full border-2 border-background" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Notifications</TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+
+            <div className="flex items-center gap-3 pl-2 border-l">
+              <div className="text-right hidden sm:block">
+                <p className="text-sm font-medium leading-none">{user.name}</p>
+                <p className="text-xs text-muted-foreground mt-1">{user.role}</p>
               </div>
-              <span className="font-bold text-gray-800">Dashboard</span>
+              <Avatar className="h-9 w-9 border-2 border-primary/20">
+                <AvatarFallback className="bg-primary text-primary-foreground">
+                  {user?.name?.charAt(0)}
+                </AvatarFallback>
+              </Avatar>
             </div>
           </div>
-          
-          <div className="flex items-center gap-2">
-            <button className="p-2 rounded-lg hover:bg-gray-100">
-              <Bell className="w-5 h-5 text-gray-600" />
-            </button>
-            <div className="w-8 h-8 rounded-full overflow-hidden bg-gradient-to-br from-blue-500 to-violet-500 flex items-center justify-center">
-              <span className="text-white font-bold">
-                {user?.name?.charAt(0) || "U"}
-              </span>
-            </div>
-          </div>
-        </div>
-      </header>
+        </header>
 
-      {/* Sidebar for Mobile */}
-      <AnimatePresence>
-        {sidebarOpen && (
-          <>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setSidebarOpen(false)}
-              className="fixed inset-0 bg-black/50 z-40 md:hidden"
-            />
-            <motion.div
-              initial={{ x: "-100%" }}
-              animate={{ x: 0 }}
-              exit={{ x: "-100%" }}
-              transition={{ type: "spring", damping: 25 }}
-              className="fixed top-0 left-0 bottom-0 w-72 bg-white shadow-2xl z-50 md:hidden overflow-y-auto"
-            >
-              <div className="p-6">
-                <div className="flex items-center justify-between mb-8">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-600 to-violet-600 flex items-center justify-center">
-                      <Sparkles className="w-5 h-5 text-white" />
-                    </div>
-                    <div>
-                      <h2 className="font-bold text-gray-800">Wellness Portal</h2>
-                      <p className="text-sm text-gray-600">Student Dashboard</p>
-                    </div>
-                  </div>
-                  <button
-                    onClick={() => setSidebarOpen(false)}
-                    className="p-2 rounded-lg hover:bg-gray-100"
-                  >
-                    <X className="w-5 h-5" />
-                  </button>
-                </div>
-
-                {/* User Profile Card */}
-                <div className="mb-8">
-                  <div className="flex items-center gap-3 p-4 bg-gradient-to-r from-blue-50 to-violet-50 rounded-xl mb-4">
-                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-violet-500 flex items-center justify-center">
-                      <span className="text-white font-bold text-lg">
-                        {user?.name?.charAt(0) || "U"}
-                      </span>
-                    </div>
-                    <div>
-                      <h3 className="font-bold text-gray-800">{user.name}</h3>
-                      <p className="text-sm text-gray-600">{user.email}</p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Navigation */}
-                <nav className="space-y-1 mb-8">
-                  {navItems.map((item) => (
-                    <Link
-                      key={item.id}
-                      to={item.link}
-                      onClick={() => {
-                        setActiveTab(item.id);
-                        setSidebarOpen(false);
-                      }}
-                      className={`flex items-center gap-3 p-3 rounded-lg transition-colors ${
-                        activeTab === item.id
-                          ? "bg-blue-100 text-blue-600"
-                          : "text-gray-700 hover:bg-gray-100"
-                      }`}
-                    >
-                      {item.icon}
-                      <span className="font-medium">{item.name}</span>
-                    </Link>
-                  ))}
-                </nav>
-
-                {/* Logout Button */}
-                <button
-                  onClick={handleLogout}
-                  className="w-full flex items-center gap-3 p-3 rounded-lg text-red-600 hover:bg-red-50 transition-colors"
-                >
-                  <LogOut className="w-5 h-5" />
-                  <span className="font-medium">Log Out</span>
-                </button>
-              </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
-
-      {/* Desktop Layout */}
-      <div className="hidden md:flex">
-        {/* Sidebar */}
-        <aside className="w-64 h-screen bg-white border-r border-gray-200 sticky top-0">
-          <div className="p-6 border-b border-gray-200">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-600 to-violet-600 flex items-center justify-center">
-                <Sparkles className="w-5 h-5 text-white" />
-              </div>
+        {/* Dashboard Content */}
+        <ScrollArea className="flex-1 p-6 lg:p-10">
+          <div className="max-w-6xl mx-auto space-y-8">
+            {/* Hero Section */}
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
               <div>
-                <h2 className="font-bold text-gray-800">Wellness Portal</h2>
-                <p className="text-sm text-gray-600">Student Dashboard</p>
+                <h1 className="text-4xl font-extrabold tracking-tight lg:text-5xl">
+                  Welcome back, <span className="text-primary">{user.name.split(' ')[0]}!</span>
+                </h1>
+                <p className="text-muted-foreground text-lg mt-2">
+                  Take a deep breath. How are you feeling today?
+                </p>
+              </div>
+              <div className="flex gap-2">
+                <Button variant="outline" className="gap-2" onClick={() => navigate("/student/communities")}>
+                    <Users className="w-4 h-4" />
+                    Communities
+                </Button>
+                <Button className="gap-2 shadow-lg shadow-primary/25" onClick={() => navigate("/student/ai-chat")}>
+                    <Brain className="w-4 h-4" />
+                    Talk to AI
+                </Button>
               </div>
             </div>
-          </div>
 
-          {/* User Profile Card */}
-          <div className="p-6">
-            <div className="bg-gradient-to-r from-blue-50 to-violet-50 rounded-xl p-4 mb-6">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-violet-500 flex items-center justify-center">
-                  <span className="text-white font-bold text-lg">
-                    {user?.name?.charAt(0) || "U"}
-                  </span>
-                </div>
-                <div>
-                  <h3 className="font-bold text-gray-800">{user.name}</h3>
-                  <p className="text-sm text-gray-600">{user.email}</p>
-                  <span className="inline-block mt-1 px-2 py-1 bg-blue-100 text-blue-600 text-xs rounded-full">
-                    {user.role}
-                  </span>
-                </div>
-              </div>
+            {/* Quick Actions Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {[
+                    { title: "Book a Session", desc: "Talk to a counselor", icon: Calendar, color: "text-blue-500", bg: "bg-blue-500/10", link: "/student/counsellors" },
+                    { title: "Join Group", desc: "Peer support groups", icon: Users, color: "text-purple-500", bg: "bg-purple-500/10", link: "/student/communities" },
+                    { title: "Profile", desc: "Update your profile", icon: User, color: "text-red-500", bg: "bg-red-500/10", link: "/student/profile" }
+                ].map((action, i) => (
+                    <Link to={action.link} key={i}>
+                        <Card className="hover:border-primary/50 transition-colors cursor-pointer group">
+                            <CardContent className="pt-6">
+                                <div className="flex items-center gap-4">
+                                    <div className={`p-3 rounded-2xl ${action.bg}`}>
+                                        <action.icon className={`w-6 h-6 ${action.color}`} />
+                                    </div>
+                                    <div>
+                                        <h3 className="font-bold group-hover:text-primary transition-colors">{action.title}</h3>
+                                        <p className="text-sm text-muted-foreground">{action.desc}</p>
+                                    </div>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </Link>
+                ))}
             </div>
-          </div>
 
-          {/* Navigation */}
-          <nav className="px-4 space-y-1">
-            {navItems.map((item) => (
-              <Link
-                key={item.id}
-                to={item.link}
-                onClick={() => setActiveTab(item.id)}
-                className={`flex items-center gap-3 p-3 rounded-lg transition-colors ${
-                  activeTab === item.id
-                    ? "bg-blue-100 text-blue-600"
-                    : "text-gray-700 hover:bg-gray-100"
-                }`}
-              >
-                {item.icon}
-                <span className="font-medium">{item.name}</span>
-              </Link>
-            ))}
-          </nav>
-
-          {/* Quick Tips */}
-          <div className="p-6 border-t border-gray-200 mt-6">
-            <h4 className="font-bold text-gray-800 mb-4">Quick Tips</h4>
-            <div className="space-y-3">
-              <div className="flex items-start gap-2 text-sm text-gray-600">
-                <Target className="w-4 h-4 text-blue-500 mt-0.5" />
-                <span>Take one step at a time</span>
-              </div>
-              <div className="flex items-start gap-2 text-sm text-gray-600">
-                <Heart className="w-4 h-4 text-red-500 mt-0.5" />
-                <span>Your mental health matters</span>
-              </div>
-              <div className="flex items-start gap-2 text-sm text-gray-600">
-                <Star className="w-4 h-4 text-amber-500 mt-0.5" />
-                <span>Be kind to yourself today</span>
-              </div>
-            </div>
-          </div>
-        </aside>
-
-        {/* Main Content */}
-        <main className="flex-1 p-6">
-          {/* Header */}
-          <div className="flex items-center justify-between mb-8">
+            {/* Main Services Section */}
             <div>
-              <h1 className="text-3xl font-bold text-gray-800">
-                Welcome back, <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-violet-600">{user.name.split(' ')[0]}!</span> 👋
-              </h1>
-              <p className="text-gray-600 mt-2">Here's everything you need for your wellness journey</p>
-            </div>
-            
-            <div className="flex items-center gap-4">
-              <button className="p-2 rounded-lg hover:bg-gray-100 relative">
-                <Bell className="w-5 h-5 text-gray-600" />
-              </button>
-              <button
-                onClick={handleLogout}
-                className="flex items-center gap-2 px-4 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors font-medium"
-              >
-                <LogOut className="w-4 h-4" />
-                Logout
-              </button>
-            </div>
-          </div>
-
-          {/* Suggestions Section */}
-          <div className="mb-8">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold text-gray-800">Get Started</h2>
-              <p className="text-gray-600">Begin your wellness journey today</p>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {suggestions.map((suggestion, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                  whileHover={{ y: -5, scale: 1.02 }}
-                >
-                  <Link
-                    to={suggestion.link}
-                    className="block group"
-                  >
-                    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-lg transition-all duration-300">
-                      <div className="flex items-center gap-3 mb-4">
-                        <div className={`p-3 rounded-xl bg-gradient-to-br from-blue-500 to-violet-500 text-white`}>
-                          {suggestion.icon}
-                        </div>
-                        <div>
-                          <h3 className="text-lg font-bold text-gray-800">{suggestion.title}</h3>
-                          <p className="text-sm text-gray-600">{suggestion.description}</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium text-blue-600">{suggestion.action}</span>
-                        <ChevronRight className="w-5 h-5 text-gray-300 group-hover:text-blue-600 group-hover:translate-x-1 transition-all" />
-                      </div>
-                    </div>
-                  </Link>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-
-          {/* Services Grid */}
-          <div className="mb-8">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold text-gray-800">Our Services</h2>
-              <p className="text-gray-600">All support options available to you</p>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {services.map((service, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                  whileHover={{ y: -5, scale: 1.02 }}
-                >
-                  <Link
-                    to={service.link}
-                    className="block group"
-                  >
-                    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-lg transition-all duration-300">
-                      <div className={`inline-flex p-3 rounded-xl bg-gradient-to-br ${service.color} text-white mb-4`}>
-                        {service.icon}
-                      </div>
-                      <h3 className="text-xl font-bold text-gray-800 mb-2 group-hover:text-blue-600 transition-colors">
-                        {service.title}
-                      </h3>
-                      <p className="text-gray-600 mb-4">{service.description}</p>
-                      <div className="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-100">
-                        <p className="text-sm text-blue-700 font-medium">{service.suggestion}</p>
-                      </div>
-                      <div className="flex items-center justify-between mt-4">
-                        <span className="text-sm font-medium text-blue-600">Access Service</span>
-                        <ChevronRight className="w-5 h-5 text-gray-300 group-hover:text-blue-600 group-hover:translate-x-1 transition-all" />
-                      </div>
-                    </div>
-                  </Link>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </main>
-      </div>
-
-      {/* Mobile Main Content */}
-      <div className="md:hidden p-4">
-        {/* Welcome Banner */}
-        <div className="bg-gradient-to-r from-blue-600 to-violet-600 rounded-2xl p-6 text-white mb-6">
-          <h1 className="text-2xl font-bold mb-2">
-            Welcome back, {user.name.split(' ')[0]}!
-          </h1>
-          <p className="opacity-90">Your wellness journey continues here</p>
-        </div>
-
-        {/* User Info Card */}
-        <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
-          <div className="flex items-center gap-4 mb-4">
-            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-violet-500 flex items-center justify-center">
-              <span className="text-white font-bold text-2xl">
-                {user?.name?.charAt(0) || "U"}
-              </span>
-            </div>
-            <div>
-              <h2 className="text-xl font-bold text-gray-800">{user.name}</h2>
-              <p className="text-gray-600">{user.email}</p>
-              <span className="inline-block mt-2 px-3 py-1 bg-blue-100 text-blue-700 text-sm rounded-full">
-                {user.role}
-              </span>
-            </div>
-          </div>
-        </div>
-
-        {/* Get Started Suggestions */}
-        <h3 className="text-lg font-bold text-gray-800 mb-4">Get Started</h3>
-        <div className="grid grid-cols-1 gap-4 mb-6">
-          {suggestions.map((suggestion, index) => (
-            <Link
-              key={index}
-              to={suggestion.link}
-              className="bg-white p-4 rounded-xl shadow-sm border border-gray-100"
-            >
-              <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-gradient-to-br from-blue-500 to-violet-500 text-white">
-                  {suggestion.icon}
-                </div>
-                <div className="flex-1">
-                  <h4 className="font-bold text-gray-800">{suggestion.title}</h4>
-                  <p className="text-sm text-gray-600">{suggestion.description}</p>
-                </div>
-                <ChevronRight className="w-5 h-5 text-gray-300" />
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-2xl font-bold tracking-tight">Wellness Services</h2>
+                <Button variant="link" className="text-primary">View all services</Button>
               </div>
-            </Link>
-          ))}
-        </div>
-
-        {/* Services Grid */}
-        <h3 className="text-lg font-bold text-gray-800 mb-4">Our Services</h3>
-        <div className="grid grid-cols-1 gap-4 mb-6">
-          {services.slice(0, 3).map((service, index) => (
-            <Link
-              key={index}
-              to={service.link}
-              className="bg-white p-4 rounded-xl shadow-sm border border-gray-100"
-            >
-              <div className="flex items-center gap-3">
-                <div className={`p-2 rounded-lg bg-gradient-to-br ${service.color} text-white`}>
-                  {service.icon}
-                </div>
-                <div className="flex-1">
-                  <h4 className="font-bold text-gray-800">{service.title}</h4>
-                  <p className="text-sm text-gray-600">{service.description}</p>
-                  <div className="mt-2 p-2 bg-blue-50 rounded">
-                    <p className="text-xs text-blue-700">{service.suggestion}</p>
-                  </div>
-                </div>
-                <ChevronRight className="w-5 h-5 text-gray-300" />
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {services.map((service, index) => (
+                  <motion.div key={index} whileHover={{ y: -4 }} transition={{ type: "spring", stiffness: 300 }}>
+                    <Card className="h-full border-none shadow-md overflow-hidden bg-card">
+                      <div className={`h-2 ${service.color}`} />
+                      <CardHeader className="pb-2">
+                        <div className="w-10 h-10 rounded-lg bg-secondary flex items-center justify-center mb-2">
+                            <service.icon className="w-5 h-5 text-foreground" />
+                        </div>
+                        <CardTitle className="text-lg">{service.title}</CardTitle>
+                        <CardDescription>{service.description}</CardDescription>
+                      </CardHeader>
+                      <CardContent className="space-y-4">
+                        <div className="p-3 bg-muted/50 rounded-lg text-xs font-medium text-muted-foreground">
+                            {service.suggestion}
+                        </div>
+                        <Button variant="secondary" className="w-full group" asChild>
+                          <Link to={service.link}>
+                            Access Service
+                            <ChevronRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                          </Link>
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                ))}
               </div>
-            </Link>
-          ))}
-        </div>
-
-        {/* Quick Actions */}
-        <div className="bg-gradient-to-r from-blue-50 to-violet-50 rounded-xl p-6 mb-6">
-          <h3 className="text-lg font-bold text-gray-800 mb-4">Need Help?</h3>
-          <div className="space-y-3">
-            <Link
-              to="/student/ai-chat"
-              className="flex items-center justify-between p-3 bg-white rounded-lg"
-            >
-              <span className="font-medium">AI Chat Support</span>
-              <Brain className="w-5 h-5 text-blue-500" />
-            </Link>
-            <Link
-              to="/student/emergency"
-              className="flex items-center justify-between p-3 bg-white rounded-lg"
-            >
-              <span className="font-medium">Emergency Help</span>
-              <AlertCircle className="w-5 h-5 text-red-500" />
-            </Link>
+            </div>
           </div>
-        </div>
-      </div>
+        </ScrollArea>
+      </main>
     </div>
   );
 };

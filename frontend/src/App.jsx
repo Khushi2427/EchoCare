@@ -25,9 +25,11 @@ import AdminCounsellors from "./pages/admin/AdminCounsellors";
 import AIChatbot from "./pages/ai/AIChatbot";
 import Communities from "./pages/student/Communities";
 import CommunityChat from "./pages/student/CommunityChat";
+import { Toaster } from "@/components/ui/sonner";
 
 function App() {
-  return (
+  return (<>
+  <Toaster richColors position="top-center" closeButton />
     <Routes>
       {/* Public */}
       <Route path="/" element={<Home />} />
@@ -146,7 +148,7 @@ function App() {
       {/* Unauthorized / 404 */}
       <Route path="/unauthorized" element={<Unauthorized />} />
       <Route path="*" element={<Unauthorized />} />
-    </Routes>
+    </Routes></>
   );
 }
 

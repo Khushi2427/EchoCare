@@ -38,23 +38,17 @@ const CommunityChat = () => {
 
   // 3️⃣ SEND MESSAGE (FINAL FIXED)
   const sendMessage = () => {
-    if (!user || !(user._id || user.id)) {
-      console.error("User id missing:", user);
-      return;
-    }
-
     if (!text.trim()) return;
-
+  
     socket.emit("sendMessage", {
-      senderId: user._id || user.id,   // ✅ FIX
-      senderName: user.name || "Anonymous",
+      token: localStorage.getItem("token"),
       text,
       communityId,
-      isAnonymous: false,
     });
-
+  
     setText("");
   };
+  
 
   // 4️⃣ Safety render
   if (!user) return <div>Loading user...</div>;

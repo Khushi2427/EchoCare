@@ -105,7 +105,7 @@ export const forgotPassword = async (req, res) => {
 
   await user.save();
 
-  const resetUrl = `http://localhost:5173/reset-password/${resetToken}`;
+  const resetUrl = `https://echo-care-omega.vercel.app/reset-password/${resetToken}`;
 
   const message = `
     You requested a password reset.

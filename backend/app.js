@@ -16,11 +16,19 @@ import adminRoutes from "./routes/adminRoutes.js";
 
 const app = express();
 
-// 1. MIDDLEWARES
-app.use(cors());
+// 1. MIDDLEWARES (Enhanced CORS for Production)
+app.use(cors({
+  origin: "*", // Allows requests from Vercel and local dev
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"]
+}));
 app.use(express.json());
 
-// 2. API ROUTES (Grouped for clarity)
+// 2. PRIORITY ROUTES
+// Move Message Routes to the top to avoid overlap with community route parameters
+app.use("/api/messages", messageRoutes);
+
+// 3. OTHER API ROUTES
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/resources", resourceRoutes);
@@ -30,10 +38,7 @@ app.use("/api/ai", aiRoutes);
 app.use("/api/profile", profileRoutes);
 app.use("/api/communities", communityRoutes);
 
-// Messages route - ensure this is visible
-app.use("/api/messages", messageRoutes);
-
-// Admin routes
+// 4. ADMIN ROUTES
 app.get(
     "/api/admin/test",
     authMiddleware,
@@ -45,9 +50,15 @@ app.get(
 app.use("/api/admin", adminCounsellorRoutes);
 app.use("/api/admin", adminRoutes);
 
-// 3. FALLBACK / HEALTH CHECK (Always at the bottom)
+// 5. HEALTH CHECK (Placed after routes to avoid catching API calls)
 app.get("/", (req, res) => {
   res.send("Mental Wellness Backend Running 🚀");
+});
+
+// 6. 404 CATCH-ALL (Optional: helps debug what path actually failed)
+app.use((req, res) => {
+  console.log(`404 occurred on: ${req.originalUrl}`);
+  res.status(404).json({ error: `Route ${req.originalUrl} not found on this server` });
 });
 
 export default app;

@@ -7,7 +7,6 @@ import { Send, Loader2, ArrowLeft, AlertCircle } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
@@ -21,7 +20,8 @@ const CommunityChat = () => {
     }
   }, []);
 
-  const userId = user?.id || user?._id;
+  const userId = user?._id || user?.id;
+  const token = localStorage.getItem("token");
 
   /* ================= ROUTER ================= */
   const { communityId } = useParams();
@@ -41,7 +41,7 @@ const CommunityChat = () => {
 
   /* ================= FETCH MESSAGES ================= */
   useEffect(() => {
-    if (!communityId) return;
+    if (!communityId || !token) return;
 
     const controller = new AbortController();
 
@@ -50,21 +50,21 @@ const CommunityChat = () => {
         setLoading(true);
         setError(null);
 
-        const apiBase = import.meta.env.VITE_API_URL;
-        const url = `${apiBase}/api/messages/${communityId}`;
-
-        console.log("API URL:", url);
+        // ✅ CORRECT URL (no double /api)
+        const url = `${import.meta.env.VITE_API_URL}/messages/${communityId}`;
 
         const res = await axios.get(url, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
           signal: controller.signal,
         });
 
-        console.log("Messages received:", res.data.length);
-
-        setMessages(res.data || []);
+        setMessages(Array.isArray(res.data) ? res.data : []);
       } catch (err) {
-        if (axios.isCancel(err)) return;
-        setError("Failed to load messages");
+        if (!axios.isCancel(err)) {
+          setError("Failed to load messages");
+        }
       } finally {
         setLoading(false);
         setTimeout(scrollToBottom, 100);
@@ -74,13 +74,15 @@ const CommunityChat = () => {
     fetchMessages();
 
     return () => controller.abort();
-  }, [communityId, scrollToBottom]);
+  }, [communityId, token, scrollToBottom]);
 
   /* ================= SOCKET ================= */
   useEffect(() => {
-    if (!communityId) return;
+    if (!communityId || !token) return;
 
-    console.log("Joining socket room:", communityId);
+    socket.auth = { token };
+    socket.connect();
+
     socket.emit("joinCommunity", communityId);
 
     const onReceive = (msg) => {
@@ -98,23 +100,21 @@ const CommunityChat = () => {
     return () => {
       socket.emit("leaveCommunity", communityId);
       socket.off("receiveMessage", onReceive);
+      socket.disconnect();
     };
-  }, [communityId, scrollToBottom]);
+  }, [communityId, token, scrollToBottom]);
 
   /* ================= SEND MESSAGE ================= */
   const sendMessage = useCallback(() => {
     if (!text.trim() || !userId) return;
 
-    const optimisticId = `temp-${Date.now()}`;
-
     const optimisticMsg = {
-      _id: optimisticId,
+      _id: `temp-${Date.now()}`,
       senderId: userId,
       senderName: user.name,
       text,
       communityId,
       createdAt: new Date().toISOString(),
-      isOptimistic: true,
     };
 
     setMessages((prev) => [...prev, optimisticMsg]);
@@ -122,14 +122,13 @@ const CommunityChat = () => {
     scrollToBottom();
 
     socket.emit("sendMessage", {
-      token: localStorage.getItem("token"),
       text,
       communityId,
     });
-  }, [text, userId, communityId, scrollToBottom, user.name]);
+  }, [text, userId, communityId, scrollToBottom, user?.name]);
 
   /* ================= GUARD ================= */
-  if (!userId) {
+  if (!userId || !token) {
     return (
       <div className="flex h-full items-center justify-center">
         <Loader2 className="animate-spin" />

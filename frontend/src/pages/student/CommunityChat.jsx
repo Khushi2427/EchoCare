@@ -37,7 +37,7 @@ const CommunityChat = () => {
       try {
         setLoading(true);
         const res = await axios.get(
-          `${import.meta.env.VITE_API_URL}/messages/${communityId}`
+          `https://echocare-x83y.onrender.com/api/messages/${communityId}`
         );
         setMessages(res.data);
         setTimeout(scrollToBottom, 100); // Small delay to ensure DOM is ready

@@ -1,7 +1,7 @@
 import { io } from "socket.io-client";
 
 // Access the environment variable using import.meta.env
-const socket = io(`https://echocare-x83y.onrender.com`, {
+const socket = io(`${import.meta.env.VITE_BASE_URL}`, {
   auth: {
     token: localStorage.getItem("token")
   },

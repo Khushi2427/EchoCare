@@ -31,6 +31,8 @@ import CommunityChat from "./pages/student/CommunityChat";
 import { Toaster } from "@/components/ui/sonner";
 import AdminUsers from "./pages/admin/AdminUsers";
 import AdminAnalytics from "./pages/admin/AdminAnalytics";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 function App() {
   return (<>
   <Toaster richColors position="top-center" closeButton />
@@ -45,6 +47,8 @@ function App() {
       <Route path="/resources" element={<Resources />} />
       <Route path="/community" element={<Community />} />
       <Route path="/about" element={<About />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+<Route path="/reset-password/:token" element={<ResetPassword />} />
 
       {/* Admin */}
       <Route

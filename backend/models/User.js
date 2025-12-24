@@ -22,6 +22,9 @@ const userSchema = new mongoose.Schema(
       enum: ["student", "counsellor", "admin"],
       default: "student"
     },
+    resetPasswordToken: String,
+resetPasswordExpire: Date,
+
     stressIndex: {
       type: Number,
       default: 0

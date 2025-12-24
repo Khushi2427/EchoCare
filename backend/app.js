@@ -16,16 +16,23 @@ import adminRoutes from "./routes/adminRoutes.js";
 
 const app = express();
 
-// 1. MIDDLEWARES
+// 1. CORRECTED CORS MIDDLEWARE
+// Allow your specific frontend origin with proper headers
 app.use(cors({
-  origin: "*", // Allows requests from Vercel
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"]
+  origin: "https://echo-care-omega.vercel.app", // Your exact frontend URL
+  credentials: true, // Allow cookies/auth tokens
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+  allowedHeaders: ["Content-Type", "Authorization", "Cache-Control", "Accept", "Origin", "X-Requested-With"],
+  exposedHeaders: ["Content-Range", "X-Content-Range"], // If you need these
+  maxAge: 86400, // Cache preflight requests for 24 hours
 }));
+
+// Explicitly handle OPTIONS (preflight) requests
+app.options("*", cors());
+
 app.use(express.json());
 
 // 2. PRIORITY API ROUTES
-// We move messages to the VERY TOP to ensure no other route steals the path
 app.use("/api/messages", messageRoutes);
 
 // 3. REMAINING API ROUTES
@@ -50,16 +57,54 @@ app.get(
     }
 );
 
-// 5. ROOT / HEALTH CHECK
+// 5. ROOT / HEALTH CHECK (Important for Render uptime)
 app.get("/", (req, res) => {
-  res.send("Mental Wellness Backend Running 🚀");
+  res.json({ 
+    status: "OK", 
+    service: "Mental Wellness Backend API",
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime()
+  });
 });
 
-// 6. 404 DEBUGGER (Add this! It will show up in your Render logs)
+// 6. Health check endpoint for monitoring (Helps with cold starts)
+app.get("/health", (req, res) => {
+  res.status(200).json({ 
+    status: "healthy",
+    timestamp: new Date().toISOString(),
+    version: "1.0.0"
+  });
+});
+
+// 7. 404 DEBUGGER
 app.use((req, res) => {
   console.log(`❌ 404 Catch-all triggered for: ${req.originalUrl}`);
+  console.log(`Method: ${req.method}, Headers:`, req.headers);
   res.status(404).json({ 
-    message: `Route ${req.originalUrl} not found on this server.` 
+    message: `Route ${req.originalUrl} not found on this server.`,
+    availableRoutes: [
+      "/api/messages/:communityId",
+      "/api/auth/*",
+      "/api/communities/*"
+    ]
+  });
+});
+
+// 8. Global error handler
+app.use((err, req, res, next) => {
+  console.error("Global error handler:", err);
+  
+  // Handle CORS errors specifically
+  if (err.name === 'CorsError') {
+    return res.status(403).json({
+      message: "CORS error: Request blocked",
+      detail: err.message
+    });
+  }
+  
+  res.status(err.status || 500).json({
+    message: err.message || "Internal server error",
+    ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
   });
 });
 

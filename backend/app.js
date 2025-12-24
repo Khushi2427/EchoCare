@@ -13,7 +13,7 @@ import profileRoutes from "./routes/profileRoutes.js";
 import communityRoutes from "./routes/communityRoutes.js";
 import messageRoutes from "./routes/messageRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
-import Message from "../models/Message.js"; 
+
 const app = express();
 
 app.use(cors());
@@ -42,27 +42,7 @@ app.get("/", (req, res) => {
   res.send("Mental Wellness Backend Running 🚀");
 });
 // Test route to check messages
-app.get('/api/debug/messages/:communityId', async (req, res) => {
-  try {
-    const messages = await Message.find({ communityId: req.params.communityId })
-      .populate('senderId', 'name email')
-      .sort({ createdAt: -1 })
-      .limit(20);
-    
-    res.json({
-      count: messages.length,
-      messages: messages.map(m => ({
-        _id: m._id,
-        content: m.content,
-        communityId: m.communityId,
-        sender: m.senderId,
-        createdAt: m.createdAt
-      }))
-    });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
+
 app.use("/api/messages", messageRoutes);
 
 app.use("/api/admin", adminRoutes);

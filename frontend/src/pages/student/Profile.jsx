@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { getProfile, updateProfile } from "../../services/profileService";
-import { toast } from "sonner"; // Using the Sonner toaster we added to App.jsx
+import { toast } from "sonner";
 import { motion } from "framer-motion";
 
 // Shadcn UI Components
@@ -8,11 +8,10 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter }
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 
 // Icons
-import { User, Mail, Phone, Loader2, Save, Camera, ShieldCheck } from "lucide-react";
+import { User, Mail, Phone, Loader2, Save, ShieldCheck } from "lucide-react";
 
 const Profile = () => {
   const [form, setForm] = useState({
@@ -73,27 +72,14 @@ const Profile = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
       >
-        <div className="flex items-center gap-4 mb-8">
-          <div className="relative group">
-            <Avatar className="h-20 w-20 border-2 border-primary/10 shadow-sm">
-              <AvatarImage src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${form.name}`} />
-              <AvatarFallback className="bg-primary/5 text-primary text-xl font-bold">
-                {form.name?.charAt(0)}
-              </AvatarFallback>
-            </Avatar>
-            <div className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
-              <Camera className="h-5 w-5 text-white" />
-            </div>
-          </div>
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight">{form.name}</h1>
-            <p className="text-slate-500">Manage your account information and preferences.</p>
-          </div>
+        {/* Header Section (Avatar removed) */}
+        <div className="mb-8">
+          <h1 className="text-2xl font-bold tracking-tight">{form.name}</h1>
+          <p className="text-slate-500">Manage your account information and preferences.</p>
         </div>
 
         <form onSubmit={handleSubmit}>
           <div className="grid gap-6">
-            {/* Account Information Card */}
             <Card className="border-slate-200 shadow-sm">
               <CardHeader>
                 <CardTitle className="text-lg flex items-center gap-2">

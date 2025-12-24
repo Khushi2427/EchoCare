@@ -43,7 +43,7 @@ const AdminUsers = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const res = await axios.get("http://localhost:5002/api/admin/users");
+        const res = await axios.get(`${import.meta.env.VITE_API_URL}/admin/users`);
         setUsers(res.data);
       } catch (err) {
         console.error("Failed to fetch users:", err);

@@ -17,7 +17,7 @@ export default function CounsellorDashboard1() {
     const fetchAppointments = async () => {
       try {
         const res = await axios.get(
-          "http://localhost:5002/api/counsellors/appointments",
+          `${import.meta.env.VITE_API_URL}/counsellors/appointments`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

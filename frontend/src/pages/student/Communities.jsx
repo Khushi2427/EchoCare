@@ -56,8 +56,8 @@ const Communities = () => {
     try {
       setLoading(true);
       const [allRes, mineRes] = await Promise.all([
-        axios.get("http://localhost:5002/api/communities", { headers }),
-        axios.get("http://localhost:5002/api/communities/my", { headers })
+        axios.get(`${import.meta.env.VITE_API_URL}/communities`, { headers }),
+        axios.get(`${import.meta.env.VITE_API_URL}/communities/my`, { headers })
       ]);
       setAllCommunities(allRes.data);
       setMyCommunities(mineRes.data);
@@ -83,7 +83,7 @@ const Communities = () => {
   const createCommunity = async () => {
     if (!name) return;
     try {
-      await axios.post("http://localhost:5002/api/communities", { name, description }, { headers });
+      await axios.post(`${import.meta.env.VITE_API_URL}/communities`, { name, description }, { headers });
       setName("");
       setDescription("");
       setIsCreating(false);
@@ -96,7 +96,7 @@ const Communities = () => {
 
   const joinCommunity = async (id) => {
     try {
-      await axios.post(`http://localhost:5002/api/communities/${id}/join`, {}, { headers });
+      await axios.post(`${import.meta.env.VITE_API_URL}/communities/${id}/join`, {}, { headers });
       toast.success("Joined successfully!");
       fetchData();
       if (selectedCommunity === id || communityId === id) {
@@ -109,7 +109,7 @@ const Communities = () => {
 
   const leaveCommunity = async (id) => {
     try {
-      await axios.post(`http://localhost:5002/api/communities/${id}/leave`, {}, { headers });
+      await axios.post(`${import.meta.env.VITE_API_URL}/communities/${id}/leave`, {}, { headers });
       toast.info("Left community");
       fetchData();
       if (selectedCommunity === id || communityId === id) {

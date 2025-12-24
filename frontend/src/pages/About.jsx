@@ -394,7 +394,7 @@ const About = () => {
               </p>
               <p className="mt-2 flex items-center justify-center gap-2 text-teal-600 font-medium">
                 <Mail className="w-4 h-4" />
-                khushigupta16057@gmail.com
+                echocare25@gmail.com
               </p>
             </div>
           </div>

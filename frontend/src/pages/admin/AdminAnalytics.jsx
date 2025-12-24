@@ -18,7 +18,7 @@ const AdminAnalytics = () => {
     const fetchAnalytics = async () => {
       try {
         const res = await axios.get(
-          "http://localhost:5002/api/admin/analytics/users-per-day",
+          `${import.meta.env.VITE_API_URL}/admin/analytics/users-per-day`,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("token")}`,

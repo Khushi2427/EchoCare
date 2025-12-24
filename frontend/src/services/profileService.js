@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API = "http://localhost:5002/api/profile";
+const API = `${import.meta.env.VITE_API_URL}/profile`;
 
 export const getProfile = () => {
   const token = localStorage.getItem("token");

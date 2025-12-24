@@ -32,6 +32,8 @@ const AiChat = () => {
   const [isTyping, setIsTyping] = useState(false);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
 
+ 
+
   // Check login status (in real app, this would be from auth context)
   useEffect(() => {
     const token = localStorage.getItem("authToken");

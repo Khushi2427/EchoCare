@@ -837,7 +837,7 @@ const Home = () => {
           
           <div className="pt-8 border-t border-gray-800 text-center text-gray-400 text-sm">
             <p>© 2025 EchoCare • Mental Wellness System for Colleges • Made with ❤️ for students</p>
-            <p className="mt-2">Crisis Line: khushigupta16057@gmail.com • Available 24/7</p>
+            <p className="mt-2">Crisis Line: echocare25@gmail.com • Available 24/7</p>
           </div>
         </div>
       </footer>

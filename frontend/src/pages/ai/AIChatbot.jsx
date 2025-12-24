@@ -57,7 +57,7 @@ const AIChatbot = () => {
       // Simulate typing delay for better UX
       setTimeout(async () => {
         try {
-          const res = await axios.post("http://localhost:5002/api/ai/chat", {
+          const res = await axios.post(`${import.meta.env.VITE_API_URL}/ai/chat`, {
             message: input,
           });
 

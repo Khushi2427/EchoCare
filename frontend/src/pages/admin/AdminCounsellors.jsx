@@ -61,7 +61,7 @@ const AdminCounsellors = () => {
     try {
       setLoading(true);
       const res = await axios.get(
-        "http://localhost:5002/api/admin/counsellors",
+        `${import.meta.env.VITE_API_URL}/admin/counsellors`,
         {
           headers: {
             Authorization: `Bearer ${adminToken}`,
@@ -122,7 +122,7 @@ const AdminCounsellors = () => {
       };
 
       await axios.post(
-        "http://localhost:5002/api/admin/counsellors",
+        `${import.meta.env.VITE_API_URL}/admin/counsellors`,
         payload,
         {
           headers: {
@@ -159,7 +159,7 @@ const AdminCounsellors = () => {
 
     try {
       await axios.delete(
-        `http://localhost:5002/api/admin/counsellors/${id}`,
+        `${import.meta.env.VITE_API_URL}/admin/counsellors/${id}`,
         {
           headers: {
             Authorization: `Bearer ${adminToken}`,

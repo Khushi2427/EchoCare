@@ -24,7 +24,7 @@ export const chatWithAI = async (req, res) => {
         headers: {
           Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
           "Content-Type": "application/json",
-          "HTTP-Referer": process.env.FRONTEND_URL,
+          "HTTP-Referer": "http://localhost:5173",
           "X-Title": "Mental Wellness App",
         },
       }

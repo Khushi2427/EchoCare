@@ -35,16 +35,24 @@ const CommunityChat = () => {
       try {
         setLoading(true);
         
-        const baseUrl = import.meta.env.VITE_API_URL;
-        // Fix: Ensures there's a slash between 'api' and 'messages'
-        const cleanBase = baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl;
+        // Fallback check to see if the variable is even loading
+        const apiBase = import.meta.env.VITE_API_URL;
+        
+        if (!apiBase) {
+          console.error("CRITICAL: VITE_API_URL is undefined. Check Vercel Settings.");
+          return;
+        }
+    
+        // Ensure we don't have a double slash or missing slash
+        const cleanBase = apiBase.endsWith('/') ? apiBase.slice(0, -1) : apiBase;
         const url = `${cleanBase}/messages/${communityId}`;
-
+    
+        console.log("Fetching from Backend:", url); 
+    
         const res = await axios.get(url);
         setMessages(res.data);
-        setTimeout(scrollToBottom, 100);
       } catch (err) {
-        console.error("Fetch messages error:", err.response || err);
+        console.error("API Error:", err.response?.data || err.message);
       } finally {
         setLoading(false);
       }

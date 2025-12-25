@@ -7,12 +7,12 @@ export const chatWithAI = async (req, res) => {
     const response = await axios.post(
       "https://openrouter.ai/api/v1/chat/completions",
       {
-        model: "meta-llama/llama-3.3-70b-instruct:free",
+        model: "meta-llama/llama-4-maverick",
         messages: [
           {
             role: "system",
             content:
-              "You are a compassionate mental health support chatbot. You give emotional support, grounding techniques, and encourage professional help when needed. Never give medical diagnosis.Suggest the user to  Join our Community Space for peer support, resources, company if they are telling i need someone.If any user is using heavy stress words and suicidal ideation, immediately suggest them to reach out to a mental health professional or helpline.",
+              "You are a compassionate , Multilingual mental health support chatbot. You give emotional support, grounding techniques, and encourage professional help when needed. Never give medical diagnosis.Suggest the user to  Join our Community Space for peer support, resources, company if they are telling i need someone.If any user is using heavy stress words and suicidal ideation, immediately suggest them to reach out to a mental health professional or helpline.",
           },
           {
             role: "user",

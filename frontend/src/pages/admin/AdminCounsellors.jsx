@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { motion } from "framer-motion";
 import {
   UserPlus,
   Trash2,
@@ -17,8 +18,156 @@ import {
   Save,
   AlertCircle,
   CheckCircle,
-  Shield
+  Shield,
+  Heart,
+  Sparkles
 } from "lucide-react";
+
+/* ── Google Fonts ── */
+(() => {
+  if (document.getElementById("echocare-fonts")) return;
+  const l = document.createElement("link");
+  l.id = "echocare-fonts";
+  l.href = "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Outfit:wght@300;400;500;600&display=swap";
+  l.rel = "stylesheet";
+  document.head.appendChild(l);
+})();
+
+/* ── Global CSS ── */
+(() => {
+  if (document.getElementById("echocare-css")) return;
+  const s = document.createElement("style");
+  s.id = "echocare-css";
+  s.textContent = `
+    :root {
+      --sage: #6B9E6B;
+      --sage-hover: #598559;
+      --sage-light: #EEF5EE;
+      --cream: #FAFAF7;
+      --warm: #F6F0E8;
+      --charcoal: #1A1A1A;
+      --charcoal-2: #2C2C2C;
+      --body: #4A4A4A;
+      --muted: #7A7A7A;
+      --border: rgba(0,0,0,0.08);
+      --shadow-sm: 0 2px 12px rgba(0,0,0,0.06);
+      --shadow-md: 0 8px 32px rgba(0,0,0,0.08);
+      --shadow-lg: 0 20px 60px rgba(0,0,0,0.12);
+      --r-md: 20px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: var(--cream);
+      color: var(--charcoal);
+      -webkit-font-smoothing: antialiased;
+      line-height: 1.6;
+    }
+    a { text-decoration: none; color: inherit; }
+    .serif { font-family: 'Cormorant Garamond', serif; }
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--charcoal); color: #fff;
+      padding: 10px 20px; border-radius: 100px;
+      font-family: 'Outfit', sans-serif; font-weight: 500; font-size: 14px;
+      border: none; cursor: pointer; transition: all 0.25s ease;
+    }
+    .btn-primary:hover { background: var(--charcoal-2); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.2); }
+    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+    .btn-ghost {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: transparent; color: var(--charcoal);
+      padding: 8px 16px; border-radius: 100px;
+      font-family: 'Outfit', sans-serif; font-weight: 400; font-size: 13px;
+      border: 1.5px solid var(--border); cursor: pointer; transition: all 0.25s ease;
+    }
+    .btn-ghost:hover { border-color: var(--charcoal); background: var(--charcoal); color: #fff; }
+    .btn-sage {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--sage); color: #fff;
+      padding: 10px 20px; border-radius: 100px;
+      font-family: 'Outfit', sans-serif; font-weight: 500; font-size: 14px;
+      border: none; cursor: pointer; transition: all 0.25s ease;
+    }
+    .btn-sage:hover { background: var(--sage-hover); transform: translateY(-2px); }
+    .btn-outline {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: transparent; color: var(--body);
+      padding: 8px 16px; border-radius: 100px;
+      font-family: 'Outfit', sans-serif; font-weight: 500; font-size: 13px;
+      border: 1.5px solid var(--border); cursor: pointer; transition: all 0.25s ease;
+    }
+    .btn-outline:hover { border-color: var(--sage); color: var(--sage); }
+    .card {
+      background: #fff; border: 1px solid var(--border);
+      border-radius: var(--r-md); box-shadow: var(--shadow-sm);
+      transition: all 0.3s ease;
+    }
+    .card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+    .badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      font-size: 11px; font-weight: 600; padding: 4px 12px;
+      border-radius: 100px; background: var(--sage-light); color: var(--sage);
+    }
+    .badge-success {
+      background: #d1fae5;
+      color: #065f46;
+    }
+    .badge-info {
+      background: var(--sage-light);
+      color: var(--sage);
+    }
+    .blob {
+      position: absolute; border-radius: 50%; pointer-events: none;
+      filter: blur(72px); z-index: 0;
+    }
+    input, select, textarea {
+      font-family: 'Outfit', sans-serif;
+    }
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    th {
+      text-align: left;
+      padding: 16px 20px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border-bottom: 1px solid var(--border);
+      background: var(--cream);
+    }
+    td {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      color: var(--body);
+      font-size: 14px;
+    }
+    tr:last-child td {
+      border-bottom: none;
+    }
+    tr:hover td {
+      background: var(--cream);
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fade-in {
+      animation: fadeIn 0.3s ease-out;
+    }
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+  `;
+  document.head.appendChild(s);
+})();
 
 const days = [
   "Monday",
@@ -173,35 +322,61 @@ const AdminCounsellors = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4 md:p-8">
-      <div className="max-w-7xl mx-auto">
+    <div style={{
+      minHeight: "100vh",
+      background: "var(--cream)",
+      padding: "24px",
+      position: "relative"
+    }}>
+      
+      {/* Background blobs */}
+      <div className="blob" style={{ width: 600, height: 600, background: "rgba(107,158,107,0.05)", top: -200, right: -100 }} />
+      <div className="blob" style={{ width: 400, height: 400, background: "rgba(246,240,232,0.6)", bottom: -50, left: -50 }} />
+
+      <div style={{ maxWidth: 1280, margin: "0 auto", position: "relative", zIndex: 10 }}>
+        
         {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between">
+        <div style={{ marginBottom: 32 }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, flexWrap: "wrap" }}>
             <div>
-              <div className="flex items-center gap-3 mb-2">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-violet-500 flex items-center justify-center">
-                  <Users className="w-5 h-5 text-white" />
+              <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 8 }}>
+                <div style={{
+                  width: 48,
+                  height: 48,
+                  borderRadius: 12,
+                  background: "var(--sage-light)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center"
+                }}>
+                  <Users size={24} color="var(--sage)" />
                 </div>
                 <div>
-                  <h1 className="text-2xl md:text-3xl font-bold text-gray-900">Counsellor Management</h1>
-                  <p className="text-gray-600">Manage your team of mental health professionals</p>
+                  <h1 className="serif" style={{ fontSize: "clamp(24px, 4vw, 32px)", fontWeight: 300, marginBottom: 4 }}>
+                    Counsellor <span style={{ color: "var(--sage)" }}>Management</span>
+                  </h1>
+                  <p style={{ fontSize: 14, color: "var(--muted)" }}>
+                    Manage your team of mental health professionals
+                  </p>
                 </div>
               </div>
-              <div className="flex items-center gap-2 mt-4">
-                <div className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-medium">
+              
+              <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
+                <span className="badge badge-info">
                   {counsellors.length} Active Counsellors
-                </div>
-                <div className="px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-sm font-medium">
+                </span>
+                <span className="badge badge-success">
                   All Systems Operational
-                </div>
+                </span>
               </div>
             </div>
+
             <button
               onClick={() => setShowForm(!showForm)}
-              className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-blue-600 to-violet-600 text-white rounded-lg hover:opacity-90 transition-opacity font-medium"
+              className="btn-primary"
+              style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "12px 24px" }}
             >
-              <UserPlus className="w-5 h-5" />
+              <UserPlus size={18} />
               {showForm ? "Cancel" : "Add Counsellor"}
             </button>
           </div>
@@ -209,12 +384,19 @@ const AdminCounsellors = () => {
 
         {/* Success Message */}
         {successMessage && (
-          <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg animate-fade-in">
-            <div className="flex items-center gap-3">
-              <CheckCircle className="w-5 h-5 text-green-600" />
+          <div style={{
+            marginBottom: 24,
+            padding: "16px 20px",
+            background: "#d1fae5",
+            border: "1px solid #a7f3d0",
+            borderRadius: 12,
+            animation: "fadeIn 0.3s ease-out"
+          }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+              <CheckCircle size={20} color="#065f46" />
               <div>
-                <p className="font-medium text-green-800">{successMessage}</p>
-                <p className="text-sm text-green-600">The counsellor has been added to the system</p>
+                <p style={{ fontWeight: 600, color: "#065f46", marginBottom: 2 }}>{successMessage}</p>
+                <p style={{ fontSize: 13, color: "#047857" }}>The counsellor has been added to the system</p>
               </div>
             </div>
           </div>
@@ -225,24 +407,33 @@ const AdminCounsellors = () => {
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="mb-8 bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden"
+            style={{ marginBottom: 32 }}
+            className="card"
           >
-            <div className="bg-gradient-to-r from-blue-50 to-violet-50 p-6 border-b border-gray-200">
-              <h2 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
-                <UserPlus className="w-5 h-5" />
+            <div style={{
+              padding: "20px 24px",
+              borderBottom: "1px solid var(--border)",
+              background: "var(--cream)"
+            }}>
+              <h2 style={{ fontSize: 18, fontWeight: 600, display: "flex", alignItems: "center", gap: 8 }}>
+                <UserPlus size={20} color="var(--sage)" />
                 Add New Counsellor
               </h2>
-              <p className="text-gray-600 text-sm mt-1">Fill in the counsellor's details and availability</p>
+              <p style={{ fontSize: 13, color: "var(--muted)", marginTop: 4 }}>Fill in the counsellor's details and availability</p>
             </div>
 
-            <form onSubmit={handleSubmit} className="p-6">
-              <div className="grid md:grid-cols-2 gap-6">
+            <form onSubmit={handleSubmit} style={{ padding: 24 }}>
+              <div style={{
+                display: "grid",
+                gridTemplateColumns: "1fr 1fr",
+                gap: 24
+              }}>
                 {/* Left Column - Basic Info */}
-                <div className="space-y-6">
+                <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
-                      <User className="w-4 h-4" />
-                      Full Name <span className="text-red-500">*</span>
+                    <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: "var(--charcoal)", marginBottom: 6, display: "flex", alignItems: "center", gap: 4 }}>
+                      <User size={14} color="var(--sage)" />
+                      Full Name <span style={{ color: "#ef4444" }}>*</span>
                     </label>
                     <input
                       name="name"
@@ -250,14 +441,24 @@ const AdminCounsellors = () => {
                       value={form.name}
                       onChange={handleChange}
                       required
-                      className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                      style={{
+                        width: "100%",
+                        padding: "12px 16px",
+                        background: "var(--cream)",
+                        border: "1px solid var(--border)",
+                        borderRadius: 8,
+                        fontSize: 14,
+                        color: "var(--charcoal)"
+                      }}
+                      onFocus={(e) => e.target.style.borderColor = "var(--sage)"}
+                      onBlur={(e) => e.target.style.borderColor = "var(--border)"}
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
-                      <User className="w-4 h-4" />
-                      Username <span className="text-red-500">*</span>
+                    <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: "var(--charcoal)", marginBottom: 6, display: "flex", alignItems: "center", gap: 4 }}>
+                      <User size={14} color="var(--sage)" />
+                      Username <span style={{ color: "#ef4444" }}>*</span>
                     </label>
                     <input
                       name="username"
@@ -265,14 +466,24 @@ const AdminCounsellors = () => {
                       value={form.username}
                       onChange={handleChange}
                       required
-                      className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                      style={{
+                        width: "100%",
+                        padding: "12px 16px",
+                        background: "var(--cream)",
+                        border: "1px solid var(--border)",
+                        borderRadius: 8,
+                        fontSize: 14,
+                        color: "var(--charcoal)"
+                      }}
+                      onFocus={(e) => e.target.style.borderColor = "var(--sage)"}
+                      onBlur={(e) => e.target.style.borderColor = "var(--border)"}
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
-                      <Key className="w-4 h-4" />
-                      Password <span className="text-red-500">*</span>
+                    <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: "var(--charcoal)", marginBottom: 6, display: "flex", alignItems: "center", gap: 4 }}>
+                      <Key size={14} color="var(--sage)" />
+                      Password <span style={{ color: "#ef4444" }}>*</span>
                     </label>
                     <input
                       name="password"
@@ -281,14 +492,24 @@ const AdminCounsellors = () => {
                       value={form.password}
                       onChange={handleChange}
                       required
-                      className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                      style={{
+                        width: "100%",
+                        padding: "12px 16px",
+                        background: "var(--cream)",
+                        border: "1px solid var(--border)",
+                        borderRadius: 8,
+                        fontSize: 14,
+                        color: "var(--charcoal)"
+                      }}
+                      onFocus={(e) => e.target.style.borderColor = "var(--sage)"}
+                      onBlur={(e) => e.target.style.borderColor = "var(--border)"}
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
-                      <Tag className="w-4 h-4" />
-                      Specialization <span className="text-red-500">*</span>
+                    <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: "var(--charcoal)", marginBottom: 6, display: "flex", alignItems: "center", gap: 4 }}>
+                      <Tag size={14} color="var(--sage)" />
+                      Specialization <span style={{ color: "#ef4444" }}>*</span>
                     </label>
                     <input
                       name="specialization"
@@ -296,18 +517,28 @@ const AdminCounsellors = () => {
                       value={form.specialization}
                       onChange={handleChange}
                       required
-                      className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                      style={{
+                        width: "100%",
+                        padding: "12px 16px",
+                        background: "var(--cream)",
+                        border: "1px solid var(--border)",
+                        borderRadius: 8,
+                        fontSize: 14,
+                        color: "var(--charcoal)"
+                      }}
+                      onFocus={(e) => e.target.style.borderColor = "var(--sage)"}
+                      onBlur={(e) => e.target.style.borderColor = "var(--border)"}
                     />
-                    <p className="mt-1 text-sm text-gray-500">Separate specializations with commas</p>
+                    <p style={{ fontSize: 12, color: "var(--muted)", marginTop: 4 }}>Separate specializations with commas</p>
                   </div>
                 </div>
 
                 {/* Right Column - Contact & Availability */}
-                <div className="space-y-6">
+                <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
-                      <Phone className="w-4 h-4" />
-                      Phone Number <span className="text-red-500">*</span>
+                    <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: "var(--charcoal)", marginBottom: 6, display: "flex", alignItems: "center", gap: 4 }}>
+                      <Phone size={14} color="var(--sage)" />
+                      Phone Number <span style={{ color: "#ef4444" }}>*</span>
                     </label>
                     <input
                       name="phone"
@@ -315,14 +546,24 @@ const AdminCounsellors = () => {
                       value={form.phone}
                       onChange={handleChange}
                       required
-                      className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                      style={{
+                        width: "100%",
+                        padding: "12px 16px",
+                        background: "var(--cream)",
+                        border: "1px solid var(--border)",
+                        borderRadius: 8,
+                        fontSize: 14,
+                        color: "var(--charcoal)"
+                      }}
+                      onFocus={(e) => e.target.style.borderColor = "var(--sage)"}
+                      onBlur={(e) => e.target.style.borderColor = "var(--border)"}
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
-                      <Mail className="w-4 h-4" />
-                      Email Address <span className="text-red-500">*</span>
+                    <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: "var(--charcoal)", marginBottom: 6, display: "flex", alignItems: "center", gap: 4 }}>
+                      <Mail size={14} color="var(--sage)" />
+                      Email Address <span style={{ color: "#ef4444" }}>*</span>
                     </label>
                     <input
                       name="email"
@@ -331,25 +572,47 @@ const AdminCounsellors = () => {
                       value={form.email}
                       onChange={handleChange}
                       required
-                      className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                      style={{
+                        width: "100%",
+                        padding: "12px 16px",
+                        background: "var(--cream)",
+                        border: "1px solid var(--border)",
+                        borderRadius: 8,
+                        fontSize: 14,
+                        color: "var(--charcoal)"
+                      }}
+                      onFocus={(e) => e.target.style.borderColor = "var(--sage)"}
+                      onBlur={(e) => e.target.style.borderColor = "var(--border)"}
                     />
                   </div>
 
                   {/* AVAILABILITY */}
-                  <div className="pt-4 border-t border-gray-200">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                      <Clock className="w-5 h-5" />
+                  <div style={{ paddingTop: 16, borderTop: "1px solid var(--border)" }}>
+                    <h3 style={{ fontSize: 16, fontWeight: 600, marginBottom: 16, display: "flex", alignItems: "center", gap: 8 }}>
+                      <Clock size={18} color="var(--sage)" />
                       Set Availability
                     </h3>
                     
-                    <div className="space-y-4">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+                      <div style={{
+                        display: "grid",
+                        gridTemplateColumns: "1fr 1fr",
+                        gap: 12
+                      }}>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">Day</label>
+                          <label style={{ display: "block", fontSize: 12, fontWeight: 500, color: "var(--charcoal)", marginBottom: 4 }}>Day</label>
                           <select
                             value={availabilityDay}
                             onChange={(e) => setAvailabilityDay(e.target.value)}
-                            className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white"
+                            style={{
+                              width: "100%",
+                              padding: "10px 12px",
+                              background: "var(--cream)",
+                              border: "1px solid var(--border)",
+                              borderRadius: 6,
+                              fontSize: 13,
+                              color: "var(--charcoal)"
+                            }}
                           >
                             <option value="">Select a day</option>
                             {days.map((d) => (
@@ -359,11 +622,19 @@ const AdminCounsellors = () => {
                         </div>
 
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">Time Slots</label>
+                          <label style={{ display: "block", fontSize: 12, fontWeight: 500, color: "var(--charcoal)", marginBottom: 4 }}>Time Slots</label>
                           <select
                             value={availabilitySlots}
                             onChange={(e) => setAvailabilitySlots(e.target.value)}
-                            className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white"
+                            style={{
+                              width: "100%",
+                              padding: "10px 12px",
+                              background: "var(--cream)",
+                              border: "1px solid var(--border)",
+                              borderRadius: 6,
+                              fontSize: 13,
+                              color: "var(--charcoal)"
+                            }}
                           >
                             <option value="">Select time slots</option>
                             {timeSlots.map((time) => (
@@ -377,9 +648,16 @@ const AdminCounsellors = () => {
                         type="button"
                         onClick={addAvailability}
                         disabled={!availabilityDay || !availabilitySlots}
-                        className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="btn-outline"
+                        style={{
+                          width: "100%",
+                          justifyContent: "center",
+                          padding: "10px",
+                          opacity: (!availabilityDay || !availabilitySlots) ? 0.5 : 1,
+                          cursor: (!availabilityDay || !availabilitySlots) ? "not-allowed" : "pointer"
+                        }}
                       >
-                        <Plus className="w-4 h-4" />
+                        <Plus size={14} />
                         Add Time Slot
                       </button>
                     </div>
@@ -389,24 +667,44 @@ const AdminCounsellors = () => {
 
               {/* Added Availability Display */}
               {availabilityList.length > 0 && (
-                <div className="mt-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
-                  <h4 className="font-medium text-gray-700 mb-3">Scheduled Availability</h4>
-                  <div className="flex flex-wrap gap-2">
+                <div style={{
+                  marginTop: 24,
+                  padding: 16,
+                  background: "var(--cream)",
+                  borderRadius: 8,
+                  border: "1px solid var(--border)"
+                }}>
+                  <h4 style={{ fontSize: 14, fontWeight: 600, marginBottom: 12 }}>Scheduled Availability</h4>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
                     {availabilityList.map((a, index) => (
                       <div
                         key={index}
-                        className="flex items-center gap-2 px-3 py-2 bg-white rounded-lg border border-gray-200"
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 8,
+                          padding: "8px 12px",
+                          background: "#fff",
+                          borderRadius: 6,
+                          border: "1px solid var(--border)"
+                        }}
                       >
-                        <Calendar className="w-4 h-4 text-blue-500" />
-                        <span className="font-medium text-gray-700">{a.day}</span>
-                        <span className="text-gray-500">•</span>
-                        <span className="text-sm text-gray-600">{a.slots.join(", ")}</span>
+                        <Calendar size={14} color="var(--sage)" />
+                        <span style={{ fontSize: 13, fontWeight: 500 }}>{a.day}</span>
+                        <span style={{ color: "var(--muted)" }}>•</span>
+                        <span style={{ fontSize: 12 }}>{a.slots.join(", ")}</span>
                         <button
                           type="button"
                           onClick={() => removeAvailability(index)}
-                          className="ml-2 p-1 hover:bg-red-50 rounded text-red-500"
+                          style={{
+                            padding: 2,
+                            background: "none",
+                            border: "none",
+                            cursor: "pointer",
+                            color: "#ef4444"
+                          }}
                         >
-                          <X className="w-3 h-3" />
+                          <X size={12} />
                         </button>
                       </div>
                     ))}
@@ -415,136 +713,190 @@ const AdminCounsellors = () => {
               )}
 
               {/* Form Actions */}
-              <div className="mt-8 pt-6 border-t border-gray-200">
-                <div className="flex items-center justify-between">
-                  <button
-                    type="button"
-                    onClick={() => setShowForm(false)}
-                    className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    disabled={loading}
-                    className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-violet-600 text-white rounded-lg hover:opacity-90 transition-opacity font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {loading ? (
-                      <>
-                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                        Creating...
-                      </>
-                    ) : (
-                      <>
-                        <Save className="w-5 h-5" />
-                        Create Counsellor
-                      </>
-                    )}
-                  </button>
-                </div>
+              <div style={{
+                marginTop: 32,
+                paddingTop: 24,
+                borderTop: "1px solid var(--border)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between"
+              }}>
+                <button
+                  type="button"
+                  onClick={() => setShowForm(false)}
+                  className="btn-ghost"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="btn-primary"
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: 8,
+                    padding: "12px 24px",
+                    background: loading ? "var(--muted)" : "var(--sage)",
+                    cursor: loading ? "not-allowed" : "pointer"
+                  }}
+                >
+                  {loading ? (
+                    <>
+                      <div style={{ width: 16, height: 16, border: "2px solid #fff", borderTopColor: "transparent", borderRadius: "50%", animation: "spin 1s linear infinite" }} />
+                      Creating...
+                    </>
+                  ) : (
+                    <>
+                      <Save size={16} />
+                      Create Counsellor
+                    </>
+                  )}
+                </button>
               </div>
             </form>
           </motion.div>
         )}
 
         {/* COUNSELLORS LIST */}
-        <div className="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
-          <div className="bg-gradient-to-r from-gray-50 to-gray-100 p-6 border-b border-gray-200">
-            <h2 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
-              <Users className="w-5 h-5" />
+        <div className="card" style={{ overflow: "hidden" }}>
+          <div style={{
+            padding: "20px 24px",
+            borderBottom: "1px solid var(--border)",
+            background: "var(--cream)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between"
+          }}>
+            <h2 style={{ fontSize: 18, fontWeight: 600, display: "flex", alignItems: "center", gap: 8 }}>
+              <Users size={20} color="var(--sage)" />
               Active Counsellors
-              <span className="ml-2 px-2.5 py-0.5 bg-blue-100 text-blue-700 text-sm rounded-full">
+              <span style={{
+                marginLeft: 8,
+                padding: "2px 10px",
+                background: "var(--sage-light)",
+                color: "var(--sage)",
+                borderRadius: 100,
+                fontSize: 12
+              }}>
                 {counsellors.length}
               </span>
             </h2>
           </div>
 
           {loading ? (
-            <div className="p-12 text-center">
-              <div className="w-12 h-12 border-4 border-gray-200 border-t-blue-600 rounded-full animate-spin mx-auto mb-4"></div>
-              <p className="text-gray-600">Loading counsellors...</p>
+            <div style={{ padding: "48px 24px", textAlign: "center" }}>
+              <div style={{ width: 48, height: 48, border: "4px solid var(--sage-light)", borderTopColor: "var(--sage)", borderRadius: "50%", animation: "spin 1s linear infinite", margin: "0 auto 16px" }} />
+              <p style={{ color: "var(--muted)" }}>Loading counsellors...</p>
             </div>
           ) : counsellors.length === 0 ? (
-            <div className="p-12 text-center">
-              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-100 flex items-center justify-center">
-                <Users className="w-8 h-8 text-gray-400" />
+            <div style={{ padding: "48px 24px", textAlign: "center" }}>
+              <div style={{
+                width: 64,
+                height: 64,
+                background: "var(--cream)",
+                borderRadius: "50%",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                margin: "0 auto 16px"
+              }}>
+                <Users size={32} color="var(--muted)" />
               </div>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">No counsellors found</h3>
-              <p className="text-gray-600 mb-4">Add your first counsellor to get started</p>
+              <h3 style={{ fontSize: 18, fontWeight: 600, marginBottom: 8 }}>No counsellors found</h3>
+              <p style={{ color: "var(--muted)", marginBottom: 16 }}>Add your first counsellor to get started</p>
               <button
                 onClick={() => setShowForm(true)}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-violet-600 text-white rounded-lg hover:opacity-90 transition-opacity font-medium"
+                className="btn-primary"
+                style={{ display: "inline-flex", alignItems: "center", gap: 8 }}
               >
-                <UserPlus className="w-4 h-4" />
+                <UserPlus size={16} />
                 Add Counsellor
               </button>
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full">
+            <div style={{ overflowX: "auto" }}>
+              <table>
                 <thead>
-                  <tr className="bg-gray-50">
-                    <th className="py-4 px-6 text-left text-sm font-semibold text-gray-900">Counsellor</th>
-                    <th className="py-4 px-6 text-left text-sm font-semibold text-gray-900">Contact</th>
-                    <th className="py-4 px-6 text-left text-sm font-semibold text-gray-900">Specialization</th>
-                    <th className="py-4 px-6 text-left text-sm font-semibold text-gray-900">Actions</th>
+                  <tr>
+                    <th>Counsellor</th>
+                    <th>Contact</th>
+                    <th>Specialization</th>
+                    <th style={{ textAlign: "right" }}>Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-200">
+                <tbody>
                   {counsellors.map((c) => (
-                    <tr key={c._id} className="hover:bg-gray-50 transition-colors">
-                      <td className="py-4 px-6">
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-violet-500 flex items-center justify-center">
-                            <span className="text-white font-semibold">
-                              {c.name?.charAt(0)?.toUpperCase() || "C"}
-                            </span>
+                    <tr key={c._id}>
+                      <td>
+                        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                          <div style={{
+                            width: 40,
+                            height: 40,
+                            borderRadius: "50%",
+                            background: "var(--sage-light)",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            color: "var(--sage)",
+                            fontWeight: 600
+                          }}>
+                            {c.name?.charAt(0)?.toUpperCase() || "C"}
                           </div>
                           <div>
-                            <div className="font-semibold text-gray-900">{c.name}</div>
-                            <div className="text-sm text-gray-500">@{c.username}</div>
+                            <div style={{ fontWeight: 600, color: "var(--charcoal)" }}>{c.name}</div>
+                            <div style={{ fontSize: 12, color: "var(--muted)" }}>@{c.username}</div>
                           </div>
                         </div>
                       </td>
-                      <td className="py-4 px-6">
-                        <div className="space-y-1">
-                          <div className="flex items-center gap-2 text-sm text-gray-600">
-                            <Mail className="w-3 h-3" />
+                      <td>
+                        <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13 }}>
+                            <Mail size={12} color="var(--muted)" />
                             {c.email}
                           </div>
-                          <div className="flex items-center gap-2 text-sm text-gray-600">
-                            <Phone className="w-3 h-3" />
+                          <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13 }}>
+                            <Phone size={12} color="var(--muted)" />
                             {c.phone}
                           </div>
                         </div>
                       </td>
-                      <td className="py-4 px-6">
-                        <div className="flex flex-wrap gap-1">
+                      <td>
+                        <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
                           {Array.isArray(c.specialization) && c.specialization.map((spec, index) => (
                             <span
                               key={index}
-                              className="px-2.5 py-1 bg-blue-50 text-blue-700 text-xs rounded-full font-medium"
+                              style={{
+                                padding: "4px 10px",
+                                background: "var(--sage-light)",
+                                color: "var(--sage)",
+                                borderRadius: 100,
+                                fontSize: 11,
+                                fontWeight: 500
+                              }}
                             >
                               {spec}
                             </span>
                           ))}
                         </div>
                       </td>
-                      <td className="py-4 px-6">
-                        <div className="flex items-center gap-2">
+                      <td style={{ textAlign: "right" }}>
+                        <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 4 }}>
                           <button
                             onClick={() => {/* Edit functionality would go here */}}
-                            className="p-2 hover:bg-gray-100 rounded-lg text-gray-600 transition-colors"
+                            className="btn-ghost-icon"
+                            style={{ width: 32, height: 32 }}
                             title="Edit"
                           >
-                            <Edit2 className="w-4 h-4" />
+                            <Edit2 size={14} />
                           </button>
                           <button
                             onClick={() => handleDelete(c._id, c.name)}
-                            className="p-2 hover:bg-red-50 rounded-lg text-red-600 transition-colors"
+                            className="btn-ghost-icon"
+                            style={{ width: 32, height: 32, color: "#ef4444" }}
                             title="Delete"
                           >
-                            <Trash2 className="w-4 h-4" />
+                            <Trash2 size={14} />
                           </button>
                         </div>
                       </td>
@@ -557,42 +909,35 @@ const AdminCounsellors = () => {
 
           {/* Stats Footer */}
           {counsellors.length > 0 && (
-            <div className="bg-gray-50 px-6 py-4 border-t border-gray-200">
-              <div className="flex items-center justify-between text-sm text-gray-600">
-                <div className="flex items-center gap-4">
-                  <div className="flex items-center gap-2">
-                    <Shield className="w-4 h-4 text-green-500" />
-                    <span>All accounts active</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Calendar className="w-4 h-4 text-blue-500" />
-                    <span>Ready for appointments</span>
-                  </div>
+            <div style={{
+              padding: "12px 24px",
+              background: "var(--cream)",
+              borderTop: "1px solid var(--border)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              fontSize: 13,
+              color: "var(--muted)"
+            }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                  <Shield size={14} color="#10b981" />
+                  <span>All accounts active</span>
                 </div>
-                <div>
-                  Showing {counsellors.length} counsellor{counsellors.length !== 1 ? 's' : ''}
+                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                  <Calendar size={14} color="var(--sage)" />
+                  <span>Ready for appointments</span>
                 </div>
+              </div>
+              <div>
+                Showing {counsellors.length} counsellor{counsellors.length !== 1 ? 's' : ''}
               </div>
             </div>
           )}
         </div>
       </div>
-
-      {/* Animation CSS */}
-      <style jsx>{`
-        @keyframes fade-in {
-          from { opacity: 0; transform: translateY(-10px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        .animate-fade-in {
-          animation: fade-in 0.3s ease-out;
-        }
-      `}</style>
     </div>
   );
 };
-
-// Add motion from framer-motion
-import { motion } from "framer-motion";
 
 export default AdminCounsellors;

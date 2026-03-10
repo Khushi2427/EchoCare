@@ -6,16 +6,126 @@ import {
   LogOut, Upload, FileText, AlertTriangle, Users, BarChart3, Settings,
   User, Shield, Bell, Search, ChevronRight, PlusCircle, Eye, Edit,
   Trash2, Download, Activity, Brain, Globe, Sparkles, CheckCircle2,
-  LayoutDashboard, Menu, X, Lock as LockIcon, // Fixed import alias
+  LayoutDashboard, Menu, X, Lock as LockIcon,
 } from "lucide-react";
 
-// Shadcn UI
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import { Separator } from "@/components/ui/separator";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+/* ── Google Fonts ── */
+(() => {
+  if (document.getElementById("echocare-fonts")) return;
+  const l = document.createElement("link");
+  l.id = "echocare-fonts";
+  l.href = "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Outfit:wght@300;400;500;600&display=swap";
+  l.rel = "stylesheet";
+  document.head.appendChild(l);
+})();
+
+/* ── Global CSS ── */
+(() => {
+  if (document.getElementById("echocare-css")) return;
+  const s = document.createElement("style");
+  s.id = "echocare-css";
+  s.textContent = `
+    :root {
+      --sage: #6B9E6B;
+      --sage-hover: #598559;
+      --sage-light: #EEF5EE;
+      --cream: #FAFAF7;
+      --warm: #F6F0E8;
+      --charcoal: #1A1A1A;
+      --charcoal-2: #2C2C2C;
+      --body: #4A4A4A;
+      --muted: #7A7A7A;
+      --border: rgba(0,0,0,0.08);
+      --shadow-sm: 0 2px 12px rgba(0,0,0,0.06);
+      --shadow-md: 0 8px 32px rgba(0,0,0,0.08);
+      --shadow-lg: 0 20px 60px rgba(0,0,0,0.12);
+      --r-md: 20px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: var(--cream);
+      color: var(--charcoal);
+      -webkit-font-smoothing: antialiased;
+      line-height: 1.6;
+    }
+    a { text-decoration: none; color: inherit; }
+    .serif { font-family: 'Cormorant Garamond', serif; }
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--charcoal); color: #fff;
+      padding: 10px 20px; border-radius: 100px;
+      font-family: 'Outfit', sans-serif; font-weight: 500; font-size: 14px;
+      border: none; cursor: pointer; transition: all 0.25s ease;
+    }
+    .btn-primary:hover { background: var(--charcoal-2); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.2); }
+    .btn-ghost {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: transparent; color: var(--charcoal);
+      padding: 10px 20px; border-radius: 100px;
+      font-family: 'Outfit', sans-serif; font-weight: 400; font-size: 14px;
+      border: 1.5px solid var(--border); cursor: pointer; transition: all 0.25s ease;
+    }
+    .btn-ghost:hover { border-color: var(--charcoal); background: var(--charcoal); color: #fff; }
+    .btn-sage {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--sage); color: #fff;
+      padding: 10px 20px; border-radius: 100px;
+      font-family: 'Outfit', sans-serif; font-weight: 500; font-size: 14px;
+      border: none; cursor: pointer; transition: all 0.25s ease;
+    }
+    .btn-sage:hover { background: var(--sage-hover); transform: translateY(-2px); }
+    .btn-outline {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: transparent; color: var(--body);
+      padding: 8px 16px; border-radius: 100px;
+      font-family: 'Outfit', sans-serif; font-weight: 500; font-size: 13px;
+      border: 1.5px solid var(--border); cursor: pointer; transition: all 0.25s ease;
+    }
+    .btn-outline:hover { border-color: var(--sage); color: var(--sage); }
+    .card {
+      background: #fff; border: 1px solid var(--border);
+      border-radius: var(--r-md); box-shadow: var(--shadow-sm);
+      transition: all 0.3s ease;
+    }
+    .card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+    .badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      font-size: 11px; font-weight: 600; padding: 4px 12px;
+      border-radius: 100px; background: var(--sage-light); color: var(--sage);
+    }
+    .badge-outline {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--body);
+    }
+    .badge-success {
+      background: #d1fae5;
+      color: #065f46;
+    }
+    .blob {
+      position: absolute; border-radius: 50%; pointer-events: none;
+      filter: blur(72px); z-index: 0;
+    }
+    input:focus {
+      outline: none;
+    }
+    @media (max-width: 1023px) {
+      .desktop-only { display: none; }
+    }
+    @media (min-width: 1024px) {
+      .mobile-only { display: none; }
+    }
+  `;
+  document.head.appendChild(s);
+})();
+
+/* ── Animation helpers ── */
+const fadeUp = (delay = 0) => ({
+  initial: { opacity: 0, y: 20 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.5, delay, ease: [0.25, 0.1, 0.25, 1] },
+});
 
 const AdminDashboard = () => {
   const { user, logout, loading } = useAuth();
@@ -23,6 +133,7 @@ const AdminDashboard = () => {
   const [dashboardData, setDashboardData] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [activeTab, setActiveTab] = useState("overview");
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -46,9 +157,17 @@ const AdminDashboard = () => {
 
   if (loading || !dashboardData) {
     return (
-      <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center">
-        <Activity className="w-10 h-10 text-blue-600 animate-spin mb-4" />
-        <h2 className="text-lg font-medium text-slate-600">Initializing Admin Environment...</h2>
+      <div style={{
+        minHeight: "100vh",
+        background: "var(--cream)",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center"
+      }}>
+        <Activity size={40} color="var(--sage)" style={{ animation: "spin 1s linear infinite", marginBottom: 16 }} />
+        <h2 style={{ fontSize: 18, fontWeight: 500, color: "var(--body)" }}>Initializing Admin Environment...</h2>
+        <style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
       </div>
     );
   }
@@ -67,248 +186,509 @@ const AdminDashboard = () => {
     {
       title: "Upload Resources",
       description: "Articles, videos, and audio for students",
-      icon: <Upload className="w-5 h-5" />,
+      icon: <Upload size={20} />,
       link: "/admin/resources/upload",
-      color: "bg-blue-600",
+      color: "var(--sage)",
       features: ["AI tagging", "Bulk upload"]
     },
     {
       title: "Manage Resources",
       description: "Edit, review, or delete content",
-      icon: <FileText className="w-5 h-5" />,
+      icon: <FileText size={20} />,
       link: "/admin/resources",
-      color: "bg-emerald-600",
+      color: "var(--sage)",
       features: ["Analytics", "Version control"]
     },
     {
       title: "Flagged Students",
       description: "High-risk cases detected by AI",
-      icon: <AlertTriangle className="w-5 h-5" />,
+      icon: <AlertTriangle size={20} />,
       link: "/admin/flagged-students",
-      color: "bg-orange-600",
+      color: "var(--sage)",
       features: ["Risk insights", "Action plans"]
     },
     {
       title: "Manage Counsellors",
       description: "Counsellor accounts and schedules",
-      icon: <Users className="w-5 h-5" />,
+      icon: <Users size={20} />,
       link: "/admin/counsellors",
-      color: "bg-violet-600",
+      color: "var(--sage)",
       features: ["Assignments", "Performance"]
     },
-    // {
-    //   title: "Analytics Reports",
-    //   description: "Platform-wide wellness trends",
-    //   icon: <BarChart3 className="w-5 h-5" />,
-    //   link: "/admin/reports",
-    //   color: "bg-indigo-600",
-    //   features: ["Real-time", "Export PDF"]
-    // },
-    // {
-    //   title: "System Settings",
-    //   description: "Configuration and permissions",
-    //   icon: <Settings className="w-5 h-5" />,
-    //   link: "/admin/settings",
-    //   color: "bg-slate-700",
-    //   features: ["Roles", "Security"]
-    // },
   ];
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] flex flex-col">
-      <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
-        <div className="px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-8">
-            <Link to="/admin" className="flex items-center gap-2">
-              <div className="bg-blue-600 p-1.5 rounded-lg">
-                <Shield className="w-5 h-5 text-white" />
+    <div style={{
+      minHeight: "100vh",
+      background: "var(--cream)",
+      display: "flex",
+      flexDirection: "column",
+      position: "relative"
+    }}>
+      
+      {/* Background blobs */}
+      <div className="blob" style={{ width: 600, height: 600, background: "rgba(107,158,107,0.05)", top: -200, right: -100 }} />
+      <div className="blob" style={{ width: 400, height: 400, background: "rgba(246,240,232,0.6)", bottom: -50, left: -50 }} />
+
+      {/* Header */}
+      <header style={{
+        position: "sticky",
+        top: 0,
+        zIndex: 50,
+        width: "100%",
+        borderBottom: "1px solid var(--border)",
+        background: "rgba(255,255,255,0.8)",
+        backdropFilter: "blur(10px)"
+      }}>
+        <div style={{
+          padding: "0 24px",
+          height: 70,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between"
+        }}>
+          
+          {/* Left side */}
+          <div style={{ display: "flex", alignItems: "center", gap: 32 }}>
+            <Link to="/admin" style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <div style={{
+                background: "var(--sage)",
+                padding: "6px",
+                borderRadius: 8,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center"
+              }}>
+                <Shield size={20} color="white" />
               </div>
-              <span className="font-bold text-xl tracking-tight text-slate-900">EchoCare <span className="text-blue-600">Admin</span></span>
+              <span style={{ fontWeight: 600, fontSize: 18, color: "var(--charcoal)" }}>
+                EchoCare <span style={{ color: "var(--sage)" }}>Admin</span>
+              </span>
             </Link>
 
-            <nav className="hidden lg:flex items-center space-x-1">
-  {["overview", "analytics", "users", "resources"].map((tab) => {
-    // Determine the path: 'overview' goes to /admin, others go to /admin/tabName
-    const path = tab === "overview" ? "/admin" : `/admin/${tab}`;
-    
-    return (
-      <Link key={tab} to={path}>
-        <Button
-          variant={activeTab === tab ? "secondary" : "ghost"}
-          onClick={() => setActiveTab(tab)}
-          className="capitalize font-medium text-slate-600"
-        >
-          {tab}
-        </Button>
-      </Link>
-    );
-  })}
-</nav>
+            {/* Desktop Navigation */}
+            <nav className="desktop-only" style={{ display: "flex", alignItems: "center", gap: 4 }}>
+              {["overview", "analytics", "users", "resources"].map((tab) => {
+                const path = tab === "overview" ? "/admin" : `/admin/${tab}`;
+                return (
+                  <Link key={tab} to={path}>
+                    <button
+                      onClick={() => setActiveTab(tab)}
+                      style={{
+                        padding: "8px 16px",
+                        borderRadius: 100,
+                        border: "none",
+                        background: activeTab === tab ? "var(--sage-light)" : "transparent",
+                        color: activeTab === tab ? "var(--sage)" : "var(--body)",
+                        fontSize: 14,
+                        fontWeight: activeTab === tab ? 500 : 400,
+                        cursor: "pointer",
+                        textTransform: "capitalize"
+                      }}
+                    >
+                      {tab}
+                    </button>
+                  </Link>
+                );
+              })}
+            </nav>
+
+            {/* Mobile Menu Button */}
+            <button
+              className="mobile-only"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              style={{
+                border: "none",
+                background: "none",
+                cursor: "pointer",
+                padding: 8,
+                display: "none"
+              }}
+            >
+              {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
           </div>
 
-          <div className="flex items-center gap-3">
-            <div className="hidden md:flex relative w-64">
-              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-slate-400" />
-              <Input
+          {/* Right side */}
+          <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+            
+            {/* Search */}
+            <div className="desktop-only" style={{
+              display: "flex",
+              alignItems: "center",
+              background: "var(--cream)",
+              borderRadius: 100,
+              padding: "8px 16px",
+              border: "1px solid var(--border)",
+              width: 240
+            }}>
+              <Search size={16} color="var(--charcoal)" style={{ marginRight: 8 }} />
+              <input
                 placeholder="Search everything..."
-                className="pl-9 bg-slate-100 border-none focus-visible:ring-1 focus-visible:ring-blue-500"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
+                style={{
+                  border: "none",
+                  background: "transparent",
+                  fontSize: 13,
+                  color: "var(--charcoal)",
+                  outline: "none",
+                  width: "100%"
+                }}
               />
             </div>
 
-            <Button variant="ghost" size="icon" className="relative">
-              <Bell className="w-5 h-5 text-slate-600" />
-              <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white" />
-            </Button>
+            {/* Notifications */}
+            <button style={{
+              position: "relative",
+              border: "none",
+              background: "none",
+              cursor: "pointer",
+              padding: 4
+            }}>
+              <Bell size={18} color="var(--body)" />
+              <span style={{
+                position: "absolute",
+                top: 0,
+                right: 0,
+                width: 8,
+                height: 8,
+                background: "var(--sage)",
+                borderRadius: "50%"
+              }} />
+            </button>
 
-            <Separator orientation="vertical" className="h-6 mx-2" />
+            <div style={{ width: 1, height: 24, background: "var(--border)", margin: "0 8px" }} />
 
-            <div className="flex items-center gap-3 pl-2">
-              <div className="text-right hidden sm:block leading-tight">
-                <p className="text-sm font-semibold text-slate-900">{user?.name}</p>
-                <Badge variant="outline" className="text-[10px] uppercase tracking-wider py-0 px-1 border-blue-200 text-blue-700 bg-blue-50">
+            {/* User Info */}
+            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+              <div className="desktop-only" style={{ textAlign: "right" }}>
+                <p style={{ fontSize: 13, fontWeight: 600, color: "var(--charcoal)" }}>{user?.name}</p>
+                <span style={{
+                  fontSize: 10,
+                  padding: "2px 8px",
+                  background: "var(--sage-light)",
+                  color: "var(--sage)",
+                  borderRadius: 100,
+                  textTransform: "uppercase",
+                  fontWeight: 600
+                }}>
                   {user?.role}
-                </Badge>
+                </span>
               </div>
               
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button variant="ghost" size="icon" className="h-10 w-10 rounded-full bg-slate-100 hover:bg-slate-200 border border-slate-200" onClick={handleLogout}>
-                      <User className="w-5 h-5 text-slate-600" />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>Log Out</TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
+              <button
+                onClick={handleLogout}
+                style={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: "50%",
+                  background: "var(--cream)",
+                  border: "1px solid var(--border)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  cursor: "pointer",
+                  color: "var(--body)",
+                  transition: "all 0.2s"
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = "var(--sage-light)";
+                  e.currentTarget.style.color = "var(--sage)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = "var(--cream)";
+                  e.currentTarget.style.color = "var(--body)";
+                }}
+                title="Logout"
+              >
+                <User size={18} />
+              </button>
             </div>
           </div>
         </div>
+
+        {/* Mobile Navigation Menu */}
+        <AnimatePresence>
+          {mobileMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              className="mobile-only"
+              style={{
+                borderTop: "1px solid var(--border)",
+                background: "#fff",
+                padding: "16px 24px",
+                display: "flex",
+                flexDirection: "column",
+                gap: 4
+              }}
+            >
+              {["overview", "analytics", "users", "resources"].map((tab) => {
+                const path = tab === "overview" ? "/admin" : `/admin/${tab}`;
+                return (
+                  <Link key={tab} to={path}>
+                    <button
+                      onClick={() => {
+                        setActiveTab(tab);
+                        setMobileMenuOpen(false);
+                      }}
+                      style={{
+                        width: "100%",
+                        padding: "12px 16px",
+                        borderRadius: 8,
+                        border: "none",
+                        background: activeTab === tab ? "var(--sage-light)" : "transparent",
+                        color: activeTab === tab ? "var(--sage)" : "var(--body)",
+                        fontSize: 14,
+                        fontWeight: activeTab === tab ? 500 : 400,
+                        textAlign: "left",
+                        cursor: "pointer",
+                        textTransform: "capitalize"
+                      }}
+                    >
+                      {tab}
+                    </button>
+                  </Link>
+                );
+              })}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </header>
 
-      <main className="flex-1 p-6 lg:px-10 max-w-[1600px] mx-auto w-full">
-        <section className="mb-10 relative overflow-hidden rounded-3xl bg-slate-900 p-8 text-white shadow-xl">
-          <div className="relative z-10">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-              <div className="space-y-3">
-                <div className="flex items-center gap-2 text-blue-400 font-medium">
-                  <Sparkles className="w-4 h-4" />
-                  <span>Admin Command Center</span>
+      {/* Main Content */}
+      <main style={{
+        flex: 1,
+        padding: "24px",
+        maxWidth: 1600,
+        margin: "0 auto",
+        width: "100%",
+        position: "relative",
+        zIndex: 10
+      }}>
+        
+        {/* Hero Section */}
+        <motion.section {...fadeUp(0)} style={{
+          marginBottom: 40,
+          position: "relative",
+          overflow: "hidden",
+          borderRadius: 24,
+          background: "var(--charcoal)",
+          padding: "40px 32px",
+          color: "#fff"
+        }}>
+          <div style={{ position: "relative", zIndex: 10 }}>
+            <div style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: 24,
+              alignItems: "flex-start"
+            }} className="md:flex-row md:items-center md:justify-between">
+              
+              <div>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, color: "var(--sage)", marginBottom: 12 }}>
+                  <Sparkles size={16} />
+                  <span style={{ fontSize: 13, fontWeight: 500 }}>Admin Command Center</span>
                 </div>
-                <h1 className="text-3xl font-bold tracking-tight">
-                  Welcome back, <span className="text-blue-400">{user?.name?.split(' ')[0]}</span>
+                
+                <h1 className="serif" style={{ fontSize: "clamp(28px, 4vw, 36px)", fontWeight: 300, marginBottom: 8 }}>
+                  Welcome back, <span style={{ color: "var(--sage)" }}>{user?.name?.split(' ')[0]}</span>
                 </h1>
-                <p className="text-slate-400 text-lg max-w-xl">
+                
+                <p style={{ fontSize: 15, color: "rgba(255,255,255,0.7)", maxWidth: 500 }}>
                   Platform oversight and student wellness management. System integrity is currently at 100%.
                 </p>
               </div>
-              
-              <div className="flex flex-wrap gap-3">
+
+              {/* Quick Stats */}
+              <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
                 {dashboardData?.quickStats.map((stat, i) => (
-                  <div key={i} className="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/10 min-w-[140px]">
-                    <p className="text-xs font-medium text-slate-400 uppercase tracking-wider mb-1">{stat.label}</p>
-                    <div className="flex items-end gap-2">
-                      <span className="text-2xl font-bold">{stat.value}</span>
-                      <Badge className={stat.trend === 'up' ? 'bg-emerald-500/20 text-emerald-400 border-none' : 'bg-slate-500/20 text-slate-400 border-none'}>
+                  <div key={i} style={{
+                    background: "rgba(255,255,255,0.1)",
+                    backdropFilter: "blur(8px)",
+                    borderRadius: 16,
+                    padding: "16px",
+                    minWidth: 140,
+                    border: "1px solid rgba(255,255,255,0.1)"
+                  }}>
+                    <p style={{ fontSize: 11, color: "rgba(255,255,255,0.5)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 4 }}>
+                      {stat.label}
+                    </p>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                      <span style={{ fontSize: 24, fontWeight: 600 }}>{stat.value}</span>
+                      <span style={{
+                        fontSize: 11,
+                        padding: "2px 8px",
+                        background: stat.trend === 'up' ? 'rgba(16,185,129,0.2)' : 'rgba(107,158,107,0.2)',
+                        color: stat.trend === 'up' ? '#10b981' : 'var(--sage)',
+                        borderRadius: 100
+                      }}>
                         {stat.trend === 'up' ? '↑' : '—'}
-                      </Badge>
+                      </span>
                     </div>
                   </div>
                 ))}
               </div>
             </div>
           </div>
-          <div className="absolute top-0 right-0 w-64 h-64 bg-blue-600/20 blur-[100px] -mr-32 -mt-32 rounded-full" />
-        </section>
 
-        <div className="grid lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2 space-y-6">
-            <div className="flex items-center justify-between mb-2">
-              <div>
-                <h2 className="text-xl font-bold text-slate-900">Service Directory</h2>
-                <p className="text-slate-500 text-sm">Access core management modules</p>
-              </div>
+          {/* Background Decoration */}
+          <div style={{
+            position: "absolute",
+            top: 0,
+            right: 0,
+            width: 300,
+            height: 300,
+            background: "rgba(107,158,107,0.2)",
+            borderRadius: "50%",
+            filter: "blur(80px)",
+            transform: "translate(50%, -50%)"
+          }} />
+        </motion.section>
+
+        {/* Main Grid */}
+        <div style={{
+          display: "grid",
+          gridTemplateColumns: "2fr 1fr",
+          gap: 32
+        }}>
+          
+          {/* Left Column - Service Directory */}
+          <div>
+            <div style={{ marginBottom: 16 }}>
+              <h2 className="serif" style={{ fontSize: 24, fontWeight: 400, marginBottom: 4 }}>Service Directory</h2>
+              <p style={{ fontSize: 13, color: "var(--charcoal)" }}>Access core management modules</p>
             </div>
 
-            <div className="grid sm:grid-cols-2 gap-4">
+            <div style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(2, 1fr)",
+              gap: 16
+            }}>
               {adminActions.map((action, index) => (
-                <motion.div key={index} whileHover={{ y: -4 }}>
-                  <Link to={action.link} className="block group">
-                    <Card className="h-full border-slate-200 transition-all group-hover:shadow-lg group-hover:border-blue-200">
-                      <CardContent className="p-5">
-                        <div className="flex items-start justify-between mb-4">
-                          <div className={`p-3 rounded-2xl text-white shadow-md ${action.color}`}>
-                            {action.icon}
-                          </div>
-                        </div>
-                        <h3 className="font-bold text-slate-900 mb-1 group-hover:text-blue-600 transition-colors">
-                          {action.title}
-                        </h3>
-                        <p className="text-sm text-slate-500 line-clamp-2">
-                          {action.description}
-                        </p>
-                      </CardContent>
-                    </Card>
+                <motion.div
+                  key={index}
+                  whileHover={{ y: -4 }}
+                >
+                  <Link to={action.link} style={{ textDecoration: "none", display: "block" }}>
+                    <div className="card" style={{ height: "100%", padding: 20 }}>
+                      <div style={{
+                        width: 48,
+                        height: 48,
+                        borderRadius: 12,
+                        background: "var(--sage-light)",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        marginBottom: 16
+                      }}>
+                        {action.icon}
+                      </div>
+                      <h3 style={{ fontSize: 16, fontWeight: 600, color: "var(--charcoal)", marginBottom: 4 }}>
+                        {action.title}
+                      </h3>
+                      <p style={{ fontSize: 12, color: "var(--charcoal)", lineHeight: 1.6 }}>
+                        {action.description}
+                      </p>
+                    </div>
                   </Link>
                 </motion.div>
               ))}
             </div>
           </div>
 
-          <div className="space-y-6">
-            <Card className="bg-white shadow-sm border-slate-200 overflow-hidden">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-lg">Platform Status</CardTitle>
-                <CardDescription>Real-time system health</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
+          {/* Right Column - Platform Status & Recent Events */}
+          <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
+            
+            {/* Platform Status */}
+            <div className="card" style={{ padding: 24 }}>
+              <h3 style={{ fontSize: 16, fontWeight: 600, color: "var(--charcoal)", marginBottom: 4 }}>Platform Status</h3>
+              <p style={{ fontSize: 12, color: "var(--charcoal)", marginBottom: 20 }}>Real-time system health</p>
+              
+              <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                 {[
-                  { label: "API Services", icon: <Globe className="w-4 h-4 text-emerald-500" />, status: "Operational" },
-                  { label: "AI Engine", icon: <Brain className="w-4 h-4 text-blue-500" />, status: "Processing" },
-                  { label: "Data Security", icon: <LockIcon className="w-4 h-4 text-indigo-500" />, status: "Secure" }, // Corrected to LockIcon
+                  { label: "API Services", icon: <Globe size={16} />, status: "Operational", color: "#10b981" },
+                  { label: "AI Engine", icon: <Brain size={16} />, status: "Processing", color: "var(--sage)" },
+                  { label: "Data Security", icon: <LockIcon size={16} />, status: "Secure", color: "var(--sage)" },
                 ].map((s, i) => (
-                  <div key={i} className="flex items-center justify-between p-3 bg-slate-50 rounded-xl">
-                    <div className="flex items-center gap-3">
-                      {s.icon}
-                      <span className="text-sm font-medium text-slate-700">{s.label}</span>
+                  <div key={i} style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    padding: "12px 16px",
+                    background: "var(--cream)",
+                    borderRadius: 12
+                  }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                      <span style={{ color: s.color }}>{s.icon}</span>
+                      <span style={{ fontSize: 13, fontWeight: 500, color: "var(--charcoal)" }}>{s.label}</span>
                     </div>
-                    <Badge variant="outline" className="bg-white text-emerald-600 border-emerald-100">
+                    <span style={{
+                      fontSize: 11,
+                      padding: "4px 12px",
+                      background: "#fff",
+                      border: "1px solid var(--border)",
+                      borderRadius: 100,
+                      color: s.color
+                    }}>
                       {s.status}
-                    </Badge>
+                    </span>
                   </div>
                 ))}
-              </CardContent>
-            </Card>
+              </div>
+            </div>
 
-            <Card className="bg-white shadow-sm border-slate-200">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-lg">Recent Events</CardTitle>
-              </CardHeader>
-              <CardContent>
-                {/* <div className="space-y-5">
-                  {dashboardData.recentActivities.map((activity, i) => (
-                    <div key={activity.id} className="flex gap-3 relative">
-                      {i !== dashboardData.recentActivities.length - 1 && (
-                        <div className="absolute left-[15px] top-8 bottom-[-20px] w-px bg-slate-100" />
-                      )}
-                      <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 z-10 ${
-                        activity.type === 'alert' ? 'bg-red-50 text-red-600' : 'bg-blue-50 text-blue-600'
-                      }`}>
-                        {activity.type === 'alert' ? <AlertTriangle size={14} /> : <CheckCircle2 size={14} />}
-                      </div>
-                      <div className="flex flex-col">
-                        <span className="text-sm font-semibold text-slate-900 leading-none mb-1">{activity.action}</span>
-                        <span className="text-xs text-slate-500">{activity.user} • {activity.time}</span>
-                      </div>
+            {/* Recent Events */}
+            <div className="card" style={{ padding: 24 }}>
+              <h3 style={{ fontSize: 16, fontWeight: 600, color: "var(--charcoal)", marginBottom: 16 }}>Recent Events</h3>
+              
+              {/* Commented out as in original */}
+              {/* <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+                {dashboardData.recentActivities.map((activity, i) => (
+                  <div key={activity.id} style={{ display: "flex", gap: 12, position: "relative" }}>
+                    {i !== dashboardData.recentActivities.length - 1 && (
+                      <div style={{
+                        position: "absolute",
+                        left: 15,
+                        top: 28,
+                        bottom: -20,
+                        width: 1,
+                        background: "var(--border)"
+                      }} />
+                    )}
+                    <div style={{
+                      width: 32,
+                      height: 32,
+                      borderRadius: "50%",
+                      background: activity.type === 'alert' ? '#fee2e2' : 'var(--sage-light)',
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      color: activity.type === 'alert' ? '#ef4444' : 'var(--sage)',
+                      zIndex: 10
+                    }}>
+                      {activity.type === 'alert' ? <AlertTriangle size={14} /> : <CheckCircle2 size={14} />}
                     </div>
-                  ))}
-                </div> */}
-              </CardContent>
-            </Card>
+                    <div>
+                      <p style={{ fontSize: 13, fontWeight: 500, color: "var(--charcoal)", marginBottom: 2 }}>{activity.action}</p>
+                      <p style={{ fontSize: 11, color: "var(--muted)" }}>{activity.user} • {activity.time}</p>
+                    </div>
+                  </div>
+                ))}
+              </div> */}
+            </div>
           </div>
         </div>
       </main>
+
+      <style>{`
+        @keyframes spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+      `}</style>
     </div>
   );
 };

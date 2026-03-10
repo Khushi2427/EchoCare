@@ -299,7 +299,7 @@ const Profile = () => {
                           border: "1px dashed var(--border)",
                           borderRadius: 10,
                           fontSize: 14,
-                          color: "var(--muted)",
+                          color: "var(--charcoal)",
                           outline: "none",
                           cursor: "not-allowed"
                         }}
@@ -322,7 +322,7 @@ const Profile = () => {
                         left: 14,
                         top: "50%",
                         transform: "translateY(-50%)",
-                        color: "var(--muted)"
+                        color: "var(--charcoal)"
                       }} />
                       <input
                         id="phone"
@@ -369,7 +369,7 @@ const Profile = () => {
                     gap: 8,
                     minWidth: 140,
                     justifyContent: "center",
-                    background: isUpdating ? "var(--muted)" : "var(--charcoal)",
+                    background: isUpdating ? "var(--charcoal)" : "var(--charcoal)",
                     cursor: isUpdating ? "not-allowed" : "pointer"
                   }}
                 >

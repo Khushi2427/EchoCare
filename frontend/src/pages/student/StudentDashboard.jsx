@@ -212,14 +212,11 @@ const StudentDashboard = () => {
   ];
 
   const upcomingAppointments = [
-    { time: "Today, 3:00 PM", with: "Dr. Sharma", type: "Video Session" },
-    { time: "Tomorrow, 11:00 AM", with: "Dr. Patel", type: "In-person" }
+    
   ];
 
   const recentActivities = [
-    { action: "Completed mindfulness exercise", time: "2 hours ago", icon: Heart },
-    { action: "Joined 'Study Groups' community", time: "Yesterday", icon: Users },
-    { action: "Booked counseling session", time: "2 days ago", icon: Calendar }
+    
   ];
 
   const moodData = [
@@ -269,7 +266,7 @@ const StudentDashboard = () => {
           </div>
           <div>
             <p style={{ fontSize: 15, fontWeight: 600, color: "var(--charcoal)" }}>{user?.name || "User"}</p>
-            <p style={{ fontSize: 12, color: "var(--muted)" }}>{user?.role || "Student"}</p>
+            <p style={{ fontSize: 12, color: "var(--charcoal)" }}>{user?.role || "Student"}</p>
           </div>
         </div>
       </div>
@@ -305,7 +302,7 @@ const StudentDashboard = () => {
 
         {/* Quick Tips */}
         <div style={{ marginTop: 40 }}>
-          <div style={{ fontSize: 11, fontWeight: 600, color: "var(--muted)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 16, paddingLeft: 16 }}>
+          <div style={{ fontSize: 11, fontWeight: 600, color: "var(--charcoal)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 16, paddingLeft: 16 }}>
             Quick Tips
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
@@ -541,7 +538,7 @@ const StudentDashboard = () => {
               }}>
                 <div>
                   <h1 className="serif" style={{ fontSize: "clamp(28px, 4vw, 42px)", fontWeight: 300, marginBottom: 8 }}>
-                    Welcome back, <span style={{ color: "var(--sage)" }}>{user?.name?.split(' ')[0]}</span>
+                    Welcome, <span style={{ color: "var(--sage)" }}>{user?.name?.split(' ')[0]}</span>
                   </h1>
                   <p style={{ fontSize: 15, color: "var(--body)" }}>
                     Take a deep breath. How are you feeling today?
@@ -584,7 +581,7 @@ const StudentDashboard = () => {
                       </div>
                       <div>
                         <h3 style={{ fontSize: 15, fontWeight: 600, color: "var(--charcoal)", marginBottom: 4 }}>{action.title}</h3>
-                        <p style={{ fontSize: 12, color: "var(--muted)" }}>{action.desc}</p>
+                        <p style={{ fontSize: 12, color: "var(--charcoal)" }}>{action.desc}</p>
                       </div>
                     </div>
                   </div>
@@ -628,7 +625,7 @@ const StudentDashboard = () => {
                   </div>
 
                   <div style={{ marginTop: 20, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                    <span style={{ fontSize: 12, color: "var(--muted)" }}>Average: 7.6/10</span>
+                    <span style={{ fontSize: 12, color: "var(--charcoal)" }}></span>
                     <Link to="#" style={{ fontSize: 12, color: "var(--sage)", display: "flex", alignItems: "center", gap: 4 }}>
                       View details <ChevronRight size={12} />
                     </Link>
@@ -660,7 +657,7 @@ const StudentDashboard = () => {
                               </div>
                               <div>
                                 <h4 style={{ fontSize: 14, fontWeight: 600, color: "var(--charcoal)" }}>{service.title}</h4>
-                                <p style={{ fontSize: 11, color: "var(--muted)" }}>{service.description}</p>
+                                <p style={{ fontSize: 11, color: "var(--charcoal)" }}>{service.description}</p>
                               </div>
                             </div>
                           </div>
@@ -693,7 +690,7 @@ const StudentDashboard = () => {
                           </div>
                           <div style={{ flex: 1 }}>
                             <p style={{ fontSize: 13, fontWeight: 500, color: "var(--charcoal)" }}>{apt.time}</p>
-                            <p style={{ fontSize: 11, color: "var(--muted)" }}>{apt.with} • {apt.type}</p>
+                            <p style={{ fontSize: 11, color: "var(--charcoal)" }}>{apt.with} • {apt.type}</p>
                           </div>
                           <div style={{ width: 8, height: 8, borderRadius: "50%", background: "var(--sage)" }} />
                         </div>
@@ -701,7 +698,7 @@ const StudentDashboard = () => {
                     </div>
                   ) : (
                     <div style={{ textAlign: "center", padding: "20px 0" }}>
-                      <p style={{ fontSize: 13, color: "var(--muted)" }}>No upcoming appointments</p>
+                      <p style={{ fontSize: 13, color: "var(--charcoal)" }}>No upcoming appointments</p>
                       <Link to="/student/counsellors" style={{ fontSize: 12, color: "var(--sage)", marginTop: 8, display: "inline-block" }}>
                         Book a session
                       </Link>
@@ -725,7 +722,7 @@ const StudentDashboard = () => {
                           </div>
                           <div style={{ flex: 1 }}>
                             <p style={{ fontSize: 13, color: "var(--charcoal)" }}>{activity.action}</p>
-                            <p style={{ fontSize: 10, color: "var(--muted)" }}>{activity.time}</p>
+                            <p style={{ fontSize: 10, color: "var(--charcoal)" }}>{activity.time}</p>
                           </div>
                         </div>
                       );

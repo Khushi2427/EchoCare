@@ -17,6 +17,100 @@ import {
   MessageSquare
 } from "lucide-react";
 
+/* ── Google Fonts ── */
+(() => {
+  if (document.getElementById("echocare-fonts")) return;
+  const l = document.createElement("link");
+  l.id = "echocare-fonts";
+  l.href = "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Outfit:wght@300;400;500;600&display=swap";
+  l.rel = "stylesheet";
+  document.head.appendChild(l);
+})();
+
+/* ── Global CSS ── */
+(() => {
+  if (document.getElementById("echocare-css")) return;
+  const s = document.createElement("style");
+  s.id = "echocare-css";
+  s.textContent = `
+    :root {
+      --sage: #6B9E6B;
+      --sage-hover: #598559;
+      --sage-light: #EEF5EE;
+      --sage-mid: #B8D4B8;
+      --cream: #FAFAF7;
+      --warm: #F6F0E8;
+      --charcoal: #1A1A1A;
+      --charcoal-2: #2C2C2C;
+      --charcoal-3: #3E3E3E;
+      --body: #4A4A4A;
+      --muted: #7A7A7A;
+      --light-muted: #A0A0A0;
+      --border: rgba(0,0,0,0.08);
+      --border-light: rgba(0,0,0,0.05);
+      --shadow-sm: 0 2px 12px rgba(0,0,0,0.06);
+      --shadow-md: 0 8px 32px rgba(0,0,0,0.08);
+      --shadow-lg: 0 20px 60px rgba(0,0,0,0.12);
+      --r-sm: 14px;
+      --r-md: 20px;
+      --r-lg: 28px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: var(--cream);
+      color: var(--charcoal);
+      -webkit-font-smoothing: antialiased;
+      line-height: 1.6;
+    }
+    a { text-decoration: none; color: inherit; }
+    .serif { font-family: 'Cormorant Garamond', serif; }
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--charcoal); color: #fff;
+      padding: 12px 24px; border-radius: 100px;
+      font-family: 'Outfit', sans-serif; font-weight: 500; font-size: 14px;
+      border: none; cursor: pointer; transition: all 0.25s ease;
+    }
+    .btn-primary:hover { background: var(--charcoal-2); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.2); }
+    .btn-ghost {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: transparent; color: var(--charcoal);
+      padding: 12px 24px; border-radius: 100px;
+      font-family: 'Outfit', sans-serif; font-weight: 400; font-size: 14px;
+      border: 1.5px solid var(--border); cursor: pointer; transition: all 0.25s ease;
+    }
+    .btn-ghost:hover { border-color: var(--charcoal); background: var(--charcoal); color: #fff; }
+    .btn-sage {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--sage); color: #fff;
+      padding: 12px 24px; border-radius: 100px;
+      font-family: 'Outfit', sans-serif; font-weight: 500; font-size: 14px;
+      border: none; cursor: pointer; transition: all 0.25s ease;
+    }
+    .btn-sage:hover { background: var(--sage-hover); transform: translateY(-2px); }
+    .card {
+      background: #fff; border: 1px solid var(--border);
+      border-radius: var(--r-md); box-shadow: var(--shadow-sm);
+      transition: all 0.3s ease;
+    }
+    .card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+    .badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      font-size: 11px; font-weight: 600; padding: 4px 12px;
+      border-radius: 100px; background: var(--sage-light); color: var(--sage);
+    }
+    .blob {
+      position: absolute; border-radius: 50%; pointer-events: none;
+      filter: blur(72px); z-index: 0;
+    }
+    @media (max-width: 1024px) {
+      .grid-cols-3 { grid-template-columns: 1fr !important; }
+    }
+  `;
+  document.head.appendChild(s);
+})();
+
 const AIChatbot = () => {
   const [messages, setMessages] = useState([
     { 
@@ -120,141 +214,265 @@ const AIChatbot = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-blue-50 p-4 md:p-8">
-      <div className="max-w-4xl mx-auto">
+    <div style={{ 
+      minHeight: "100vh", 
+      background: "var(--cream)",
+      padding: "24px",
+      position: "relative"
+    }}>
+      
+      {/* Background blobs */}
+      <div className="blob" style={{ width: 600, height: 600, background: "rgba(107,158,107,0.05)", top: -200, right: -100 }} />
+      <div className="blob" style={{ width: 400, height: 400, background: "rgba(246,240,232,0.6)", bottom: -50, left: -50 }} />
+
+      <div style={{ maxWidth: 1280, margin: "0 auto", position: "relative", zIndex: 10 }}>
+        
         {/* Header */}
-        <div className="mb-6 md:mb-8">
-          <div className="flex items-center gap-4 mb-4">
-            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center shadow-lg">
-              <Brain className="w-6 h-6 text-white" />
+        <div style={{ marginBottom: 32 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 16 }}>
+            <div style={{
+              width: 56,
+              height: 56,
+              borderRadius: 16,
+              background: "var(--sage)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              boxShadow: "var(--shadow-md)"
+            }}>
+              <Brain size={28} color="white" />
             </div>
             <div>
-              <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
-                AI Wellness Assistant
+              <h1 className="serif" style={{ fontSize: "clamp(28px, 4vw, 36px)", fontWeight: 300, marginBottom: 4 }}>
+                AI Wellness <span style={{ color: "var(--sage)" }}>Assistant</span>
               </h1>
-              <p className="text-gray-600">24/7 emotional support powered by AI</p>
+              <p style={{ color: "var(--body)" }}>24/7 emotional support powered by AI</p>
             </div>
           </div>
           
-          <div className="flex flex-wrap gap-2">
-            <div className="px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-sm font-medium flex items-center gap-1">
-              <Sparkles className="w-3 h-3" />
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+            <span style={{ display: "flex", alignItems: "center", gap: 4, padding: "4px 12px", background: "var(--sage-light)", color: "var(--sage)", borderRadius: 100, fontSize: 13, fontWeight: 500 }}>
+              <Sparkles size={14} />
               AI-Powered
-            </div>
-            <div className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-medium flex items-center gap-1">
-              <Heart className="w-3 h-3" />
+            </span>
+            <span style={{ display: "flex", alignItems: "center", gap: 4, padding: "4px 12px", background: "var(--sage-light)", color: "var(--sage)", borderRadius: 100, fontSize: 13, fontWeight: 500 }}>
+              <Heart size={14} />
               Confidential
-            </div>
-            <div className="px-3 py-1 bg-violet-100 text-violet-700 rounded-full text-sm font-medium flex items-center gap-1">
-              <Bot className="w-3 h-3" />
+            </span>
+            <span style={{ display: "flex", alignItems: "center", gap: 4, padding: "4px 12px", background: "var(--sage-light)", color: "var(--sage)", borderRadius: 100, fontSize: 13, fontWeight: 500 }}>
+              <Bot size={14} />
               Always Available
-            </div>
+            </span>
           </div>
         </div>
 
-        <div className="grid lg:grid-cols-3 gap-6">
+        <div style={{ 
+          display: "grid", 
+          gridTemplateColumns: "2fr 1fr", 
+          gap: 24
+        }} className="grid-cols-3">
+          
           {/* Left Column - Chat Interface */}
-          <div className="lg:col-span-2">
-            <div className="bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden h-[600px] flex flex-col">
+          <div style={{ gridColumn: "span 2" }}>
+            <div className="card" style={{
+              height: "600px",
+              display: "flex",
+              flexDirection: "column",
+              overflow: "hidden",
+              background: "#fff"
+            }}>
               {/* Chat Header */}
-              <div className="bg-gradient-to-r from-emerald-500 to-teal-500 p-4 text-white">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
-                      <Bot className="w-4 h-4" />
+              <div style={{
+                background: "var(--sage)",
+                padding: "16px 20px",
+                color: "#fff"
+              }}>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                    <div style={{
+                      width: 32,
+                      height: 32,
+                      borderRadius: 8,
+                      background: "rgba(255,255,255,0.2)",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center"
+                    }}>
+                      <Bot size={16} color="white" />
                     </div>
                     <div>
-                      <h2 className="font-semibold">Wellness Assistant</h2>
-                      <p className="text-xs opacity-90">AI Emotional Support</p>
+                      <h3 style={{ fontSize: 15, fontWeight: 600 }}>Wellness Assistant</h3>
+                      <p style={{ fontSize: 11, opacity: 0.9 }}>AI Emotional Support</p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                     <button
                       onClick={clearChat}
-                      className="p-2 hover:bg-white/20 rounded-lg transition-colors"
+                      style={{
+                        padding: 6,
+                        borderRadius: 6,
+                        background: "rgba(255,255,255,0.2)",
+                        border: "none",
+                        cursor: "pointer",
+                        color: "#fff"
+                      }}
                       title="Clear chat"
                     >
-                      <RotateCcw className="w-4 h-4" />
+                      <RotateCcw size={14} />
                     </button>
-                    <div className="w-2 h-2 bg-green-300 rounded-full animate-pulse"></div>
+                    <div style={{
+                      width: 8,
+                      height: 8,
+                      borderRadius: "50%",
+                      background: "#4CAF50",
+                      animation: "pulse 2s infinite"
+                    }} />
                   </div>
                 </div>
               </div>
 
               {/* Messages Container */}
-              <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gradient-to-b from-gray-50 to-white">
-                {messages.map((message, index) => (
-                  <div
-                    key={index}
-                    className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}
-                  >
-                    <div className={`max-w-[80%] rounded-2xl p-4 ${message.role === "user" 
-                      ? "bg-gradient-to-r from-blue-500 to-violet-500 text-white rounded-br-none" 
-                      : "bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-100 rounded-bl-none"
-                    }`}>
-                      <div className="flex items-start gap-3">
-                        {message.role === "ai" && (
-                          <div className="w-6 h-6 rounded-full bg-gradient-to-r from-emerald-400 to-teal-400 flex items-center justify-center flex-shrink-0">
-                            <Bot className="w-3 h-3 text-white" />
+              <div style={{
+                flex: 1,
+                overflowY: "auto",
+                padding: "20px",
+                background: "var(--cream)"
+              }}>
+                <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+                  {messages.map((message, index) => (
+                    <div
+                      key={index}
+                      style={{ display: "flex", justifyContent: message.role === "user" ? "flex-end" : "flex-start" }}
+                    >
+                      <div style={{
+                        maxWidth: "80%",
+                        padding: "12px 16px",
+                        borderRadius: 16,
+                        background: message.role === "user" ? "var(--charcoal)" : "var(--sage-light)",
+                        color: message.role === "user" ? "#fff" : "var(--charcoal)",
+                        borderBottomRightRadius: message.role === "user" ? 4 : 16,
+                        borderBottomLeftRadius: message.role === "ai" ? 4 : 16
+                      }}>
+                        <div style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
+                          {message.role === "ai" && (
+                            <div style={{
+                              width: 24,
+                              height: 24,
+                              borderRadius: 6,
+                              background: "var(--sage)",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              flexShrink: 0
+                            }}>
+                              <Bot size={12} color="white" />
+                            </div>
+                          )}
+                          <div style={{ flex: 1 }}>
+                            <p style={{ fontSize: 14, lineHeight: 1.6, whiteSpace: "pre-wrap" }}>{message.text}</p>
+                            <div style={{
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "space-between",
+                              marginTop: 8,
+                              fontSize: 10,
+                              color: message.role === "user" ? "rgba(255,255,255,0.5)" : "var(--muted)"
+                            }}>
+                              <span>{message.timestamp}</span>
+                              {message.role === "ai" && (
+                                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                                  <button style={{ background: "none", border: "none", cursor: "pointer", color: "var(--muted)" }}>
+                                    <ThumbsUp size={10} />
+                                  </button>
+                                  <button style={{ background: "none", border: "none", cursor: "pointer", color: "var(--muted)" }}>
+                                    <ThumbsDown size={10} />
+                                  </button>
+                                </div>
+                              )}
+                            </div>
                           </div>
-                        )}
-                        <div className="flex-1">
-                          <p className="whitespace-pre-wrap">{message.text}</p>
-                          <div className={`flex items-center justify-between mt-2 text-xs ${message.role === "user" ? "text-blue-200" : "text-gray-500"}`}>
-                            <span>{message.timestamp}</span>
-                            {message.role === "ai" && (
-                              <div className="flex items-center gap-2">
-                                <button className="hover:text-emerald-600">
-                                  <ThumbsUp className="w-3 h-3" />
-                                </button>
-                                <button className="hover:text-red-600">
-                                  <ThumbsDown className="w-3 h-3" />
-                                </button>
-                              </div>
-                            )}
-                          </div>
+                          {message.role === "user" && (
+                            <div style={{
+                              width: 24,
+                              height: 24,
+                              borderRadius: 6,
+                              background: "var(--charcoal-2)",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              flexShrink: 0
+                            }}>
+                              <User size={12} color="white" />
+                            </div>
+                          )}
                         </div>
-                        {message.role === "user" && (
-                          <div className="w-6 h-6 rounded-full bg-gradient-to-r from-blue-400 to-violet-400 flex items-center justify-center flex-shrink-0">
-                            <User className="w-3 h-3 text-white" />
-                          </div>
-                        )}
                       </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
 
-                {/* Typing Indicator */}
-                {isTyping && (
-                  <div className="flex justify-start">
-                    <div className="max-w-[80%] rounded-2xl p-4 bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-100 rounded-bl-none">
-                      <div className="flex items-center gap-3">
-                        <div className="w-6 h-6 rounded-full bg-gradient-to-r from-emerald-400 to-teal-400 flex items-center justify-center">
-                          <Bot className="w-3 h-3 text-white" />
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <div className="w-2 h-2 bg-emerald-400 rounded-full animate-bounce"></div>
-                          <div className="w-2 h-2 bg-emerald-400 rounded-full animate-bounce delay-100"></div>
-                          <div className="w-2 h-2 bg-emerald-400 rounded-full animate-bounce delay-200"></div>
+                  {/* Typing Indicator */}
+                  {isTyping && (
+                    <div style={{ display: "flex", justifyContent: "flex-start" }}>
+                      <div style={{
+                        padding: "12px 16px",
+                        borderRadius: 16,
+                        background: "var(--sage-light)",
+                        borderBottomLeftRadius: 4
+                      }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                          <div style={{
+                            width: 24,
+                            height: 24,
+                            borderRadius: 6,
+                            background: "var(--sage)",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center"
+                          }}>
+                            <Bot size={12} color="white" />
+                          </div>
+                          <div style={{ display: "flex", gap: 4 }}>
+                            <div style={{ width: 6, height: 6, background: "var(--sage)", borderRadius: "50%", animation: "bounce 1.4s infinite" }} />
+                            <div style={{ width: 6, height: 6, background: "var(--sage)", borderRadius: "50%", animation: "bounce 1.4s infinite", animationDelay: "0.2s" }} />
+                            <div style={{ width: 6, height: 6, background: "var(--sage)", borderRadius: "50%", animation: "bounce 1.4s infinite", animationDelay: "0.4s" }} />
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                )}
+                  )}
 
-                <div ref={messagesEndRef} />
+                  <div ref={messagesEndRef} />
+                </div>
               </div>
 
               {/* Quick Responses */}
               {messages.length === 1 && (
-                <div className="px-4 pt-4 border-t border-gray-200">
-                  <p className="text-sm text-gray-600 mb-2">Quick responses:</p>
-                  <div className="flex flex-wrap gap-2">
+                <div style={{ padding: "16px 20px", borderTop: "1px solid var(--border)" }}>
+                  <p style={{ fontSize: 13, color: "var(--muted)", marginBottom: 8 }}>Quick responses:</p>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
                     {quickResponses.map((response, index) => (
                       <button
                         key={index}
                         onClick={() => handleQuickResponse(response)}
-                        className="px-3 py-2 bg-gradient-to-r from-blue-50 to-violet-50 hover:from-blue-100 hover:to-violet-100 text-gray-700 rounded-lg text-sm font-medium transition-all border border-gray-200 hover:border-blue-300"
+                        style={{
+                          padding: "8px 16px",
+                          background: "var(--sage-light)",
+                          color: "var(--sage)",
+                          border: "1px solid var(--sage-mid)",
+                          borderRadius: 100,
+                          fontSize: 13,
+                          fontWeight: 500,
+                          cursor: "pointer",
+                          transition: "all 0.2s"
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.background = "var(--sage)";
+                          e.currentTarget.style.color = "#fff";
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.background = "var(--sage-light)";
+                          e.currentTarget.style.color = "var(--sage)";
+                        }}
                       >
                         {response}
                       </button>
@@ -264,33 +482,82 @@ const AIChatbot = () => {
               )}
 
               {/* Input Area */}
-              <div className="p-4 border-t border-gray-200 bg-white">
-                <div className="relative">
+              <div style={{ padding: "16px 20px", borderTop: "1px solid var(--border)", background: "#fff" }}>
+                <div style={{ position: "relative" }}>
                   <textarea
-                    className="w-full px-4 py-3 pr-24 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all resize-none"
+                    style={{
+                      width: "100%",
+                      padding: "12px 16px",
+                      paddingRight: "120px",
+                      background: "var(--cream)",
+                      border: "1px solid var(--border)",
+                      borderRadius: 12,
+                      fontSize: 14,
+                      fontFamily: "'Outfit', sans-serif",
+                      color: "var(--charcoal)",
+                      outline: "none",
+                      resize: "none",
+                      transition: "border-color 0.2s"
+                    }}
                     placeholder="Tell me how you're feeling today..."
                     rows="2"
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
                     onKeyPress={handleKeyPress}
                     disabled={loading}
+                    onFocus={(e) => e.target.style.borderColor = "var(--sage)"}
+                    onBlur={(e) => e.target.style.borderColor = "var(--border)"}
                   />
-                  <div className="absolute right-2 bottom-2 flex items-center gap-2">
-                    <button className="p-2 hover:bg-gray-100 rounded-lg text-gray-600 transition-colors">
-                      <Paperclip className="w-4 h-4" />
+                  <div style={{
+                    position: "absolute",
+                    right: 8,
+                    bottom: 8,
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 4
+                  }}>
+                    <button style={{
+                      padding: 8,
+                      borderRadius: 6,
+                      background: "transparent",
+                      border: "none",
+                      cursor: "pointer",
+                      color: "var(--muted)"
+                    }}>
+                      <Paperclip size={16} />
                     </button>
-                    <button className="p-2 hover:bg-gray-100 rounded-lg text-gray-600 transition-colors">
-                      <Mic className="w-4 h-4" />
+                    <button style={{
+                      padding: 8,
+                      borderRadius: 6,
+                      background: "transparent",
+                      border: "none",
+                      cursor: "pointer",
+                      color: "var(--muted)"
+                    }}>
+                      <Mic size={16} />
                     </button>
                     <button
                       onClick={sendMessage}
                       disabled={!input.trim() || loading}
-                      className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white rounded-lg font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 6,
+                        padding: "8px 16px",
+                        background: !input.trim() || loading ? "var(--muted)" : "var(--sage)",
+                        color: "#fff",
+                        border: "none",
+                        borderRadius: 8,
+                        fontSize: 13,
+                        fontWeight: 500,
+                        cursor: !input.trim() || loading ? "not-allowed" : "pointer",
+                        transition: "all 0.2s"
+                      }}
                     >
                       {loading ? (
-                        <Loader2 className="w-4 h-4 animate-spin" />
+                        <Loader2 size={14} style={{ animation: "spin 1s linear infinite" }} />
                       ) : (
-                        <Send className="w-4 h-4" />
+                        <Send size={14} />
                       )}
                       Send
                     </button>
@@ -301,82 +568,122 @@ const AIChatbot = () => {
           </div>
 
           {/* Right Column - Info & Tips */}
-          <div className="space-y-6">
+          <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
+            
             {/* AI Assistant Info */}
-            <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-r from-emerald-500 to-teal-500 flex items-center justify-center">
-                  <Brain className="w-5 h-5 text-white" />
+            <div className="card" style={{ padding: 24 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16 }}>
+                <div style={{ width: 48, height: 48, borderRadius: 12, background: "var(--sage-light)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <Brain size={24} color="var(--sage)" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-gray-900">About Your AI Assistant</h3>
-                  <p className="text-sm text-gray-600">Powered by advanced AI</p>
+                  <h3 style={{ fontSize: 16, fontWeight: 600, color: "var(--charcoal)" }}>About Your AI Assistant</h3>
+                  <p style={{ fontSize: 13, color: "var(--muted)" }}>Powered by advanced AI</p>
                 </div>
               </div>
-              <ul className="space-y-3 text-sm text-gray-600">
-                <li className="flex items-start gap-2">
-                  <div className="w-2 h-2 rounded-full bg-emerald-500 mt-1.5 flex-shrink-0" />
-                  Provides emotional support and coping strategies
+              <ul style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                <li style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
+                  <span style={{ width: 6, height: 6, background: "var(--sage)", borderRadius: "50%", marginTop: 6, flexShrink: 0 }} />
+                  <span style={{ fontSize: 13, color: "var(--body)" }}>Provides emotional support and coping strategies</span>
                 </li>
-                <li className="flex items-start gap-2">
-                  <div className="w-2 h-2 rounded-full bg-emerald-500 mt-1.5 flex-shrink-0" />
-                  Maintains 100% confidentiality
+                <li style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
+                  <span style={{ width: 6, height: 6, background: "var(--sage)", borderRadius: "50%", marginTop: 6, flexShrink: 0 }} />
+                  <span style={{ fontSize: 13, color: "var(--body)" }}>Maintains 100% confidentiality</span>
                 </li>
-                <li className="flex items-start gap-2">
-                  <div className="w-2 h-2 rounded-full bg-emerald-500 mt-1.5 flex-shrink-0" />
-                  Available 24/7 for immediate support
+                <li style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
+                  <span style={{ width: 6, height: 6, background: "var(--sage)", borderRadius: "50%", marginTop: 6, flexShrink: 0 }} />
+                  <span style={{ fontSize: 13, color: "var(--body)" }}>Available 24/7 for immediate support</span>
                 </li>
-                <li className="flex items-start gap-2">
-                  <div className="w-2 h-2 rounded-full bg-emerald-500 mt-1.5 flex-shrink-0" />
-                  Trained on mental wellness resources
+                <li style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
+                  <span style={{ width: 6, height: 6, background: "var(--sage)", borderRadius: "50%", marginTop: 6, flexShrink: 0 }} />
+                  <span style={{ fontSize: 13, color: "var(--body)" }}>Trained on mental wellness resources</span>
                 </li>
               </ul>
             </div>
 
             {/* Safety Notice */}
-            <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-2xl border border-amber-200 p-6">
-              <div className="flex items-start gap-3 mb-3">
-                <AlertCircle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+            <div style={{
+              background: "var(--warm)",
+              borderRadius: 20,
+              padding: 24,
+              border: "1px solid rgba(107,158,107,0.2)"
+            }}>
+              <div style={{ display: "flex", alignItems: "flex-start", gap: 12, marginBottom: 16 }}>
+                <AlertCircle size={20} color="var(--sage)" style={{ flexShrink: 0, marginTop: 2 }} />
                 <div>
-                  <h3 className="font-semibold text-gray-900">Important Notice</h3>
-                  <p className="text-sm text-gray-600 mt-1">
+                  <h3 style={{ fontSize: 16, fontWeight: 600, color: "var(--charcoal)" }}>Important Notice</h3>
+                  <p style={{ fontSize: 13, color: "var(--body)", marginTop: 4 }}>
                     This AI provides emotional support and is not a substitute for professional medical advice, diagnosis, or treatment.
                   </p>
                 </div>
               </div>
-              <button className="w-full mt-4 py-2.5 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-lg hover:opacity-90 transition-opacity font-medium text-sm">
+              <button style={{
+                width: "100%",
+                padding: "12px",
+                background: "var(--sage)",
+                color: "#fff",
+                border: "none",
+                borderRadius: 100,
+                fontSize: 13,
+                fontWeight: 500,
+                cursor: "pointer",
+                transition: "all 0.2s"
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.background = "var(--sage-hover)"}
+              onMouseLeave={(e) => e.currentTarget.style.background = "var(--sage)"}
+              >
                 Need Urgent Help? Contact Support
               </button>
             </div>
 
             {/* Conversation Tips */}
-            <div className="bg-gradient-to-r from-blue-50 to-violet-50 rounded-2xl border border-blue-200 p-6">
-              <div className="flex items-center gap-3 mb-4">
-                <MessageSquare className="w-5 h-5 text-blue-600" />
-                <h3 className="font-semibold text-gray-900">Tips for Better Conversation</h3>
+            <div className="card" style={{ padding: 24 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16 }}>
+                <MessageSquare size={20} color="var(--sage)" />
+                <h3 style={{ fontSize: 16, fontWeight: 600, color: "var(--charcoal)" }}>Tips for Better Conversation</h3>
               </div>
-              <ul className="space-y-2 text-sm text-gray-600">
-                <li className="flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-blue-400"></span>
-                  Be specific about your feelings
+              <ul style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                <li style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <span style={{ width: 6, height: 6, background: "var(--sage)", borderRadius: "50%" }} />
+                  <span style={{ fontSize: 13, color: "var(--body)" }}>Be specific about your feelings</span>
                 </li>
-                <li className="flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-blue-400"></span>
-                  Share recent experiences
+                <li style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <span style={{ width: 6, height: 6, background: "var(--sage)", borderRadius: "50%" }} />
+                  <span style={{ fontSize: 13, color: "var(--body)" }}>Share recent experiences</span>
                 </li>
-                <li className="flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-blue-400"></span>
-                  Ask for specific help if needed
+                <li style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <span style={{ width: 6, height: 6, background: "var(--sage)", borderRadius: "50%" }} />
+                  <span style={{ fontSize: 13, color: "var(--body)" }}>Ask for specific help if needed</span>
                 </li>
-                <li className="flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-blue-400"></span>
-                  Take your time to express yourself
+                <li style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <span style={{ width: 6, height: 6, background: "var(--sage)", borderRadius: "50%" }} />
+                  <span style={{ fontSize: 13, color: "var(--body)" }}>Take your time to express yourself</span>
                 </li>
               </ul>
             </div>
           </div>
         </div>
       </div>
+
+      <style>{`
+        @keyframes spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+        @keyframes pulse {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.5; }
+        }
+        @keyframes bounce {
+          0%, 80%, 100% { transform: translateY(0); }
+          40% { transform: translateY(-8px); }
+        }
+        @media (max-width: 1024px) {
+          .grid-cols-3 {
+            grid-template-columns: 1fr !important;
+          }
+        }
+      `}</style>
     </div>
   );
 };

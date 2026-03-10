@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Sparkles,
   Video,
@@ -23,8 +23,65 @@ import {
   Book,
   AlertCircle,
   Heart,
-  CheckCircle
+  CheckCircle,
+  Menu,
+  X,
+  Brain,
+  Users,
+  Calendar,
+  Shield,
+  Star
 } from "lucide-react";
+
+/* ── Google Fonts (if not already loaded) ── */
+(() => {
+  if (document.getElementById("echocare-fonts")) return;
+  const l = document.createElement("link");
+  l.id = "echocare-fonts";
+  l.href = "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Outfit:wght@300;400;500;600&display=swap";
+  l.rel = "stylesheet";
+  document.head.appendChild(l);
+})();
+
+/* ── Animation helpers ── */
+const fadeUp = (delay = 0) => ({
+  initial: { opacity: 0, y: 20 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.6, delay, ease: [0.25, 0.1, 0.25, 1] },
+});
+
+const fadeIn = (delay = 0) => ({
+  initial: { opacity: 0 },
+  animate: { opacity: 1 },
+  transition: { duration: 0.6, delay, ease: [0.25, 0.1, 0.25, 1] },
+});
+
+const scaleIn = (delay = 0) => ({
+  initial: { opacity: 0, scale: 0.95 },
+  animate: { opacity: 1, scale: 1 },
+  transition: { duration: 0.55, delay, ease: [0.25, 0.1, 0.25, 1] },
+});
+
+const slideRight = (delay = 0) => ({
+  initial: { opacity: 0, x: -24 },
+  animate: { opacity: 1, x: 0 },
+  transition: { duration: 0.6, delay, ease: [0.25, 0.1, 0.25, 1] },
+});
+
+const slideLeft = (delay = 0) => ({
+  initial: { opacity: 0, x: 24 },
+  animate: { opacity: 1, x: 0 },
+  transition: { duration: 0.6, delay, ease: [0.25, 0.1, 0.25, 1] },
+});
+
+const NAV_ITEMS = [
+  { label: "Home", path: "/" },
+  { label: "AI Chat", path: "/ai-chat" },
+  { label: "Book Session", path: "/book" },
+  { label: "Resources", path: "/resources" },
+  { label: "Community", path: "/community" },
+  { label: "About", path: "/about" },
+];
 
 const Resources = () => {
   const navigate = useNavigate();
@@ -32,20 +89,31 @@ const Resources = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedLanguage, setSelectedLanguage] = useState("all");
+  const [scrolled, setScrolled] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   // Mock login check
-  React.useEffect(() => {
+  useEffect(() => {
     const token = localStorage.getItem("authToken");
     setIsLoggedIn(!!token);
   }, []);
 
+  // Handle scroll effect for navbar
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 28);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   const resourceCategories = [
     {
-      icon: <Video className="w-6 h-6" />,
+      icon: <Video size={24} />,
       title: "Video Guides",
       description: "Expert-led wellness videos and tutorials.",
       count: "50+ Videos",
       color: "bg-blue-100 text-blue-600",
+      bgColor: "#EEF5EE",
+      iconColor: "var(--sage)",
       type: "video",
       items: [
         "Managing Exam Anxiety",
@@ -57,11 +125,13 @@ const Resources = () => {
       ]
     },
     {
-      icon: <Headphones className="w-6 h-6" />,
+      icon: <Headphones size={24} />,
       title: "Guided Audios",
       description: "Meditation and breathing exercises.",
       count: "100+ Tracks",
       color: "bg-green-100 text-green-600",
+      bgColor: "#F6F0E8",
+      iconColor: "var(--sage)",
       type: "audio",
       items: [
         "5-Minute Breathing Exercise",
@@ -73,11 +143,13 @@ const Resources = () => {
       ]
     },
     {
-      icon: <FileText className="w-6 h-6" />,
+      icon: <FileText size={24} />,
       title: "Wellness Guides",
       description: "Comprehensive mental health guides.",
       count: "30+ Guides",
       color: "bg-purple-100 text-purple-600",
+      bgColor: "#EEF5EE",
+      iconColor: "var(--sage)",
       type: "guide",
       items: [
         "Understanding Depression",
@@ -89,11 +161,13 @@ const Resources = () => {
       ]
     },
     {
-      icon: <Globe className="w-6 h-6" />,
+      icon: <Globe size={24} />,
       title: "Multi-Language",
       description: "Resources in 10+ languages.",
       count: "Hindi, English, Tamil",
       color: "bg-orange-100 text-orange-600",
+      bgColor: "#F6F0E8",
+      iconColor: "var(--sage)",
       type: "language",
       languages: ["Hindi", "English", "Tamil", "Bengali", "Telugu", "Marathi", "Gujarati", "Malayalam", "Kannada", "Punjabi"]
     }
@@ -130,323 +204,577 @@ const Resources = () => {
     alert(`Accessing: ${resource.title}`);
   };
 
+  const S = {
+    maxW: { maxWidth: 1280, margin: "0 auto", width: "100%" },
+  };
+
   if (!isLoggedIn) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-blue-50/50 to-white">
-        {/* Header */}
-        <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-lg border-b border-gray-200">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-            <div className="flex items-center justify-between">
-              <Link to="/" className="flex items-center gap-2">
-                <Sparkles className="w-6 h-6 text-teal-600" />
-                <span className="text-xl font-bold bg-gradient-to-r from-teal-600 to-blue-600 bg-clip-text text-transparent">
-                  EchoCare
-                </span>
-              </Link>
-              <div className="flex items-center gap-4">
-                <Link
-                  to="/login"
-                  className="flex items-center gap-2 px-4 py-2 rounded-lg border border-teal-500 text-teal-600 hover:bg-teal-50 transition-colors text-sm font-medium"
-                >
-                  <LogIn className="w-4 h-4" />
-                  Login
-                </Link>
-                <Link
-                  to="/register"
-                  className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-teal-600 to-blue-600 text-white hover:shadow-lg transition-shadow text-sm font-medium"
-                >
-                  <UserPlus className="w-4 h-4" />
-                  Sign Up
-                </Link>
-              </div>
-            </div>
-          </div>
-        </header>
+      <div style={{ background: "var(--cream)", minHeight: "100vh", overflowX: "hidden" }}>
+        
+        {/* Background blobs */}
+        <div className="blob" style={{ width: 600, height: 600, background: "rgba(107,158,107,0.05)", top: -200, right: -100 }} />
+        <div className="blob" style={{ width: 400, height: 400, background: "rgba(246,240,232,0.8)", bottom: -100, left: -100 }} />
 
-        {/* Login Required Section */}
-        <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        {/* ========== NAVBAR ========== */}
+        <motion.header
+          initial={{ opacity: 0, y: -18 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.55 }}
+          style={{
+            position: "sticky", top: 0, zIndex: 300,
+            height: 70, padding: "0 40px",
+            display: "flex", alignItems: "center", justifyContent: "space-between",
+            background: scrolled ? "rgba(250,250,247,0.85)" : "transparent",
+            backdropFilter: scrolled ? "blur(20px)" : "none",
+            borderBottom: scrolled ? "1px solid var(--border)" : "1px solid transparent",
+            transition: "all 0.38s ease",
+          }}
+        >
+          {/* Logo */}
+          <Link to="/" style={{ display: "flex", alignItems: "center", gap: 12, flexShrink: 0 }}>
+            <motion.div
+              whileHover={{ rotate: 5, scale: 1.05 }}
+              style={{ width: 36, height: 36, borderRadius: 12, background: "var(--sage)", display: "flex", alignItems: "center", justifyContent: "center" }}
+            >
+              <Heart size={18} color="white" />
+            </motion.div>
+            <span className="serif" style={{ fontWeight: 500, fontSize: 22, color: "var(--charcoal)", letterSpacing: "-0.02em" }}>
+              EchoCare
+            </span>
+          </Link>
+
+          {/* Desktop nav */}
+          <nav className="mob-hide" style={{ display: "flex", gap: 36, alignItems: "center" }}>
+            {NAV_ITEMS.map(item => (
+              <Link key={item.label} to={item.path} className="nav-link">
+                {item.label}
+              </Link>
+            ))}
+          </nav>
+
+          {/* Desktop CTA */}
+          <div className="mob-hide" style={{ display: "flex", gap: 12, alignItems: "center" }}>
+            <Link to="/login" className="btn-ghost" style={{ padding: "10px 24px" }}>Sign in</Link>
+            <Link to="/register" className="btn-primary" style={{ padding: "10px 24px" }}>
+              Get Started <ArrowRight size={16} />
+            </Link>
+          </div>
+
+          {/* Mobile toggle */}
+          <button
+            onClick={() => setMobileOpen(!mobileOpen)}
+            className="mob-show"
+            style={{
+              background: "none", border: "none", cursor: "pointer",
+              display: "none", padding: 8, color: "var(--charcoal)"
+            }}
+          >
+            {mobileOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
+        </motion.header>
+
+        {/* Mobile menu */}
+        <AnimatePresence>
+          {mobileOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              style={{
+                background: "#fff", borderBottom: "1px solid var(--border)",
+                padding: "0 24px", overflow: "hidden",
+                position: "sticky", top: 70, zIndex: 299
+              }}
+            >
+              <div style={{ padding: "24px 0", display: "flex", flexDirection: "column", gap: 8 }}>
+                {NAV_ITEMS.map(item => (
+                  <Link
+                    key={item.label}
+                    to={item.path}
+                    onClick={() => setMobileOpen(false)}
+                    style={{
+                      padding: "14px 12px", color: "var(--body)", fontSize: 16,
+                      borderRadius: 10, display: "block",
+                      transition: "background 0.2s"
+                    }}
+                    onMouseEnter={e => e.currentTarget.style.background = "var(--sage-light)"}
+                    onMouseLeave={e => e.currentTarget.style.background = "transparent"}
+                  >
+                    {item.label}
+                  </Link>
+                ))}
+                <div style={{
+                  display: "flex", gap: 12, marginTop: 24,
+                  paddingTop: 24, borderTop: "1px solid var(--border)"
+                }}>
+                  <Link to="/login" className="btn-ghost" style={{ flex: 1, justifyContent: "center" }}>
+                    Sign in
+                  </Link>
+                  <Link to="/register" className="btn-primary" style={{ flex: 1, justifyContent: "center" }}>
+                    Get Started
+                  </Link>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* ========== LOGIN REQUIRED SECTION ========== */}
+        <main style={{ ...S.maxW, padding: "40px 40px 60px" }}>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-center mb-12"
+            style={{ textAlign: "center", marginBottom: 48 }}
           >
-            <div className="bg-gradient-to-r from-teal-500 to-blue-500 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
-              <BookOpen className="w-10 h-10 text-white" />
-            </div>
+            <motion.div
+              animate={{ scale: [1, 1.1, 1] }}
+              transition={{ duration: 4, repeat: Infinity }}
+              style={{
+                width: 80, height: 80, borderRadius: 24,
+                background: "var(--sage)",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                margin: "0 auto 32px",
+                boxShadow: "0 10px 30px rgba(107,158,107,0.3)"
+              }}
+            >
+              <BookOpen size={40} color="white" />
+            </motion.div>
             
-            <h1 className="text-4xl font-bold text-gray-800 mb-4">
-              Wellness Resource Hub
+            <h1 className="serif" style={{ fontSize: "clamp(36px, 5vw, 52px)", fontWeight: 300, marginBottom: 16 }}>
+              Wellness Resource <em style={{ color: "var(--sage)", fontStyle: "italic" }}>Hub</em>
             </h1>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            <p style={{ fontSize: 16, color: "var(--body)", maxWidth: 600, margin: "0 auto 48px" }}>
               Access psychoeducational materials in your preferred language.
               Please login or sign up to access our complete wellness library.
             </p>
-          </motion.div>
 
-          <div className="bg-white rounded-2xl shadow-lg p-8 mb-8">
-            <div className="flex items-center justify-center gap-3 mb-6">
-              <Lock className="w-6 h-6 text-yellow-600" />
-              <h2 className="text-xl font-bold text-gray-800">Premium Resources Access</h2>
-            </div>
-            
-            <p className="text-gray-600 mb-8 text-center">
-              Our wellness resources are available exclusively to EchoCare members.
-              Register for free to access guided meditations, educational videos,
-              and mental health guides curated by professionals.
-            </p>
-
-            {/* Preview of Resources */}
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
-              {resourceCategories.map((category, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                  whileHover={{ y: -5, scale: 1.02 }}
-                  className="bg-gradient-to-br from-gray-50 to-white border-2 border-gray-200 rounded-xl p-6 text-center group"
-                >
-                  <div className={`inline-flex p-3 rounded-lg ${category.color} mb-4`}>
-                    {category.icon}
-                  </div>
-                  <h3 className="font-bold text-gray-800 mb-2">{category.title}</h3>
-                  <p className="text-sm text-gray-600 mb-3">{category.description}</p>
-                  <div className={`text-sm font-bold ${category.color.split(' ')[1]}`}>
-                    {category.count}
-                  </div>
-                  <div className="mt-4 pt-4 border-t border-gray-200">
-                    <div className="text-xs text-gray-500 font-medium">PREVIEW</div>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-
-            <div className="text-center">
-              <div className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-yellow-50 to-orange-50 border border-yellow-200 rounded-full mb-6">
-                <AlertCircle className="w-5 h-5 text-yellow-600" />
-                <span className="text-yellow-700 font-medium">Login required to access resources</span>
+            <div className="card" style={{ padding: 48, marginBottom: 48 }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 12, marginBottom: 24 }}>
+                <Lock size={24} color="var(--sage)" />
+                <h2 className="serif" style={{ fontSize: 24, fontWeight: 400, color: "var(--charcoal)" }}>Premium Resources Access</h2>
               </div>
               
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Link
-                  to="/login"
-                  className="inline-flex items-center justify-center gap-3 px-8 py-4 bg-gradient-to-r from-teal-600 to-blue-600 text-white rounded-xl font-bold hover:shadow-xl transition-all hover:scale-105"
-                >
-                  <LogIn className="w-5 h-5" />
-                  Login to Access Resources
-                </Link>
-                <Link
-                  to="/register"
-                  className="inline-flex items-center justify-center gap-3 px-8 py-4 border-2 border-teal-500 text-teal-600 rounded-xl font-bold hover:bg-teal-50 transition-all hover:scale-105"
-                >
-                  <UserPlus className="w-5 h-5" />
-                  Create Free Account
-                </Link>
+              <p style={{ fontSize: 15, color: "var(--body)", marginBottom: 40, maxWidth: 600, margin: "0 auto 40px" }}>
+                Our wellness resources are available exclusively to EchoCare members.
+                Register for free to access guided meditations, educational videos,
+                and mental health guides curated by professionals.
+              </p>
+
+              {/* Preview of Resources */}
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 20, marginBottom: 40 }}>
+                {resourceCategories.map((category, index) => (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                    whileHover={{ y: -5 }}
+                    className="card"
+                    style={{ padding: 24, textAlign: "center", cursor: "pointer" }}
+                  >
+                    <div style={{ width: 56, height: 56, borderRadius: 14, background: "var(--sage-light)", color: "var(--sage)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 16px" }}>
+                      {category.icon}
+                    </div>
+                    <h3 style={{ fontSize: 16, fontWeight: 600, marginBottom: 8, color: "var(--charcoal)" }}>{category.title}</h3>
+                    <p style={{ fontSize: 13, color: "var(--body)", marginBottom: 12, lineHeight: 1.6 }}>{category.description}</p>
+                    <div style={{ fontSize: 12, fontWeight: 500, color: "var(--sage)" }}>{category.count}</div>
+                    <div style={{ marginTop: 16, paddingTop: 16, borderTop: "1px solid var(--border)" }}>
+                      <span style={{ fontSize: 11, color: "var(--light-muted)", fontWeight: 500 }}>PREVIEW</span>
+                    </div>
+                  </motion.div>
+                ))}
               </div>
 
-              <p className="text-sm text-gray-500 mt-6">
-                Already have an account? <Link to="/login" className="text-teal-600 hover:text-teal-700 font-medium">Login here</Link>
+              <div style={{ textAlign: "center" }}>
+                <div style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "var(--warm)", padding: "8px 20px", borderRadius: 100, marginBottom: 32 }}>
+                  <AlertCircle size={16} color="var(--sage)" />
+                  <span style={{ fontSize: 13, color: "var(--charcoal)" }}>Login required to access resources</span>
+                </div>
+                
+                <div style={{ display: "flex", gap: 16, justifyContent: "center", marginBottom: 24 }}>
+                  <Link
+                    to="/login"
+                    className="btn-primary"
+                    style={{ padding: "14px 32px", fontSize: 15 }}
+                  >
+                    <LogIn size={16} />
+                    Login to Access Resources
+                  </Link>
+                  <Link
+                    to="/register"
+                    className="btn-sage"
+                    style={{ padding: "14px 32px", fontSize: 15 }}
+                  >
+                    <UserPlus size={16} />
+                    Create Free Account
+                  </Link>
+                </div>
+
+                <p style={{ fontSize: 13, color: "var(--muted)" }}>
+                  Already have an account? <Link to="/login" style={{ color: "var(--sage)", textDecoration: "underline" }}>Login here</Link>
+                </p>
+              </div>
+            </div>
+
+            {/* Benefits of Registering */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              style={{ background: "linear-gradient(135deg, var(--sage-light) 0%, #fff 100%)", borderRadius: 32, padding: 40 }}
+            >
+              <h2 className="serif" style={{ fontSize: 28, fontWeight: 400, marginBottom: 32, textAlign: "center" }}>
+                What You'll Get <em style={{ color: "var(--sage)" }}>Access To</em>
+              </h2>
+              
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24 }}>
+                <div className="card" style={{ padding: 28 }}>
+                  <h3 style={{ fontSize: 16, fontWeight: 600, marginBottom: 20, color: "var(--charcoal)" }}>Resource Library Includes:</h3>
+                  <ul style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+                    {[
+                      "Professional mental health video guides",
+                      "Guided meditation & relaxation audios",
+                      "Downloadable wellness worksheets",
+                      "Multi-language support for all resources",
+                      "Expert-curated coping strategies",
+                      "Evidence-based therapy techniques"
+                    ].map((item, index) => (
+                      <li key={index} style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
+                        <CheckCircle size={18} color="var(--sage)" style={{ flexShrink: 0, marginTop: 2 }} />
+                        <span style={{ fontSize: 14, color: "var(--body)" }}>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                
+                <div className="card" style={{ padding: 28 }}>
+                  <h3 style={{ fontSize: 16, fontWeight: 600, marginBottom: 20, color: "var(--charcoal)" }}>Additional Benefits:</h3>
+                  <ul style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+                    {[
+                      "Track your wellness progress",
+                      "Save favorite resources",
+                      "Personalized recommendations",
+                      "Access to community forums",
+                      "Regular content updates",
+                      "Professional counselor access"
+                    ].map((item, index) => (
+                      <li key={index} style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
+                        <Heart size={18} color="var(--sage)" style={{ flexShrink: 0, marginTop: 2 }} />
+                        <span style={{ fontSize: 14, color: "var(--body)" }}>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        </main>
+
+        {/* Footer */}
+        <footer style={{ background: "var(--charcoal)", padding: "40px 40px 24px", marginTop: 40 }}>
+          <div style={S.maxW}>
+            <div style={{ textAlign: "center" }}>
+              <p style={{ fontSize: 13, color: "rgba(255,255,255,0.5)" }}>
+                All resources are created by licensed mental health professionals and reviewed by our clinical team.
+              </p>
+              <p style={{ fontSize: 12, color: "rgba(255,255,255,0.3)", marginTop: 12 }}>
+                © 2025 EchoCare Wellness Resources. For educational purposes only. Not a substitute for professional medical advice.
               </p>
             </div>
           </div>
-
-          {/* Benefits of Registering */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="bg-gradient-to-r from-teal-50 to-blue-50 rounded-2xl p-8"
-          >
-            <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">
-              What You'll Get Access To
-            </h2>
-            
-            <div className="grid md:grid-cols-2 gap-6">
-              <div className="bg-white rounded-xl p-6">
-                <h3 className="font-bold text-gray-800 mb-4">Resource Library Includes:</h3>
-                <ul className="space-y-3">
-                  {[
-                    "Professional mental health video guides",
-                    "Guided meditation & relaxation audios",
-                    "Downloadable wellness worksheets",
-                    "Multi-language support for all resources",
-                    "Expert-curated coping strategies",
-                    "Evidence-based therapy techniques"
-                  ].map((item, index) => (
-                    <li key={index} className="flex items-start gap-3">
-                      <CheckCircle className="w-5 h-5 text-teal-500 flex-shrink-0 mt-0.5" />
-                      <span className="text-gray-700">{item}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              
-              <div className="bg-white rounded-xl p-6">
-                <h3 className="font-bold text-gray-800 mb-4">Additional Benefits:</h3>
-                <ul className="space-y-3">
-                  {[
-                    "Track your wellness progress",
-                    "Save favorite resources",
-                    "Personalized recommendations",
-                    "Access to community forums",
-                    "Regular content updates",
-                    "Professional counselor access"
-                  ].map((item, index) => (
-                    <li key={index} className="flex items-start gap-3">
-                      <Heart className="w-5 h-5 text-pink-500 flex-shrink-0 mt-0.5" />
-                      <span className="text-gray-700">{item}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          </motion.div>
-        </main>
+        </footer>
       </div>
     );
   }
 
   // Logged in view
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50/50 to-white">
-      {/* Header */}
-      <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-lg border-b border-gray-200">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
-            <Link to="/" className="flex items-center gap-2">
-              <Sparkles className="w-6 h-6 text-teal-600" />
-              <span className="text-xl font-bold bg-gradient-to-r from-teal-600 to-blue-600 bg-clip-text text-transparent">
-                EchoCare
-              </span>
+    <div style={{ background: "var(--cream)", minHeight: "100vh", overflowX: "hidden" }}>
+      
+      {/* Background blobs */}
+      <div className="blob" style={{ width: 600, height: 600, background: "rgba(107,158,107,0.05)", top: -200, right: -100 }} />
+      <div className="blob" style={{ width: 400, height: 400, background: "rgba(246,240,232,0.8)", bottom: -100, left: -100 }} />
+
+      {/* ========== NAVBAR ========== */}
+      <motion.header
+        initial={{ opacity: 0, y: -18 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.55 }}
+        style={{
+          position: "sticky", top: 0, zIndex: 300,
+          height: 70, padding: "0 40px",
+          display: "flex", alignItems: "center", justifyContent: "space-between",
+          background: scrolled ? "rgba(250,250,247,0.85)" : "transparent",
+          backdropFilter: scrolled ? "blur(20px)" : "none",
+          borderBottom: scrolled ? "1px solid var(--border)" : "1px solid transparent",
+          transition: "all 0.38s ease",
+        }}
+      >
+        {/* Logo */}
+        <Link to="/" style={{ display: "flex", alignItems: "center", gap: 12, flexShrink: 0 }}>
+          <motion.div
+            whileHover={{ rotate: 5, scale: 1.05 }}
+            style={{ width: 36, height: 36, borderRadius: 12, background: "var(--sage)", display: "flex", alignItems: "center", justifyContent: "center" }}
+          >
+            <Heart size={18} color="white" />
+          </motion.div>
+          <span className="serif" style={{ fontWeight: 500, fontSize: 22, color: "var(--charcoal)", letterSpacing: "-0.02em" }}>
+            EchoCare
+          </span>
+        </Link>
+
+        {/* Desktop nav */}
+        <nav className="mob-hide" style={{ display: "flex", gap: 36, alignItems: "center" }}>
+          {NAV_ITEMS.map(item => (
+            <Link key={item.label} to={item.path} className="nav-link">
+              {item.label}
             </Link>
-            <div className="flex items-center gap-4">
-              <div className="w-8 h-8 rounded-full bg-gradient-to-r from-teal-500 to-blue-500 flex items-center justify-center text-white font-medium">
-                U
-              </div>
-              <button
-                onClick={() => {
-                  localStorage.removeItem("authToken");
-                  setIsLoggedIn(false);
-                  navigate("/");
-                }}
-                className="text-sm text-gray-600 hover:text-gray-900"
-              >
-                Logout
-              </button>
+          ))}
+        </nav>
+
+        {/* Desktop user menu */}
+        <div className="mob-hide" style={{ display: "flex", gap: 12, alignItems: "center" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+            <div style={{ width: 36, height: 36, borderRadius: "50%", background: "var(--sage)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 500 }}>
+              U
             </div>
           </div>
+          <button
+            onClick={() => {
+              localStorage.removeItem("authToken");
+              setIsLoggedIn(false);
+              navigate("/");
+            }}
+            className="btn-ghost"
+            style={{ padding: "8px 20px" }}
+          >
+            Logout
+          </button>
         </div>
-      </header>
 
-      {/* Main Content */}
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Hero Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-8"
+        {/* Mobile toggle */}
+        <button
+          onClick={() => setMobileOpen(!mobileOpen)}
+          className="mob-show"
+          style={{
+            background: "none", border: "none", cursor: "pointer",
+            display: "none", padding: 8, color: "var(--charcoal)"
+          }}
         >
-          <div className="text-center mb-8">
-            <h1 className="text-4xl font-bold text-gray-800 mb-3">
-              Wellness Resource Hub
-            </h1>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Access psychoeducational materials in your preferred language.
-            </p>
-          </div>
+          {mobileOpen ? <X size={24} /> : <Menu size={24} />}
+        </button>
+      </motion.header>
 
-          {/* Search and Filter */}
-          <div className="bg-white rounded-2xl shadow-lg p-6 mb-8">
-            <div className="flex flex-col md:flex-row gap-4">
-              <div className="flex-1 relative">
-                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                <input
-                  type="text"
-                  placeholder="Search resources..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-12 pr-4 py-3 bg-gray-50 border-2 border-gray-200 rounded-xl focus:border-teal-500 focus:ring-2 focus:ring-teal-200 outline-none transition-all duration-300"
-                />
+      {/* Mobile menu */}
+      <AnimatePresence>
+        {mobileOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            style={{
+              background: "#fff", borderBottom: "1px solid var(--border)",
+              padding: "0 24px", overflow: "hidden",
+              position: "sticky", top: 70, zIndex: 299
+            }}
+          >
+            <div style={{ padding: "24px 0", display: "flex", flexDirection: "column", gap: 8 }}>
+              {NAV_ITEMS.map(item => (
+                <Link
+                  key={item.label}
+                  to={item.path}
+                  onClick={() => setMobileOpen(false)}
+                  style={{
+                    padding: "14px 12px", color: "var(--body)", fontSize: 16,
+                    borderRadius: 10, display: "block",
+                    transition: "background 0.2s"
+                  }}
+                  onMouseEnter={e => e.currentTarget.style.background = "var(--sage-light)"}
+                  onMouseLeave={e => e.currentTarget.style.background = "transparent"}
+                >
+                  {item.label}
+                </Link>
+              ))}
+              <div style={{
+                display: "flex", gap: 12, marginTop: 24,
+                paddingTop: 24, borderTop: "1px solid var(--border)"
+              }}>
+                <button
+                  onClick={() => {
+                    localStorage.removeItem("authToken");
+                    setIsLoggedIn(false);
+                    navigate("/");
+                  }}
+                  className="btn-ghost"
+                  style={{ flex: 1, justifyContent: "center" }}
+                >
+                  Logout
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ========== MAIN CONTENT ========== */}
+      <main style={{ ...S.maxW, padding: "40px 40px 60px" }}>
+        
+        {/* Back link */}
+        <motion.div {...fadeUp(0)} style={{ marginBottom: 24 }}>
+          <Link to="/" style={{ display: "inline-flex", alignItems: "center", gap: 8, color: "var(--body)", fontSize: 14 }}>
+            <ArrowRight size={14} style={{ transform: "rotate(180deg)" }} />
+            Back to Home
+          </Link>
+        </motion.div>
+        
+        {/* Hero Section */}
+        <motion.div {...fadeUp(0.1)} style={{ textAlign: "center", marginBottom: 40 }}>
+          <span className="badge" style={{ background: "var(--sage-light)", color: "var(--sage)", marginBottom: 16, display: "inline-flex" }}>
+            <BookOpen size={14} />
+            Wellness Library
+          </span>
+          <h1 className="serif" style={{ fontSize: "clamp(36px, 5vw, 52px)", fontWeight: 300, marginBottom: 12 }}>
+            Wellness Resource <em style={{ color: "var(--sage)", fontStyle: "italic" }}>Hub</em>
+          </h1>
+          <p style={{ fontSize: 16, color: "var(--body)", maxWidth: 600, margin: "0 auto" }}>
+            Access psychoeducational materials in your preferred language.
+          </p>
+        </motion.div>
+
+        {/* Search and Filter */}
+        <motion.div {...fadeUp(0.2)} className="card" style={{ padding: 24, marginBottom: 40 }}>
+          <div style={{ display: "flex", flexDirection: "row", gap: 16 }}>
+            <div style={{ flex: 1, position: "relative" }}>
+              <Search size={18} style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)", color: "var(--muted)" }} />
+              <input
+                type="text"
+                placeholder="Search resources..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                style={{
+                  width: "100%",
+                  padding: "14px 14px 14px 42px",
+                  background: "var(--cream)",
+                  border: "2px solid var(--border)",
+                  borderRadius: 12,
+                  fontSize: 14,
+                  fontFamily: "'Outfit', sans-serif",
+                  color: "var(--charcoal)",
+                  outline: "none",
+                  transition: "border-color 0.2s"
+                }}
+                onFocus={(e) => e.target.style.borderColor = "var(--sage)"}
+                onBlur={(e) => e.target.style.borderColor = "var(--border)"}
+              />
+            </div>
+            
+            <div style={{ display: "flex", gap: 12 }}>
+              <div style={{ position: "relative" }}>
+                <select
+                  value={selectedCategory}
+                  onChange={(e) => setSelectedCategory(e.target.value)}
+                  style={{
+                    appearance: "none",
+                    padding: "14px 40px 14px 42px",
+                    background: "var(--cream)",
+                    border: "2px solid var(--border)",
+                    borderRadius: 12,
+                    fontSize: 14,
+                    fontFamily: "'Outfit', sans-serif",
+                    color: "var(--charcoal)",
+                    outline: "none",
+                    cursor: "pointer",
+                    minWidth: 160
+                  }}
+                >
+                  <option value="all">All Categories</option>
+                  {categories.map(cat => (
+                    <option key={cat.id} value={cat.id}>{cat.label}</option>
+                  ))}
+                </select>
+                <Filter size={18} style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)", color: "var(--muted)", pointerEvents: "none" }} />
+                <ChevronDown size={16} style={{ position: "absolute", right: 14, top: "50%", transform: "translateY(-50%)", color: "var(--muted)", pointerEvents: "none" }} />
               </div>
               
-              <div className="flex gap-3">
-                <div className="relative">
-                  <select
-                    value={selectedCategory}
-                    onChange={(e) => setSelectedCategory(e.target.value)}
-                    className="appearance-none pl-10 pr-8 py-3 bg-gray-50 border-2 border-gray-200 rounded-xl focus:border-teal-500 focus:ring-2 focus:ring-teal-200 outline-none transition-all duration-300"
-                  >
-                    <option value="all">All Categories</option>
-                    {categories.map(cat => (
-                      <option key={cat.id} value={cat.id}>{cat.label}</option>
-                    ))}
-                  </select>
-                  <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                </div>
-                
-                <div className="relative">
-                  <select
-                    value={selectedLanguage}
-                    onChange={(e) => setSelectedLanguage(e.target.value)}
-                    className="appearance-none pl-10 pr-8 py-3 bg-gray-50 border-2 border-gray-200 rounded-xl focus:border-teal-500 focus:ring-2 focus:ring-teal-200 outline-none transition-all duration-300"
-                  >
-                    <option value="all">All Languages</option>
-                    {languages.map(lang => (
-                      <option key={lang.code} value={lang.code}>{lang.flag} {lang.name}</option>
-                    ))}
-                  </select>
-                  <Globe className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                </div>
+              <div style={{ position: "relative" }}>
+                <select
+                  value={selectedLanguage}
+                  onChange={(e) => setSelectedLanguage(e.target.value)}
+                  style={{
+                    appearance: "none",
+                    padding: "14px 40px 14px 42px",
+                    background: "var(--cream)",
+                    border: "2px solid var(--border)",
+                    borderRadius: 12,
+                    fontSize: 14,
+                    fontFamily: "'Outfit', sans-serif",
+                    color: "var(--charcoal)",
+                    outline: "none",
+                    cursor: "pointer",
+                    minWidth: 160
+                  }}
+                >
+                  <option value="all">All Languages</option>
+                  {languages.map(lang => (
+                    <option key={lang.code} value={lang.code}>{lang.flag} {lang.name}</option>
+                  ))}
+                </select>
+                <Globe size={18} style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)", color: "var(--muted)", pointerEvents: "none" }} />
+                <ChevronDown size={16} style={{ position: "absolute", right: 14, top: "50%", transform: "translateY(-50%)", color: "var(--muted)", pointerEvents: "none" }} />
               </div>
             </div>
           </div>
         </motion.div>
 
         {/* Resource Categories Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 20, marginBottom: 48 }}>
           {resourceCategories.map((category, index) => (
             <motion.div
               key={index}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.1 }}
-              whileHover={{ y: -5, scale: 1.02 }}
+              {...scaleIn(index * 0.1)}
+              whileHover={{ y: -6 }}
               onClick={() => handleResourceClick(category)}
-              className="group cursor-pointer"
+              style={{ cursor: "pointer" }}
             >
-              <div className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 p-6 h-full">
-                <div className={`inline-flex p-3 rounded-lg ${category.color} mb-4`}>
+              <div className="card" style={{ padding: 28, height: "100%", display: "flex", flexDirection: "column" }}>
+                <div style={{ width: 56, height: 56, borderRadius: 14, background: "var(--sage-light)", color: "var(--sage)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 20 }}>
                   {category.icon}
                 </div>
-                <h3 className="font-bold text-gray-800 mb-2 text-lg">{category.title}</h3>
-                <p className="text-sm text-gray-600 mb-4">{category.description}</p>
+                <h3 style={{ fontSize: 18, fontWeight: 600, marginBottom: 8, color: "var(--charcoal)" }}>{category.title}</h3>
+                <p style={{ fontSize: 13, color: "var(--body)", marginBottom: 16, lineHeight: 1.7, flex: 1 }}>{category.description}</p>
                 
-                <div className={`text-sm font-bold mb-6 ${category.color.split(' ')[1]}`}>
+                <div style={{ fontSize: 13, fontWeight: 500, color: "var(--sage)", marginBottom: 20 }}>
                   {category.count}
                 </div>
                 
                 {category.type !== 'language' ? (
-                  <div className="mt-4 pt-4 border-t border-gray-200">
-                    <h4 className="text-xs font-semibold text-gray-500 mb-2">SAMPLE CONTENT</h4>
-                    <ul className="space-y-1">
+                  <div style={{ marginTop: 8, paddingTop: 16, borderTop: "1px solid var(--border)" }}>
+                    <h4 style={{ fontSize: 11, fontWeight: 600, color: "var(--light-muted)", marginBottom: 10, textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                      Sample Content
+                    </h4>
+                    <ul style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                       {category.items.slice(0, 3).map((item, idx) => (
-                        <li key={idx} className="text-xs text-gray-600 truncate">
-                          • {item}
+                        <li key={idx} style={{ fontSize: 12, color: "var(--body)", display: "flex", alignItems: "center", gap: 6 }}>
+                          <span style={{ width: 3, height: 3, background: "var(--sage)", borderRadius: "50%" }} />
+                          {item}
                         </li>
                       ))}
                     </ul>
                   </div>
                 ) : (
-                  <div className="mt-4 pt-4 border-t border-gray-200">
-                    <h4 className="text-xs font-semibold text-gray-500 mb-2">AVAILABLE IN</h4>
-                    <div className="flex flex-wrap gap-1">
+                  <div style={{ marginTop: 8, paddingTop: 16, borderTop: "1px solid var(--border)" }}>
+                    <h4 style={{ fontSize: 11, fontWeight: 600, color: "var(--light-muted)", marginBottom: 10, textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                      Available In
+                    </h4>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
                       {category.languages.slice(0, 5).map((lang, idx) => (
-                        <span key={idx} className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded">
+                        <span key={idx} style={{ fontSize: 11, padding: "4px 10px", background: "var(--sage-light)", color: "var(--sage)", borderRadius: 100 }}>
                           {lang}
                         </span>
                       ))}
                       {category.languages.length > 5 && (
-                        <span className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded">
+                        <span style={{ fontSize: 11, padding: "4px 10px", background: "var(--sage-light)", color: "var(--sage)", borderRadius: 100 }}>
                           +{category.languages.length - 5} more
                         </span>
                       )}
@@ -454,11 +782,9 @@ const Resources = () => {
                   </div>
                 )}
                 
-                <div className="mt-6 flex items-center justify-between">
-                  <span className="text-teal-600 font-medium text-sm group-hover:gap-2 transition-all">
-                    Access Now
-                  </span>
-                  <ArrowRight className="w-4 h-4 text-teal-600 group-hover:translate-x-1 transition-transform" />
+                <div style={{ marginTop: 20, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                  <span style={{ fontSize: 13, color: "var(--sage)", fontWeight: 500 }}>Access Now</span>
+                  <ArrowRight size={14} color="var(--sage)" />
                 </div>
               </div>
             </motion.div>
@@ -467,30 +793,29 @@ const Resources = () => {
 
         {/* Language Support Section */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-          className="mb-12"
+          {...fadeUp(0.4)}
+          style={{ marginBottom: 48 }}
         >
-          <div className="bg-gradient-to-r from-teal-50 to-blue-50 rounded-2xl p-8">
-            <div className="flex items-center gap-3 mb-6">
-              <Languages className="w-6 h-6 text-teal-600" />
-              <h2 className="text-2xl font-bold text-gray-800">Multi-Language Support</h2>
+          <div style={{ background: "linear-gradient(135deg, var(--sage-light) 0%, #fff 100%)", borderRadius: 32, padding: 40, border: "1px solid rgba(107,158,107,0.15)" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20 }}>
+              <Languages size={24} color="var(--sage)" />
+              <h2 className="serif" style={{ fontSize: 24, fontWeight: 400, color: "var(--charcoal)" }}>Multi-Language Support</h2>
             </div>
             
-            <p className="text-gray-600 mb-6">
+            <p style={{ fontSize: 14, color: "var(--body)", marginBottom: 32, maxWidth: 600 }}>
               All our resources are available in multiple Indian languages to ensure 
               everyone can access mental health support in their preferred language.
             </p>
             
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 12 }}>
               {languages.map((lang) => (
                 <div
                   key={lang.code}
-                  className="bg-white p-4 rounded-xl text-center hover:shadow-lg transition-shadow cursor-pointer"
+                  className="card"
+                  style={{ padding: 16, textAlign: "center", cursor: "pointer" }}
                 >
-                  <div className="text-2xl mb-2">{lang.flag}</div>
-                  <div className="font-medium text-gray-800">{lang.name}</div>
+                  <div style={{ fontSize: 24, marginBottom: 8 }}>{lang.flag}</div>
+                  <div style={{ fontSize: 13, fontWeight: 500, color: "var(--charcoal)" }}>{lang.name}</div>
                 </div>
               ))}
             </div>
@@ -499,52 +824,52 @@ const Resources = () => {
 
         {/* Featured Resources */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
-          className="mb-12"
+          {...fadeUp(0.5)}
+          style={{ marginBottom: 48 }}
         >
-          <h2 className="text-2xl font-bold text-gray-800 mb-6">Featured This Week</h2>
+          <h2 className="serif" style={{ fontSize: 24, fontWeight: 400, marginBottom: 24 }}>
+            Featured <em style={{ color: "var(--sage)" }}>This Week</em>
+          </h2>
           
-          <div className="grid md:grid-cols-3 gap-6">
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20 }}>
             {[
               {
                 title: "Stress-Free Exam Prep",
                 type: "Video Series",
                 duration: "45 min",
                 language: "Hindi & English",
-                icon: <Film className="w-5 h-5" />
+                icon: <Film size={20} />
               },
               {
                 title: "Guided Sleep Meditation",
                 type: "Audio Session",
                 duration: "20 min",
                 language: "Tamil & English",
-                icon: <Volume2 className="w-5 h-5" />
+                icon: <Volume2 size={20} />
               },
               {
                 title: "Anxiety Management Guide",
                 type: "PDF Workbook",
                 pages: "24 pages",
                 language: "Multiple",
-                icon: <Book className="w-5 h-5" />
+                icon: <Book size={20} />
               }
             ].map((resource, index) => (
-              <div key={index} className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition-shadow">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="p-2 bg-teal-100 text-teal-600 rounded-lg">
+              <div key={index} className="card" style={{ padding: 24 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16 }}>
+                  <div style={{ width: 44, height: 44, borderRadius: 10, background: "var(--sage-light)", color: "var(--sage)", display: "flex", alignItems: "center", justifyContent: "center" }}>
                     {resource.icon}
                   </div>
                   <div>
-                    <h3 className="font-bold text-gray-800">{resource.title}</h3>
-                    <p className="text-sm text-gray-500">{resource.type}</p>
+                    <h3 style={{ fontSize: 16, fontWeight: 600, color: "var(--charcoal)", marginBottom: 4 }}>{resource.title}</h3>
+                    <p style={{ fontSize: 12, color: "var(--muted)" }}>{resource.type}</p>
                   </div>
                 </div>
-                <div className="flex items-center justify-between text-sm text-gray-600 mb-4">
-                  <span>{resource.duration || resource.pages}</span>
-                  <span className="px-2 py-1 bg-gray-100 rounded">{resource.language}</span>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
+                  <span style={{ fontSize: 13, color: "var(--body)" }}>{resource.duration || resource.pages}</span>
+                  <span style={{ fontSize: 12, padding: "4px 12px", background: "var(--sage-light)", color: "var(--sage)", borderRadius: 100 }}>{resource.language}</span>
                 </div>
-                <button className="w-full py-3 bg-gradient-to-r from-teal-600 to-blue-600 text-white rounded-xl font-medium hover:shadow-lg transition-shadow">
+                <button className="btn-primary" style={{ width: "100%", padding: "12px", justifyContent: "center" }}>
                   Access Now
                 </button>
               </div>
@@ -554,29 +879,30 @@ const Resources = () => {
 
         {/* Quick Actions */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6 }}
-          className="text-center"
+          {...fadeUp(0.6)}
         >
-          <div className="bg-white rounded-2xl shadow-lg p-8">
-            <h2 className="text-2xl font-bold text-gray-800 mb-4">Need Personalized Support?</h2>
-            <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
+          <div className="card" style={{ padding: 40, textAlign: "center" }}>
+            <h2 className="serif" style={{ fontSize: 24, fontWeight: 400, marginBottom: 12 }}>
+              Need Personalized <em style={{ color: "var(--sage)" }}>Support?</em>
+            </h2>
+            <p style={{ fontSize: 15, color: "var(--body)", marginBottom: 32, maxWidth: 600, margin: "0 auto 32px" }}>
               Our resources are helpful, but sometimes you need direct support from a professional.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <div style={{ display: "flex", gap: 16, justifyContent: "center" }}>
               <Link
                 to="/ai-chat"
-                className="inline-flex items-center justify-center gap-3 px-8 py-4 bg-gradient-to-r from-teal-600 to-blue-600 text-white rounded-xl font-bold hover:shadow-xl transition-all"
+                className="btn-primary"
+                style={{ padding: "14px 28px" }}
               >
-                <PlayCircle className="w-5 h-5" />
+                <Brain size={16} />
                 Talk to AI Assistant
               </Link>
               <Link
                 to="/book"
-                className="inline-flex items-center justify-center gap-3 px-8 py-4 border-2 border-teal-500 text-teal-600 rounded-xl font-bold hover:bg-teal-50 transition-all"
+                className="btn-sage"
+                style={{ padding: "14px 28px" }}
               >
-                <BookOpen className="w-5 h-5" />
+                <Calendar size={16} />
                 Book Counseling Session
               </Link>
             </div>
@@ -585,18 +911,24 @@ const Resources = () => {
       </main>
 
       {/* Footer */}
-      <footer className="mt-12 border-t border-gray-200">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="text-center text-sm text-gray-600">
-            <p>
+      <footer style={{ background: "var(--charcoal)", padding: "40px 40px 24px", marginTop: 40 }}>
+        <div style={S.maxW}>
+          <div style={{ textAlign: "center" }}>
+            <p style={{ fontSize: 13, color: "rgba(255,255,255,0.5)" }}>
               All resources are created by licensed mental health professionals and reviewed by our clinical team.
             </p>
-            <p className="mt-2">
+            <p style={{ fontSize: 12, color: "rgba(255,255,255,0.3)", marginTop: 12 }}>
               © 2025 EchoCare Wellness Resources. For educational purposes only. Not a substitute for professional medical advice.
             </p>
           </div>
         </div>
       </footer>
+
+      <style>{`
+        .chevron-down {
+          transition: transform 0.2s;
+        }
+      `}</style>
     </div>
   );
 };

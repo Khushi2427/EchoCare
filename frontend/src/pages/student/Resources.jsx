@@ -31,15 +31,114 @@ import {
   X
 } from "lucide-react";
 
-// Shadcn & Utils
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Separator } from "@/components/ui/separator";
-import { cn } from "@/lib/utils";
+/* ── Google Fonts ── */
+(() => {
+  if (document.getElementById("echocare-fonts")) return;
+  const l = document.createElement("link");
+  l.id = "echocare-fonts";
+  l.href = "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Outfit:wght@300;400;500;600&display=swap";
+  l.rel = "stylesheet";
+  document.head.appendChild(l);
+})();
+
+/* ── Global CSS ── */
+(() => {
+  if (document.getElementById("echocare-css")) return;
+  const s = document.createElement("style");
+  s.id = "echocare-css";
+  s.textContent = `
+    :root {
+      --sage: #6B9E6B;
+      --sage-hover: #598559;
+      --sage-light: #EEF5EE;
+      --sage-mid: #B8D4B8;
+      --cream: #FAFAF7;
+      --warm: #F6F0E8;
+      --charcoal: #1A1A1A;
+      --charcoal-2: #2C2C2C;
+      --charcoal-3: #3E3E3E;
+      --body: #4A4A4A;
+      --muted: #7A7A7A;
+      --light-muted: #A0A0A0;
+      --border: rgba(0,0,0,0.08);
+      --border-light: rgba(0,0,0,0.05);
+      --shadow-sm: 0 2px 12px rgba(0,0,0,0.06);
+      --shadow-md: 0 8px 32px rgba(0,0,0,0.08);
+      --shadow-lg: 0 20px 60px rgba(0,0,0,0.12);
+      --r-sm: 14px;
+      --r-md: 20px;
+      --r-lg: 28px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: var(--cream);
+      color: var(--charcoal);
+      -webkit-font-smoothing: antialiased;
+      line-height: 1.6;
+    }
+    a { text-decoration: none; color: inherit; }
+    .serif { font-family: 'Cormorant Garamond', serif; }
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--charcoal); color: #fff;
+      padding: 12px 24px; border-radius: 100px;
+      font-family: 'Outfit', sans-serif; font-weight: 500; font-size: 14px;
+      border: none; cursor: pointer; transition: all 0.25s ease;
+    }
+    .btn-primary:hover { background: var(--charcoal-2); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.2); }
+    .btn-ghost {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: transparent; color: var(--charcoal);
+      padding: 12px 24px; border-radius: 100px;
+      font-family: 'Outfit', sans-serif; font-weight: 400; font-size: 14px;
+      border: 1.5px solid var(--border); cursor: pointer; transition: all 0.25s ease;
+    }
+    .btn-ghost:hover { border-color: var(--charcoal); background: var(--charcoal); color: #fff; }
+    .btn-sage {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--sage); color: #fff;
+      padding: 12px 24px; border-radius: 100px;
+      font-family: 'Outfit', sans-serif; font-weight: 500; font-size: 14px;
+      border: none; cursor: pointer; transition: all 0.25s ease;
+    }
+    .btn-sage:hover { background: var(--sage-hover); transform: translateY(-2px); }
+    .card {
+      background: #fff; border: 1px solid var(--border);
+      border-radius: var(--r-md); box-shadow: var(--shadow-sm);
+      transition: all 0.3s ease;
+    }
+    .card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+    .badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      font-size: 11px; font-weight: 600; padding: 4px 12px;
+      border-radius: 100px; background: var(--sage-light); color: var(--sage);
+    }
+    .blob {
+      position: absolute; border-radius: 50%; pointer-events: none;
+      filter: blur(72px); z-index: 0;
+    }
+    .line-clamp-1 { display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
+    .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    @media (max-width: 768px) {
+      .mob-hide { display: none !important; }
+    }
+  `;
+  document.head.appendChild(s);
+})();
+
+/* ── Animation helpers ── */
+const fadeUp = (delay = 0) => ({
+  initial: { opacity: 0, y: 20 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.5, delay, ease: [0.25, 0.1, 0.25, 1] },
+});
+
+const scaleIn = (delay = 0) => ({
+  initial: { opacity: 0, scale: 0.95 },
+  animate: { opacity: 1, scale: 1 },
+  transition: { duration: 0.4, delay, ease: [0.25, 0.1, 0.25, 1] },
+});
 
 const Resources = () => {
   const [resources, setResources] = useState([]);
@@ -53,20 +152,20 @@ const Resources = () => {
   const [bookmarks, setBookmarks] = useState([]);
 
   const categories = [
-    { id: "", name: "Discovery", icon: <Sparkles className="w-4 h-4" />, color: "from-purple-500 to-pink-500" },
-    { id: "stress", name: "Stress", icon: <Brain className="w-4 h-4" />, color: "from-red-500 to-orange-500" },
-    { id: "anxiety", name: "Anxiety", icon: <Activity className="w-4 h-4" />, color: "from-blue-500 to-cyan-500" },
-    { id: "focus", name: "Focus", icon: <Target className="w-4 h-4" />, color: "from-green-500 to-teal-500" },
-    { id: "sleep", name: "Sleep", icon: <Moon className="w-4 h-4" />, color: "from-indigo-500 to-purple-500" },
-    { id: "mindfulness", name: "Mindfulness", icon: <Zap className="w-4 h-4" />, color: "from-yellow-500 to-amber-500" },
-    { id: "relationships", name: "Relations", icon: <Users className="w-4 h-4" />, color: "from-pink-500 to-rose-500" },
+    { id: "", name: "Discovery", icon: <Sparkles size={16} /> },
+    { id: "stress", name: "Stress", icon: <Brain size={16} /> },
+    { id: "anxiety", name: "Anxiety", icon: <Activity size={16} /> },
+    { id: "focus", name: "Focus", icon: <Target size={16} /> },
+    { id: "sleep", name: "Sleep", icon: <Moon size={16} /> },
+    { id: "mindfulness", name: "Mindfulness", icon: <Zap size={16} /> },
+    { id: "relationships", name: "Relations", icon: <Users size={16} /> },
   ];
 
   const resourceTypes = [
-    { id: "all", name: "All", icon: <BookOpen className="w-4 h-4" /> },
-    { id: "video", name: "Videos", icon: <Video className="w-4 h-4" /> },
-    { id: "audio", name: "Podcasts", icon: <Headphones className="w-4 h-4" /> },
-    { id: "article", name: "Articles", icon: <FileText className="w-4 h-4" /> },
+    { id: "all", name: "All", icon: <BookOpen size={16} /> },
+    { id: "video", name: "Videos", icon: <Video size={16} /> },
+    { id: "audio", name: "Podcasts", icon: <Headphones size={16} /> },
+    { id: "article", name: "Articles", icon: <FileText size={16} /> },
   ];
 
   const fetchResources = async () => {
@@ -91,7 +190,6 @@ const Resources = () => {
     fetchResources();
   }, [category, typeFilter, languageFilter]);
 
-  // FIXED: Added missing handleRefresh function
   const handleRefresh = () => {
     setRefreshing(true);
     fetchResources();
@@ -99,10 +197,10 @@ const Resources = () => {
 
   const getResourceUI = (type) => {
     const configs = {
-      video: { icon: <Video className="w-4 h-4" />, color: "bg-red-500/10 text-red-600" },
-      audio: { icon: <Headphones className="w-4 h-4" />, color: "bg-blue-500/10 text-blue-600" },
-      pdf: { icon: <FileText className="w-4 h-4" />, color: "bg-orange-500/10 text-orange-600" },
-      article: { icon: <BookOpen className="w-4 h-4" />, color: "bg-emerald-500/10 text-emerald-600" }
+      video: { icon: <Video size={14} />, color: "var(--sage)", bg: "var(--sage-light)" },
+      audio: { icon: <Headphones size={14} />, color: "var(--sage)", bg: "var(--sage-light)" },
+      pdf: { icon: <FileText size={14} />, color: "var(--sage)", bg: "var(--sage-light)" },
+      article: { icon: <BookOpen size={14} />, color: "var(--sage)", bg: "var(--sage-light)" }
     };
     return configs[type] || configs.article;
   };
@@ -113,119 +211,256 @@ const Resources = () => {
 
   if (loading && !refreshing) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50">
-        <Loader2 className="w-10 h-10 text-primary animate-spin mb-4" />
-        <p className="text-slate-500 font-medium animate-pulse">Personalizing your library...</p>
+      <div style={{ 
+        minHeight: "100vh", 
+        display: "flex", 
+        flexDirection: "column",
+        alignItems: "center", 
+        justifyContent: "center",
+        background: "var(--cream)"
+      }}>
+        <Loader2 size={40} color="var(--sage)" style={{ animation: "spin 1s linear infinite", marginBottom: 16 }} />
+        <p style={{ color: "var(--muted)", fontFamily: "'Outfit', sans-serif" }}>Personalizing your library...</p>
+        <style>{`
+          @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        `}</style>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 pb-20">
-      {/* Cinematic Hero */}
-      <div className="relative h-[300px] md:h-[350px] overflow-hidden bg-slate-900 flex items-center">
-        <div className="absolute inset-0 bg-gradient-to-r from-purple-900/90 to-indigo-900/80 z-10" />
-        <div className="relative z-20 max-w-7xl mx-auto px-6 w-full">
+    <div style={{ minHeight: "100vh", background: "var(--cream)", paddingBottom: 80, position: "relative" }}>
+      
+      {/* Background blobs */}
+      <div className="blob" style={{ width: 600, height: 600, background: "rgba(107,158,107,0.05)", top: -200, right: -100 }} />
+      <div className="blob" style={{ width: 400, height: 400, background: "rgba(246,240,232,0.6)", bottom: -50, left: -50 }} />
+
+      {/* Hero Section */}
+      <div style={{
+        position: "relative",
+        height: "300px",
+        background: "var(--charcoal)",
+        overflow: "hidden",
+        display: "flex",
+        alignItems: "center"
+      }}>
+        <div style={{
+          position: "absolute",
+          inset: 0,
+          background: "linear-gradient(135deg, rgba(107,158,107,0.9) 0%, rgba(26,26,26,0.8) 100%)",
+          zIndex: 1
+        }} />
+        
+        <div style={{
+          position: "relative",
+          zIndex: 2,
+          maxWidth: 1280,
+          margin: "0 auto",
+          padding: "0 40px",
+          width: "100%"
+        }}>
           <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
-            <Badge className="mb-4 bg-white/20 text-white backdrop-blur-md border-white/30 px-3 py-1">
-              <Sparkles className="w-3 h-3 mr-2" />
+            <span style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 8,
+              background: "rgba(255,255,255,0.15)",
+              color: "#fff",
+              padding: "6px 16px",
+              borderRadius: 100,
+              fontSize: 12,
+              fontWeight: 500,
+              marginBottom: 20,
+              backdropFilter: "blur(10px)"
+            }}>
+              <Sparkles size={14} />
               Mindful Library
-            </Badge>
-            <h1 className="text-4xl md:text-6xl font-black text-white tracking-tight mb-4">
-              Find Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-300">Balance</span>
+            </span>
+            
+            <h1 style={{
+              fontFamily: "'Cormorant Garamond', serif",
+              fontSize: "clamp(40px, 6vw, 64px)",
+              fontWeight: 300,
+              color: "#fff",
+              marginBottom: 12,
+              letterSpacing: "-0.02em"
+            }}>
+              Find Your <span style={{ color: "var(--sage)" }}>Balance</span>
             </h1>
-            <p className="text-purple-100 text-lg max-w-xl leading-relaxed opacity-90">
+            
+            <p style={{ fontSize: 18, color: "rgba(255,255,255,0.8)", maxWidth: 500, lineHeight: 1.6 }}>
               Curated expert content to support your mental wellness journey.
             </p>
           </motion.div>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-6 -mt-10 relative z-30">
-        {/* Search & Mode Toggle */}
-        <Card className="border-none shadow-2xl rounded-2xl overflow-hidden">
-          <CardContent className="p-4 bg-white">
-            <div className="flex flex-col md:flex-row gap-4 items-center">
-              <div className="relative flex-1 w-full">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                <Input 
-                  placeholder="Search resources..." 
-                  className="pl-11 h-12 bg-slate-50 border-none"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && fetchResources()}
-                />
-              </div>
-              <div className="flex items-center gap-2">
-                <Tabs value={typeFilter} onValueChange={setTypeFilter}>
-                  <TabsList className="h-12">
-                    {resourceTypes.map(t => (
-                      <TabsTrigger key={t.id} value={t.id} className="px-4 gap-2">
-                        {t.icon} <span className="hidden sm:inline">{t.name}</span>
-                      </TabsTrigger>
-                    ))}
-                  </TabsList>
-                </Tabs>
-                <Separator orientation="vertical" className="h-8 mx-2" />
-                <Button 
-                  variant={viewMode === 'grid' ? 'secondary' : 'ghost'} 
-                  size="icon" 
-                  onClick={() => setViewMode('grid')}
-                >
-                  <Grid className="w-5 h-5" />
-                </Button>
-                <Button 
-                  variant={viewMode === 'list' ? 'secondary' : 'ghost'} 
-                  size="icon" 
-                  onClick={() => setViewMode('list')}
-                >
-                  <List className="w-5 h-5" />
-                </Button>
-              </div>
+      {/* Main Content */}
+      <div style={{ maxWidth: 1280, margin: "0 auto", padding: "0 24px", marginTop: -40, position: "relative", zIndex: 10 }}>
+        
+        {/* Search & Filter Card */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.4 }}
+          className="card"
+          style={{ padding: 20, background: "#fff" }}
+        >
+          <div style={{ display: "flex", flexDirection: "column", gap: 16, alignItems: "stretch" }} className="md:flex-row md:items-center">
+            
+            {/* Search */}
+            <div style={{ position: "relative", flex: 1 }}>
+              <Search size={16} style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)", color: "var(--muted)" }} />
+              <input
+                placeholder="Search resources..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && fetchResources()}
+                style={{
+                  width: "100%",
+                  padding: "14px 14px 14px 42px",
+                  background: "var(--cream)",
+                  border: "1px solid var(--border)",
+                  borderRadius: 100,
+                  fontSize: 14,
+                  fontFamily: "'Outfit', sans-serif",
+                  color: "var(--charcoal)",
+                  outline: "none"
+                }}
+              />
             </div>
-          </CardContent>
-        </Card>
 
-        {/* Categories */}
-        <div className="mt-8">
-          <ScrollArea className="w-full pb-4">
-            <div className="flex space-x-3">
-              {categories.map((cat) => (
+            {/* Type Filters */}
+            <div style={{ display: "flex", gap: 4, flexWrap: "wrap" }}>
+              {resourceTypes.map((type) => (
                 <button
-                  key={cat.id}
-                  onClick={() => setCategory(cat.id)}
-                  className={cn(
-                    "flex items-center gap-3 px-6 py-3 rounded-full transition-all border font-medium whitespace-nowrap",
-                    category === cat.id 
-                      ? "bg-slate-900 text-white border-slate-900 shadow-lg" 
-                      : "bg-white text-slate-600 border-slate-200 hover:bg-slate-50"
-                  )}
+                  key={type.id}
+                  onClick={() => setTypeFilter(type.id)}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 6,
+                    padding: "8px 16px",
+                    borderRadius: 100,
+                    border: "1px solid",
+                    borderColor: typeFilter === type.id ? "var(--sage)" : "var(--border)",
+                    background: typeFilter === type.id ? "var(--sage-light)" : "transparent",
+                    color: typeFilter === type.id ? "var(--sage)" : "var(--body)",
+                    fontSize: 13,
+                    fontWeight: typeFilter === type.id ? 500 : 400,
+                    cursor: "pointer",
+                    transition: "all 0.2s"
+                  }}
                 >
-                  {cat.icon}
-                  {cat.name}
+                  {type.icon}
+                  <span className="mob-hide">{type.name}</span>
                 </button>
               ))}
             </div>
-            <ScrollBar orientation="horizontal" />
-          </ScrollArea>
+
+            {/* View Toggle */}
+            <div style={{ display: "flex", gap: 4 }}>
+              <button
+                onClick={() => setViewMode('grid')}
+                style={{
+                  padding: "10px",
+                  borderRadius: 8,
+                  background: viewMode === 'grid' ? "var(--sage-light)" : "transparent",
+                  color: viewMode === 'grid' ? "var(--sage)" : "var(--muted)",
+                  border: "none",
+                  cursor: "pointer"
+                }}
+              >
+                <Grid size={18} />
+              </button>
+              <button
+                onClick={() => setViewMode('list')}
+                style={{
+                  padding: "10px",
+                  borderRadius: 8,
+                  background: viewMode === 'list' ? "var(--sage-light)" : "transparent",
+                  color: viewMode === 'list' ? "var(--sage)" : "var(--muted)",
+                  border: "none",
+                  cursor: "pointer"
+                }}
+              >
+                <List size={18} />
+              </button>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Categories */}
+        <div style={{ marginTop: 24 }}>
+          <div style={{ display: "flex", gap: 8, overflowX: "auto", paddingBottom: 8, scrollbarWidth: "none" }}>
+            {categories.map((cat) => (
+              <button
+                key={cat.id}
+                onClick={() => setCategory(cat.id)}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 8,
+                  padding: "10px 20px",
+                  borderRadius: 100,
+                  border: "1px solid",
+                  borderColor: category === cat.id ? "var(--sage)" : "var(--border)",
+                  background: category === cat.id ? "var(--sage-light)" : "#fff",
+                  color: category === cat.id ? "var(--sage)" : "var(--body)",
+                  fontSize: 13,
+                  fontWeight: category === cat.id ? 500 : 400,
+                  cursor: "pointer",
+                  whiteSpace: "nowrap",
+                  transition: "all 0.2s"
+                }}
+              >
+                {cat.icon}
+                {cat.name}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Content */}
-        <div className="mt-8">
-          <div className="flex items-center justify-between mb-8">
-            <h2 className="text-2xl font-bold text-slate-900">
+        <div style={{ marginTop: 32 }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 24 }}>
+            <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 28, fontWeight: 400 }}>
               {category === "" ? "Recent Resources" : `${categories.find(c => c.id === category)?.name} Selection`}
             </h2>
-            <Button variant="outline" size="sm" onClick={handleRefresh} className="rounded-full gap-2">
-              <RefreshCw className={cn("w-3.5 h-3.5", refreshing && "animate-spin")} />
+            <button
+              onClick={handleRefresh}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 8,
+                padding: "8px 20px",
+                borderRadius: 100,
+                border: "1px solid var(--border)",
+                background: "transparent",
+                color: "var(--body)",
+                fontSize: 13,
+                cursor: "pointer",
+                transition: "all 0.2s"
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.borderColor = "var(--sage)";
+                e.currentTarget.style.color = "var(--sage)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.borderColor = "var(--border)";
+                e.currentTarget.style.color = "var(--body)";
+              }}
+            >
+              <RefreshCw size={14} style={refreshing ? { animation: "spin 1s linear infinite" } : {}} />
               Refresh
-            </Button>
+            </button>
           </div>
 
-          <div className={cn(
-            "gap-6",
-            viewMode === "grid" ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3" : "flex flex-col"
-          )}>
+          <div style={{
+            display: "grid",
+            gap: 20,
+            gridTemplateColumns: viewMode === "grid" ? "repeat(auto-fill, minmax(300px, 1fr))" : "1fr"
+          }}>
             {resources.map((resource, idx) => {
               const ui = getResourceUI(resource.type);
               return (
@@ -236,54 +471,114 @@ const Resources = () => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: idx * 0.05 }}
                 >
-                  <Card className={cn(
-                    "group overflow-hidden border-slate-200 transition-all hover:shadow-xl",
-                    viewMode === "list" && "flex flex-row items-center"
-                  )}>
+                  <div className="card" style={{
+                    display: viewMode === "list" ? "flex" : "block",
+                    overflow: "hidden",
+                    height: viewMode === "list" ? "auto" : "100%"
+                  }}>
                     {/* Thumbnail Area */}
-                    <div className={cn(
-                      "relative bg-slate-100 flex items-center justify-center",
-                      viewMode === "grid" ? "aspect-video" : "w-48 aspect-video m-2 rounded-lg shrink-0"
-                    )}>
-                       {resource.type === 'video' ? <PlayCircle className="w-12 h-12 text-slate-300" /> : ui.icon}
-                       <Badge className={cn("absolute top-3 left-3 border-none shadow-sm", ui.color)}>
-                         {ui.icon} <span className="ml-1.5 capitalize">{resource.type}</span>
-                       </Badge>
+                    <div style={{
+                      background: "var(--cream)",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      position: "relative",
+                      ...(viewMode === "grid" 
+                        ? { aspectRatio: "16/9", width: "100%" }
+                        : { width: 180, aspectRatio: "16/9", margin: 12, borderRadius: 12, flexShrink: 0 })
+                    }}>
+                      {resource.type === 'video' ? (
+                        <PlayCircle size={40} color="var(--sage)" style={{ opacity: 0.5 }} />
+                      ) : (
+                        <BookOpen size={40} color="var(--sage)" style={{ opacity: 0.5 }} />
+                      )}
+                      
+                      {/* Type badge */}
+                      <span style={{
+                        position: "absolute",
+                        top: 8,
+                        left: 8,
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 4,
+                        padding: "4px 10px",
+                        background: "var(--sage-light)",
+                        color: "var(--sage)",
+                        borderRadius: 100,
+                        fontSize: 11,
+                        fontWeight: 500
+                      }}>
+                        {ui.icon}
+                        <span style={{ textTransform: "capitalize" }}>{resource.type}</span>
+                      </span>
                     </div>
 
-                    <CardContent className="p-5 flex-1">
-                      <div className="flex justify-between items-start mb-2">
-                         <div className="flex items-center gap-2 text-xs font-bold text-slate-400">
-                           <Clock className="w-3.5 h-3.5" />
-                           {resource.duration || "5 min"}
-                         </div>
-                         <Button 
-                          variant="ghost" size="icon" className="h-8 w-8"
+                    {/* Content */}
+                    <div style={{ padding: 20, flex: 1 }}>
+                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: "var(--muted)" }}>
+                          <Clock size={12} />
+                          {resource.duration || "5 min"}
+                        </div>
+                        <button
                           onClick={() => toggleBookmark(resource._id)}
-                         >
-                           <Bookmark className={cn("w-4 h-4", bookmarks.includes(resource._id) && "fill-purple-500 text-purple-500")} />
-                         </Button>
+                          style={{ background: "none", border: "none", cursor: "pointer", padding: 4 }}
+                        >
+                          <Bookmark 
+                            size={16} 
+                            color={bookmarks.includes(resource._id) ? "var(--sage)" : "var(--muted)"}
+                            fill={bookmarks.includes(resource._id) ? "var(--sage)" : "none"}
+                          />
+                        </button>
                       </div>
 
-                      <h3 className="text-lg font-bold text-slate-900 group-hover:text-purple-600 line-clamp-1">
+                      <h3 style={{
+                        fontSize: 18,
+                        fontWeight: 600,
+                        marginBottom: 8,
+                        color: "var(--charcoal)",
+                        lineClamp: 1,
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap"
+                      }}>
                         {resource.title}
                       </h3>
                       
-                      <div className="mt-4 flex flex-col gap-3">
+                      <div style={{ marginTop: 16, display: "flex", flexDirection: "column", gap: 12 }}>
                         <ResourcePlayer resource={resource} />
-                        <div className="flex items-center gap-2 text-xs font-semibold text-slate-500">
-                          <Star className="w-3.5 h-3.5 fill-amber-500 text-amber-500" />
-                          {resource.rating || "4.8"} • {resource.author || "EchoCare Team"}
+                        <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 12, color: "var(--muted)" }}>
+                          <Star size={14} color="#FBBF24" fill="#FBBF24" />
+                          <span style={{ fontWeight: 500 }}>{resource.rating || "4.8"}</span>
+                          <span>•</span>
+                          <span>{resource.author || "EchoCare Team"}</span>
                         </div>
                       </div>
-                    </CardContent>
-                  </Card>
+                    </div>
+                  </div>
                 </motion.div>
-              )
+              );
             })}
           </div>
         </div>
       </div>
+
+      <style>{`
+        @keyframes spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+        @media (max-width: 768px) {
+          .mob-hide { display: none !important; }
+        }
+        div[style*="overflowX: auto"] {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+        div[style*="overflowX: auto"]::-webkit-scrollbar {
+          display: none;
+        }
+      `}</style>
     </div>
   );
 };

@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Calendar,
   Clock,
@@ -20,8 +20,63 @@ import {
   LogIn,
   UserPlus,
   ChevronDown,
-  CalendarDays
+  CalendarDays,
+  Menu,
+  X,
+  Star,
+  Lock,
+  Brain
 } from "lucide-react";
+
+/* ── Google Fonts (if not already loaded) ── */
+(() => {
+  if (document.getElementById("echocare-fonts")) return;
+  const l = document.createElement("link");
+  l.id = "echocare-fonts";
+  l.href = "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Outfit:wght@300;400;500;600&display=swap";
+  l.rel = "stylesheet";
+  document.head.appendChild(l);
+})();
+
+/* ── Animation helpers ── */
+const fadeUp = (delay = 0) => ({
+  initial: { opacity: 0, y: 20 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.6, delay, ease: [0.25, 0.1, 0.25, 1] },
+});
+
+const fadeIn = (delay = 0) => ({
+  initial: { opacity: 0 },
+  animate: { opacity: 1 },
+  transition: { duration: 0.6, delay, ease: [0.25, 0.1, 0.25, 1] },
+});
+
+const scaleIn = (delay = 0) => ({
+  initial: { opacity: 0, scale: 0.95 },
+  animate: { opacity: 1, scale: 1 },
+  transition: { duration: 0.55, delay, ease: [0.25, 0.1, 0.25, 1] },
+});
+
+const slideRight = (delay = 0) => ({
+  initial: { opacity: 0, x: -24 },
+  animate: { opacity: 1, x: 0 },
+  transition: { duration: 0.6, delay, ease: [0.25, 0.1, 0.25, 1] },
+});
+
+const slideLeft = (delay = 0) => ({
+  initial: { opacity: 0, x: 24 },
+  animate: { opacity: 1, x: 0 },
+  transition: { duration: 0.6, delay, ease: [0.25, 0.1, 0.25, 1] },
+});
+
+const NAV_ITEMS = [
+  { label: "Home", path: "/" },
+  { label: "AI Chat", path: "/ai-chat" },
+  { label: "Book Session", path: "/book" },
+  { label: "Resources", path: "/resources" },
+  { label: "Community", path: "/community" },
+  { label: "About", path: "/about" },
+];
 
 const Book = () => {
   const navigate = useNavigate();
@@ -37,6 +92,8 @@ const Book = () => {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [selectedCounselor, setSelectedCounselor] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   // Mock login check
   const checkAuth = () => {
@@ -44,8 +101,15 @@ const Book = () => {
     return !!token;
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     setIsLoggedIn(checkAuth());
+  }, []);
+
+  // Handle scroll effect for navbar
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 28);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   const timeSlots = [
@@ -55,29 +119,26 @@ const Book = () => {
   ];
 
   const sessionTypes = [
-    { value: "individual", label: "Individual Counseling", icon: <User className="w-4 h-4" /> },
-    { value: "couple", label: "Couple Counseling", icon: <Users className="w-4 h-4" /> },
-    { value: "group", label: "Group Therapy", icon: <Users className="w-4 h-4" /> }
+    { value: "individual", label: "Individual Counseling", icon: <User size={16} /> },
+    { value: "couple", label: "Couple Counseling", icon: <Users size={16} /> },
+    { value: "group", label: "Group Therapy", icon: <Users size={16} /> }
   ];
 
   const benefits = [
     {
-      icon: <Shield className="w-5 h-5" />,
+      icon: <Shield size={20} />,
       title: "100% Confidential",
       description: "Your privacy is our top priority. All sessions are completely confidential and secure.",
-      color: "text-blue-600 bg-blue-50"
     },
     {
-      icon: <Award className="w-5 h-5" />,
+      icon: <Award size={20} />,
       title: "Certified Professionals",
       description: "Connect with licensed counselors and mental health professionals.",
-      color: "text-green-600 bg-green-50"
     },
     {
-      icon: <Calendar className="w-5 h-5" />,
+      icon: <Calendar size={20} />,
       title: "Flexible Scheduling",
       description: "Book sessions that fit your schedule, with same-day availability.",
-      color: "text-purple-600 bg-purple-50"
     }
   ];
 
@@ -114,245 +175,465 @@ const Book = () => {
     }));
   };
 
+  const S = {
+    maxW: { maxWidth: 1280, margin: "0 auto", width: "100%" },
+  };
+
   if (!isLoggedIn) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-blue-50/50 to-white">
-        {/* Header */}
-        <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-lg border-b border-gray-200">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-            <div className="flex items-center justify-between">
-              <Link to="/" className="flex items-center gap-2">
-                <Sparkles className="w-6 h-6 text-teal-600" />
-                <span className="text-xl font-bold bg-gradient-to-r from-teal-600 to-blue-600 bg-clip-text text-transparent">
-                  EchoCare
-                </span>
-              </Link>
-              <div className="flex items-center gap-4">
-                <Link
-                  to="/login"
-                  className="flex items-center gap-2 px-4 py-2 rounded-lg border border-teal-500 text-teal-600 hover:bg-teal-50 transition-colors text-sm font-medium"
-                >
-                  <LogIn className="w-4 h-4" />
-                  Login
-                </Link>
-                <Link
-                  to="/register"
-                  className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-teal-600 to-blue-600 text-white hover:shadow-lg transition-shadow text-sm font-medium"
-                >
-                  <UserPlus className="w-4 h-4" />
-                  Sign Up
-                </Link>
-              </div>
-            </div>
-          </div>
-        </header>
+      <div style={{ background: "var(--cream)", minHeight: "100vh", overflowX: "hidden" }}>
+        
+        {/* Background blobs */}
+        <div className="blob" style={{ width: 600, height: 600, background: "rgba(107,158,107,0.05)", top: -200, right: -100 }} />
+        <div className="blob" style={{ width: 400, height: 400, background: "rgba(246,240,232,0.8)", bottom: -100, left: -100 }} />
 
-        {/* Login Required Section */}
-        <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        {/* ========== NAVBAR ========== */}
+        <motion.header
+          initial={{ opacity: 0, y: -18 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.55 }}
+          style={{
+            position: "sticky", top: 0, zIndex: 300,
+            height: 70, padding: "0 40px",
+            display: "flex", alignItems: "center", justifyContent: "space-between",
+            background: scrolled ? "rgba(250,250,247,0.85)" : "transparent",
+            backdropFilter: scrolled ? "blur(20px)" : "none",
+            borderBottom: scrolled ? "1px solid var(--border)" : "1px solid transparent",
+            transition: "all 0.38s ease",
+          }}
+        >
+          {/* Logo */}
+          <Link to="/" style={{ display: "flex", alignItems: "center", gap: 12, flexShrink: 0 }}>
+            <motion.div
+              whileHover={{ rotate: 5, scale: 1.05 }}
+              style={{ width: 36, height: 36, borderRadius: 12, background: "var(--sage)", display: "flex", alignItems: "center", justifyContent: "center" }}
+            >
+              <Heart size={18} color="white" />
+            </motion.div>
+            <span className="serif" style={{ fontWeight: 500, fontSize: 22, color: "var(--charcoal)", letterSpacing: "-0.02em" }}>
+              EchoCare
+            </span>
+          </Link>
+
+          {/* Desktop nav */}
+          <nav className="mob-hide" style={{ display: "flex", gap: 36, alignItems: "center" }}>
+            {NAV_ITEMS.map(item => (
+              <Link key={item.label} to={item.path} className="nav-link">
+                {item.label}
+              </Link>
+            ))}
+          </nav>
+
+          {/* Desktop CTA */}
+          <div className="mob-hide" style={{ display: "flex", gap: 12, alignItems: "center" }}>
+            <Link to="/login" className="btn-ghost" style={{ padding: "10px 24px" }}>Sign in</Link>
+            <Link to="/register" className="btn-primary" style={{ padding: "10px 24px" }}>
+              Get Started <ArrowRight size={16} />
+            </Link>
+          </div>
+
+          {/* Mobile toggle */}
+          <button
+            onClick={() => setMobileOpen(!mobileOpen)}
+            className="mob-show"
+            style={{
+              background: "none", border: "none", cursor: "pointer",
+              display: "none", padding: 8, color: "var(--charcoal)"
+            }}
+          >
+            {mobileOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
+        </motion.header>
+
+        {/* Mobile menu */}
+        <AnimatePresence>
+          {mobileOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              style={{
+                background: "#fff", borderBottom: "1px solid var(--border)",
+                padding: "0 24px", overflow: "hidden",
+                position: "sticky", top: 70, zIndex: 299
+              }}
+            >
+              <div style={{ padding: "24px 0", display: "flex", flexDirection: "column", gap: 8 }}>
+                {NAV_ITEMS.map(item => (
+                  <Link
+                    key={item.label}
+                    to={item.path}
+                    onClick={() => setMobileOpen(false)}
+                    style={{
+                      padding: "14px 12px", color: "var(--body)", fontSize: 16,
+                      borderRadius: 10, display: "block",
+                      transition: "background 0.2s"
+                    }}
+                    onMouseEnter={e => e.currentTarget.style.background = "var(--sage-light)"}
+                    onMouseLeave={e => e.currentTarget.style.background = "transparent"}
+                  >
+                    {item.label}
+                  </Link>
+                ))}
+                <div style={{
+                  display: "flex", gap: 12, marginTop: 24,
+                  paddingTop: 24, borderTop: "1px solid var(--border)"
+                }}>
+                  <Link to="/login" className="btn-ghost" style={{ flex: 1, justifyContent: "center" }}>
+                    Sign in
+                  </Link>
+                  <Link to="/register" className="btn-primary" style={{ flex: 1, justifyContent: "center" }}>
+                    Get Started
+                  </Link>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* ========== LOGIN REQUIRED SECTION ========== */}
+        <main style={{ ...S.maxW, padding: "40px 40px 60px" }}>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-center"
+            style={{ textAlign: "center" }}
           >
-            <div className="bg-gradient-to-r from-teal-500 to-blue-500 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
-              <Calendar className="w-10 h-10 text-white" />
-            </div>
+            <motion.div
+              animate={{ scale: [1, 1.1, 1] }}
+              transition={{ duration: 4, repeat: Infinity }}
+              style={{
+                width: 80, height: 80, borderRadius: 24,
+                background: "var(--sage)",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                margin: "0 auto 32px",
+                boxShadow: "0 10px 30px rgba(107,158,107,0.3)"
+              }}
+            >
+              <Calendar size={40} color="white" />
+            </motion.div>
             
-            <h1 className="text-4xl font-bold text-gray-800 mb-4">
-              Book Confidential Session
+            <h1 className="serif" style={{ fontSize: "clamp(36px, 5vw, 52px)", fontWeight: 300, marginBottom: 16 }}>
+              Book Confidential <em style={{ color: "var(--sage)", fontStyle: "italic" }}>Session</em>
             </h1>
-            <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
+            <p style={{ fontSize: 16, color: "var(--body)", marginBottom: 48, maxWidth: 600, margin: "0 auto 48px" }}>
               Schedule private appointments with certified counselors. Please login or sign up to access booking services.
             </p>
 
-            <div className="bg-white rounded-2xl shadow-lg p-8 mb-8">
-              <div className="flex items-center justify-center gap-3 mb-6">
-                <AlertCircle className="w-6 h-6 text-yellow-600" />
-                <h2 className="text-xl font-bold text-gray-800">Authentication Required</h2>
+            <div className="card" style={{ padding: 48, marginBottom: 48, textAlign: "center" }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 12, marginBottom: 24 }}>
+                <AlertCircle size={24} color="var(--sage)" />
+                <h2 className="serif" style={{ fontSize: 24, fontWeight: 400, color: "var(--charcoal)" }}>Authentication Required</h2>
               </div>
               
-              <p className="text-gray-600 mb-8 text-center">
+              <p style={{ fontSize: 15, color: "var(--body)", marginBottom: 32, maxWidth: 500, margin: "0 auto 32px" }}>
                 To book counseling sessions and ensure your privacy, you need to have an account with EchoCare.
                 This allows us to provide you with secure, confidential support and manage your appointments effectively.
               </p>
 
-              <div className="grid md:grid-cols-2 gap-6 mb-8">
-                <div className="bg-blue-50 rounded-xl p-6">
-                  <h3 className="font-bold text-blue-700 mb-3">Why Register?</h3>
-                  <ul className="space-y-2 text-sm text-blue-600">
-                    <li className="flex items-start gap-2">
-                      <Shield className="w-4 h-4 mt-0.5 flex-shrink-0" />
-                      <span>Secure & confidential session management</span>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24, marginBottom: 32 }}>
+                <div style={{ background: "var(--sage-light)", borderRadius: 16, padding: 24, textAlign: "left" }}>
+                  <h3 style={{ fontSize: 16, fontWeight: 600, color: "var(--charcoal)", marginBottom: 16 }}>Why Register?</h3>
+                  <ul style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                    <li style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
+                      <Shield size={16} color="var(--sage)" style={{ flexShrink: 0, marginTop: 2 }} />
+                      <span style={{ fontSize: 13, color: "var(--body)" }}>Secure & confidential session management</span>
                     </li>
-                    <li className="flex items-start gap-2">
-                      <Calendar className="w-4 h-4 mt-0.5 flex-shrink-0" />
-                      <span>Easy appointment scheduling & reminders</span>
+                    <li style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
+                      <Calendar size={16} color="var(--sage)" style={{ flexShrink: 0, marginTop: 2 }} />
+                      <span style={{ fontSize: 13, color: "var(--body)" }}>Easy appointment scheduling & reminders</span>
                     </li>
-                    <li className="flex items-start gap-2">
-                      <Heart className="w-4 h-4 mt-0.5 flex-shrink-0" />
-                      <span>Personalized wellness recommendations</span>
+                    <li style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
+                      <Heart size={16} color="var(--sage)" style={{ flexShrink: 0, marginTop: 2 }} />
+                      <span style={{ fontSize: 13, color: "var(--body)" }}>Personalized wellness recommendations</span>
                     </li>
                   </ul>
                 </div>
                 
-                <div className="bg-teal-50 rounded-xl p-6">
-                  <h3 className="font-bold text-teal-700 mb-3">What You Get</h3>
-                  <ul className="space-y-2 text-sm text-teal-600">
-                    <li className="flex items-start gap-2">
-                      <CheckCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
-                      <span>Access to certified mental health professionals</span>
+                <div style={{ background: "var(--warm)", borderRadius: 16, padding: 24, textAlign: "left" }}>
+                  <h3 style={{ fontSize: 16, fontWeight: 600, color: "var(--charcoal)", marginBottom: 16 }}>What You Get</h3>
+                  <ul style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                    <li style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
+                      <CheckCircle size={16} color="var(--sage)" style={{ flexShrink: 0, marginTop: 2 }} />
+                      <span style={{ fontSize: 13, color: "var(--body)" }}>Access to certified mental health professionals</span>
                     </li>
-                    <li className="flex items-start gap-2">
-                      <MessageSquare className="w-4 h-4 mt-0.5 flex-shrink-0" />
-                      <span>Free AI wellness chat included</span>
+                    <li style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
+                      <MessageSquare size={16} color="var(--sage)" style={{ flexShrink: 0, marginTop: 2 }} />
+                      <span style={{ fontSize: 13, color: "var(--body)" }}>Free AI wellness chat included</span>
                     </li>
-                    <li className="flex items-start gap-2">
-                      <Users className="w-4 h-4 mt-0.5 flex-shrink-0" />
-                      <span>Join supportive student communities</span>
+                    <li style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
+                      <Users size={16} color="var(--sage)" style={{ flexShrink: 0, marginTop: 2 }} />
+                      <span style={{ fontSize: 13, color: "var(--body)" }}>Join supportive student communities</span>
                     </li>
                   </ul>
                 </div>
               </div>
 
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <div style={{ display: "flex", gap: 16, justifyContent: "center", marginBottom: 24 }}>
                 <Link
                   to="/login"
-                  className="inline-flex items-center justify-center gap-3 px-8 py-4 bg-gradient-to-r from-teal-600 to-blue-600 text-white rounded-xl font-bold hover:shadow-xl transition-all hover:scale-105"
+                  className="btn-primary"
+                  style={{ padding: "14px 32px", fontSize: 15 }}
                 >
-                  <LogIn className="w-5 h-5" />
+                  <LogIn size={16} />
                   Login to Book Session
                 </Link>
                 <Link
                   to="/register"
-                  className="inline-flex items-center justify-center gap-3 px-8 py-4 border-2 border-teal-500 text-teal-600 rounded-xl font-bold hover:bg-teal-50 transition-all hover:scale-105"
+                  className="btn-sage"
+                  style={{ padding: "14px 32px", fontSize: 15 }}
                 >
-                  <UserPlus className="w-5 h-5" />
+                  <UserPlus size={16} />
                   Create Free Account
                 </Link>
               </div>
 
-              <p className="text-sm text-gray-500 mt-6 text-center">
-                Already have an account? <Link to="/login" className="text-teal-600 hover:text-teal-700 font-medium">Login here</Link>
+              <p style={{ fontSize: 13, color: "var(--muted)" }}>
+                Already have an account? <Link to="/login" style={{ color: "var(--sage)", textDecoration: "underline" }}>Login here</Link>
               </p>
             </div>
 
             {/* Benefits Preview */}
-            <div className="text-left">
-              <h3 className="text-lg font-bold text-gray-800 mb-6">What to Expect</h3>
-              <div className="grid md:grid-cols-3 gap-6">
+            <div style={{ textAlign: "left" }}>
+              <h3 className="serif" style={{ fontSize: 24, fontWeight: 400, marginBottom: 24 }}>What to Expect</h3>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20 }}>
                 {benefits.map((benefit, index) => (
                   <motion.div
                     key={index}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.1 }}
-                    className="bg-white p-6 rounded-xl shadow-sm border border-gray-100"
+                    className="card"
+                    style={{ padding: 24 }}
                   >
-                    <div className={`inline-flex p-3 rounded-lg ${benefit.color} mb-4`}>
+                    <div style={{ width: 48, height: 48, borderRadius: 12, background: "var(--sage-light)", color: "var(--sage)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 16 }}>
                       {benefit.icon}
                     </div>
-                    <h4 className="font-bold text-gray-800 mb-2">{benefit.title}</h4>
-                    <p className="text-sm text-gray-600">{benefit.description}</p>
+                    <h4 style={{ fontSize: 16, fontWeight: 600, marginBottom: 8, color: "var(--charcoal)" }}>{benefit.title}</h4>
+                    <p style={{ fontSize: 13, color: "var(--body)", lineHeight: 1.7 }}>{benefit.description}</p>
                   </motion.div>
                 ))}
               </div>
             </div>
           </motion.div>
         </main>
+
+        {/* Footer */}
+        <footer style={{ background: "var(--charcoal)", padding: "40px 40px 24px", marginTop: 40 }}>
+          <div style={S.maxW}>
+            <div style={{ textAlign: "center" }}>
+              <p style={{ fontSize: 14, color: "rgba(255,255,255,0.5)", marginBottom: 12 }}>
+                Need immediate help? Call the National Suicide Prevention Lifeline:{" "}
+                <span style={{ color: "var(--sage)", fontWeight: 500 }}>1-800-273-8255</span>
+              </p>
+              <p style={{ fontSize: 12, color: "rgba(255,255,255,0.3)" }}>
+                © 2025 EchoCare Counseling Services. All sessions are confidential and protected.
+              </p>
+            </div>
+          </div>
+        </footer>
       </div>
     );
   }
 
   // Logged in view
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50/50 to-white">
-      {/* Header */}
-      <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-lg border-b border-gray-200">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
-            <Link to="/" className="flex items-center gap-2">
-              <Sparkles className="w-6 h-6 text-teal-600" />
-              <span className="text-xl font-bold bg-gradient-to-r from-teal-600 to-blue-600 bg-clip-text text-transparent">
-                EchoCare
-              </span>
+    <div style={{ background: "var(--cream)", minHeight: "100vh", overflowX: "hidden" }}>
+      
+      {/* Background blobs */}
+      <div className="blob" style={{ width: 600, height: 600, background: "rgba(107,158,107,0.05)", top: -200, right: -100 }} />
+      <div className="blob" style={{ width: 400, height: 400, background: "rgba(246,240,232,0.8)", bottom: -100, left: -100 }} />
+
+      {/* ========== NAVBAR ========== */}
+      <motion.header
+        initial={{ opacity: 0, y: -18 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.55 }}
+        style={{
+          position: "sticky", top: 0, zIndex: 300,
+          height: 70, padding: "0 40px",
+          display: "flex", alignItems: "center", justifyContent: "space-between",
+          background: scrolled ? "rgba(250,250,247,0.85)" : "transparent",
+          backdropFilter: scrolled ? "blur(20px)" : "none",
+          borderBottom: scrolled ? "1px solid var(--border)" : "1px solid transparent",
+          transition: "all 0.38s ease",
+        }}
+      >
+        {/* Logo */}
+        <Link to="/" style={{ display: "flex", alignItems: "center", gap: 12, flexShrink: 0 }}>
+          <motion.div
+            whileHover={{ rotate: 5, scale: 1.05 }}
+            style={{ width: 36, height: 36, borderRadius: 12, background: "var(--sage)", display: "flex", alignItems: "center", justifyContent: "center" }}
+          >
+            <Heart size={18} color="white" />
+          </motion.div>
+          <span className="serif" style={{ fontWeight: 500, fontSize: 22, color: "var(--charcoal)", letterSpacing: "-0.02em" }}>
+            EchoCare
+          </span>
+        </Link>
+
+        {/* Desktop nav */}
+        <nav className="mob-hide" style={{ display: "flex", gap: 36, alignItems: "center" }}>
+          {NAV_ITEMS.map(item => (
+            <Link key={item.label} to={item.path} className="nav-link">
+              {item.label}
             </Link>
-            <div className="flex items-center gap-4">
-              <div className="w-8 h-8 rounded-full bg-gradient-to-r from-teal-500 to-blue-500 flex items-center justify-center text-white font-medium">
-                U
-              </div>
-              <button
-                onClick={() => {
-                  localStorage.removeItem("authToken");
-                  setIsLoggedIn(false);
-                  navigate("/");
-                }}
-                className="text-sm text-gray-600 hover:text-gray-900"
-              >
-                Logout
-              </button>
+          ))}
+        </nav>
+
+        {/* Desktop user menu */}
+        <div className="mob-hide" style={{ display: "flex", gap: 12, alignItems: "center" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+            <div style={{ width: 36, height: 36, borderRadius: "50%", background: "var(--sage)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 500 }}>
+              U
             </div>
           </div>
+          <button
+            onClick={() => {
+              localStorage.removeItem("authToken");
+              setIsLoggedIn(false);
+              navigate("/");
+            }}
+            className="btn-ghost"
+            style={{ padding: "8px 20px" }}
+          >
+            Logout
+          </button>
         </div>
-      </header>
 
-      {/* Main Content */}
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-8"
+        {/* Mobile toggle */}
+        <button
+          onClick={() => setMobileOpen(!mobileOpen)}
+          className="mob-show"
+          style={{
+            background: "none", border: "none", cursor: "pointer",
+            display: "none", padding: 8, color: "var(--charcoal)"
+          }}
         >
-          <Link to="/" className="inline-flex items-center gap-2 text-teal-600 hover:text-teal-700 mb-4">
-            <ArrowRight className="w-4 h-4 rotate-180" />
+          {mobileOpen ? <X size={24} /> : <Menu size={24} />}
+        </button>
+      </motion.header>
+
+      {/* Mobile menu */}
+      <AnimatePresence>
+        {mobileOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            style={{
+              background: "#fff", borderBottom: "1px solid var(--border)",
+              padding: "0 24px", overflow: "hidden",
+              position: "sticky", top: 70, zIndex: 299
+            }}
+          >
+            <div style={{ padding: "24px 0", display: "flex", flexDirection: "column", gap: 8 }}>
+              {NAV_ITEMS.map(item => (
+                <Link
+                  key={item.label}
+                  to={item.path}
+                  onClick={() => setMobileOpen(false)}
+                  style={{
+                    padding: "14px 12px", color: "var(--body)", fontSize: 16,
+                    borderRadius: 10, display: "block",
+                    transition: "background 0.2s"
+                  }}
+                  onMouseEnter={e => e.currentTarget.style.background = "var(--sage-light)"}
+                  onMouseLeave={e => e.currentTarget.style.background = "transparent"}
+                >
+                  {item.label}
+                </Link>
+              ))}
+              <div style={{
+                display: "flex", gap: 12, marginTop: 24,
+                paddingTop: 24, borderTop: "1px solid var(--border)"
+              }}>
+                <button
+                  onClick={() => {
+                    localStorage.removeItem("authToken");
+                    setIsLoggedIn(false);
+                    navigate("/");
+                  }}
+                  className="btn-ghost"
+                  style={{ flex: 1, justifyContent: "center" }}
+                >
+                  Logout
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ========== MAIN CONTENT ========== */}
+      <main style={{ ...S.maxW, padding: "40px 40px 60px" }}>
+        
+        {/* Back link */}
+        <motion.div {...fadeUp(0)} style={{ marginBottom: 24 }}>
+          <Link to="/" style={{ display: "inline-flex", alignItems: "center", gap: 8, color: "var(--body)", fontSize: 14 }}>
+            <ArrowRight size={14} style={{ transform: "rotate(180deg)" }} />
             Back to Home
           </Link>
-          
-          <div className="text-center mb-8">
-            <h1 className="text-4xl font-bold text-gray-800 mb-3">
-              Book Confidential Session
-            </h1>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Schedule private appointments with certified counselors.
-            </p>
-          </div>
+        </motion.div>
+        
+        {/* Header */}
+        <motion.div {...fadeUp(0.1)} style={{ textAlign: "center", marginBottom: 48 }}>
+          <span className="badge" style={{ background: "var(--sage-light)", color: "var(--sage)", marginBottom: 16, display: "inline-flex" }}>
+            <Calendar size={14} />
+            Confidential Counseling
+          </span>
+          <h1 className="serif" style={{ fontSize: "clamp(36px, 5vw, 52px)", fontWeight: 300, marginBottom: 12 }}>
+            Book Your <em style={{ color: "var(--sage)", fontStyle: "italic" }}>Session</em>
+          </h1>
+          <p style={{ fontSize: 16, color: "var(--body)", maxWidth: 500, margin: "0 auto" }}>
+            Schedule private appointments with certified counselors.
+          </p>
         </motion.div>
 
-        <div className="grid lg:grid-cols-2 gap-8">
+        <div style={{ display: "grid", gridTemplateColumns: "1.2fr 0.8fr", gap: 32 }}>
+          
           {/* Left Column - Booking Form */}
           <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="bg-white rounded-2xl shadow-lg p-8"
+            {...slideRight(0.2)}
+            className="card"
+            style={{ padding: 32 }}
           >
-            <div className="flex items-center gap-3 mb-6">
-              <div className="p-2 bg-gradient-to-r from-teal-500 to-blue-500 rounded-lg">
-                <Calendar className="w-5 h-5 text-white" />
+            <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 24 }}>
+              <div style={{ width: 48, height: 48, borderRadius: 12, background: "var(--sage)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <CalendarDays size={24} color="white" />
               </div>
-              <h2 className="text-2xl font-bold text-gray-800">Schedule Your Session</h2>
+              <h2 className="serif" style={{ fontSize: 24, fontWeight: 400, color: "var(--charcoal)" }}>Schedule Your Session</h2>
             </div>
 
             <form onSubmit={handleSubmit}>
               {/* Date Selection */}
-              <div className="mb-6">
-                <label className="block text-sm font-bold text-gray-700 mb-3">
+              <div style={{ marginBottom: 24 }}>
+                <label style={{ display: "block", fontSize: 14, fontWeight: 500, color: "var(--charcoal)", marginBottom: 12 }}>
                   Preferred Date
                 </label>
-                <div className="grid grid-cols-3 sm:grid-cols-7 gap-2">
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 8 }}>
                   {dates.map((dateObj) => (
                     <button
                       key={dateObj.value}
                       type="button"
                       onClick={() => handleChange('date', dateObj.value)}
-                      className={`p-3 rounded-lg border-2 transition-all ${formData.date === dateObj.value
-                          ? 'border-teal-500 bg-teal-50 text-teal-700'
-                          : 'border-gray-200 hover:border-teal-300 hover:bg-teal-50/50'
-                        }`}
+                      style={{
+                        padding: "12px 4px",
+                        borderRadius: 12,
+                        border: "2px solid",
+                        borderColor: formData.date === dateObj.value ? "var(--sage)" : "var(--border)",
+                        background: formData.date === dateObj.value ? "var(--sage-light)" : "#fff",
+                        color: formData.date === dateObj.value ? "var(--sage)" : "var(--body)",
+                        cursor: "pointer",
+                        transition: "all 0.2s",
+                        fontSize: 12,
+                        fontWeight: formData.date === dateObj.value ? 500 : 400,
+                      }}
                     >
-                      <div className="text-xs text-gray-500 mb-1">
+                      <div style={{ fontSize: 10, color: formData.date === dateObj.value ? "var(--sage)" : "var(--muted)", marginBottom: 4 }}>
                         {dateObj.display.split(' ')[0]}
                       </div>
-                      <div className="font-medium">
-                        {dateObj.display.split(' ').slice(1).join(' ')}
+                      <div>
+                        {dateObj.display.split(' ')[1]} {dateObj.display.split(' ')[2]}
                       </div>
                     </button>
                   ))}
@@ -360,18 +641,24 @@ const Book = () => {
               </div>
 
               {/* Time Selection */}
-              <div className="mb-6">
-                <label className="block text-sm font-bold text-gray-700 mb-3">
+              <div style={{ marginBottom: 24 }}>
+                <label style={{ display: "block", fontSize: 14, fontWeight: 500, color: "var(--charcoal)", marginBottom: 12 }}>
                   Preferred Time
                 </label>
-                <div className="space-y-2">
+                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                   {timeSlots.map((slot) => (
                     <label
                       key={slot.value}
-                      className={`flex items-center gap-3 p-4 rounded-xl border-2 cursor-pointer transition-all ${formData.time === slot.value
-                          ? 'border-teal-500 bg-teal-50'
-                          : 'border-gray-200 hover:border-teal-300'
-                        }`}
+                      style={{
+                        display: "flex", alignItems: "center", gap: 12,
+                        padding: 12,
+                        borderRadius: 12,
+                        border: "2px solid",
+                        borderColor: formData.time === slot.value ? "var(--sage)" : "var(--border)",
+                        background: formData.time === slot.value ? "var(--sage-light)" : "#fff",
+                        cursor: "pointer",
+                        transition: "all 0.2s"
+                      }}
                     >
                       <input
                         type="radio"
@@ -379,28 +666,34 @@ const Book = () => {
                         value={slot.value}
                         checked={formData.time === slot.value}
                         onChange={(e) => handleChange('time', e.target.value)}
-                        className="w-4 h-4 text-teal-600"
+                        style={{ accentColor: "var(--sage)" }}
                       />
-                      <span className="text-xl">{slot.icon}</span>
-                      <span className="font-medium">{slot.label}</span>
+                      <span style={{ fontSize: 18 }}>{slot.icon}</span>
+                      <span style={{ fontSize: 14, color: "var(--charcoal)" }}>{slot.label}</span>
                     </label>
                   ))}
                 </div>
               </div>
 
               {/* Session Type */}
-              <div className="mb-6">
-                <label className="block text-sm font-bold text-gray-700 mb-3">
+              <div style={{ marginBottom: 24 }}>
+                <label style={{ display: "block", fontSize: 14, fontWeight: 500, color: "var(--charcoal)", marginBottom: 12 }}>
                   Session Type
                 </label>
-                <div className="space-y-2">
+                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                   {sessionTypes.map((type) => (
                     <label
                       key={type.value}
-                      className={`flex items-center gap-3 p-4 rounded-xl border-2 cursor-pointer transition-all ${formData.type === type.value
-                          ? 'border-teal-500 bg-teal-50'
-                          : 'border-gray-200 hover:border-teal-300'
-                        }`}
+                      style={{
+                        display: "flex", alignItems: "center", gap: 12,
+                        padding: 12,
+                        borderRadius: 12,
+                        border: "2px solid",
+                        borderColor: formData.type === type.value ? "var(--sage)" : "var(--border)",
+                        background: formData.type === type.value ? "var(--sage-light)" : "#fff",
+                        cursor: "pointer",
+                        transition: "all 0.2s"
+                      }}
                     >
                       <input
                         type="radio"
@@ -408,20 +701,20 @@ const Book = () => {
                         value={type.value}
                         checked={formData.type === type.value}
                         onChange={(e) => handleChange('type', e.target.value)}
-                        className="w-4 h-4 text-teal-600"
+                        style={{ accentColor: "var(--sage)" }}
                       />
-                      <div className="p-2 bg-gray-100 rounded-lg">
+                      <div style={{ width: 32, height: 32, borderRadius: 8, background: "var(--sage-light)", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--sage)" }}>
                         {type.icon}
                       </div>
-                      <span className="font-medium">{type.label}</span>
+                      <span style={{ fontSize: 14, color: "var(--charcoal)" }}>{type.label}</span>
                     </label>
                   ))}
                 </div>
               </div>
 
               {/* Description */}
-              <div className="mb-8">
-                <label className="block text-sm font-bold text-gray-700 mb-3">
+              <div style={{ marginBottom: 32 }}>
+                <label style={{ display: "block", fontSize: 14, fontWeight: 500, color: "var(--charcoal)", marginBottom: 12 }}>
                   Brief Description (Optional)
                 </label>
                 <textarea
@@ -429,9 +722,23 @@ const Book = () => {
                   onChange={(e) => handleChange('description', e.target.value)}
                   placeholder="Briefly describe what you'd like to discuss..."
                   rows="4"
-                  className="w-full p-4 bg-gray-50 border-2 border-gray-200 rounded-xl focus:border-teal-500 focus:ring-2 focus:ring-teal-200 outline-none transition-all duration-300 resize-none"
+                  style={{
+                    width: "100%",
+                    padding: 14,
+                    background: "var(--cream)",
+                    border: "2px solid var(--border)",
+                    borderRadius: 12,
+                    fontSize: 14,
+                    fontFamily: "'Outfit', sans-serif",
+                    color: "var(--charcoal)",
+                    outline: "none",
+                    resize: "none",
+                    transition: "border-color 0.2s"
+                  }}
+                  onFocus={(e) => e.target.style.borderColor = "var(--sage)"}
+                  onBlur={(e) => e.target.style.borderColor = "var(--border)"}
                 />
-                <p className="text-sm text-gray-500 mt-2">
+                <p style={{ fontSize: 12, color: "var(--muted)", marginTop: 8 }}>
                   This helps your counselor prepare for your session. All information is confidential.
                 </p>
               </div>
@@ -442,17 +749,19 @@ const Book = () => {
                 whileTap={{ scale: 0.98 }}
                 type="submit"
                 disabled={isSubmitting || !formData.date}
-                className={`w-full py-4 rounded-xl font-bold text-lg transition-all ${!formData.date || isSubmitting
-                    ? 'bg-gray-300 cursor-not-allowed'
-                    : 'bg-gradient-to-r from-teal-600 to-blue-600 text-white hover:shadow-xl'
-                  }`}
+                className={!formData.date || isSubmitting ? "btn-ghost" : "btn-primary"}
+                style={{
+                  width: "100%",
+                  padding: "16px",
+                  fontSize: 16,
+                  justifyContent: "center",
+                  opacity: !formData.date || isSubmitting ? 0.6 : 1,
+                  cursor: !formData.date || isSubmitting ? "not-allowed" : "pointer"
+                }}
               >
                 {isSubmitting ? (
-                  <span className="flex items-center justify-center gap-2">
-                    <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
+                  <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                    <span className="spin" style={{ width: 18, height: 18, border: "2px solid #fff", borderTopColor: "transparent", borderRadius: "50%" }} />
                     Processing...
                   </span>
                 ) : (
@@ -464,78 +773,70 @@ const Book = () => {
 
           {/* Right Column - Benefits & Features */}
           <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.2 }}
-            className="space-y-6"
+            {...slideLeft(0.2)}
+            style={{ display: "flex", flexDirection: "column", gap: 24 }}
           >
             {/* Benefits */}
-            <div className="bg-white rounded-2xl shadow-lg p-6">
-              <h3 className="text-lg font-bold text-gray-800 mb-6">Why Choose EchoCare</h3>
-              <div className="space-y-4">
+            <div className="card" style={{ padding: 24 }}>
+              <h3 className="serif" style={{ fontSize: 20, fontWeight: 400, marginBottom: 20 }}>Why Choose EchoCare</h3>
+              <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
                 {benefits.map((benefit, index) => (
-                  <div key={index} className="flex items-start gap-3">
-                    <div className={`p-2 rounded-lg ${benefit.color} mt-1`}>
+                  <div key={index} style={{ display: "flex", gap: 12 }}>
+                    <div style={{ width: 40, height: 40, borderRadius: 10, background: "var(--sage-light)", color: "var(--sage)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                       {benefit.icon}
                     </div>
                     <div>
-                      <h4 className="font-medium text-gray-800">{benefit.title}</h4>
-                      <p className="text-sm text-gray-600 mt-1">{benefit.description}</p>
+                      <h4 style={{ fontSize: 14, fontWeight: 600, marginBottom: 4, color: "var(--charcoal)" }}>{benefit.title}</h4>
+                      <p style={{ fontSize: 13, color: "var(--body)", lineHeight: 1.7 }}>{benefit.description}</p>
                     </div>
                   </div>
                 ))}
               </div>
             </div>
 
-            {/* Additional Information */}
-            <div className="bg-gradient-to-br from-teal-50 to-blue-50 border border-teal-100 rounded-2xl p-6">
-              <h3 className="font-bold text-gray-800 mb-4">What Happens Next?</h3>
-              <div className="space-y-4">
-                <div className="flex items-start gap-3">
-                  <div className="w-6 h-6 rounded-full bg-teal-500 text-white flex items-center justify-center text-sm font-bold flex-shrink-0">
-                    1
-                  </div>
+            {/* What Happens Next */}
+            <div style={{ background: "linear-gradient(135deg, var(--sage-light) 0%, #fff 100%)", borderRadius: 20, padding: 24, border: "1px solid rgba(107,158,107,0.2)" }}>
+              <h3 className="serif" style={{ fontSize: 20, fontWeight: 400, marginBottom: 16 }}>What Happens Next?</h3>
+              <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+                <div style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
+                  <div style={{ width: 24, height: 24, borderRadius: "50%", background: "var(--sage)", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 600, flexShrink: 0 }}>1</div>
                   <div>
-                    <h4 className="font-medium text-gray-800">Confirmation</h4>
-                    <p className="text-sm text-gray-600">Receive instant confirmation via email</p>
+                    <h4 style={{ fontSize: 14, fontWeight: 600, marginBottom: 2, color: "var(--charcoal)" }}>Confirmation</h4>
+                    <p style={{ fontSize: 13, color: "var(--body)" }}>Receive instant confirmation via email</p>
                   </div>
                 </div>
-                <div className="flex items-start gap-3">
-                  <div className="w-6 h-6 rounded-full bg-teal-500 text-white flex items-center justify-center text-sm font-bold flex-shrink-0">
-                    2
-                  </div>
+                <div style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
+                  <div style={{ width: 24, height: 24, borderRadius: "50%", background: "var(--sage)", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 600, flexShrink: 0 }}>2</div>
                   <div>
-                    <h4 className="font-medium text-gray-800">Counselor Match</h4>
-                    <p className="text-sm text-gray-600">Get matched with the best counselor for your needs</p>
+                    <h4 style={{ fontSize: 14, fontWeight: 600, marginBottom: 2, color: "var(--charcoal)" }}>Counselor Match</h4>
+                    <p style={{ fontSize: 13, color: "var(--body)" }}>Get matched with the best counselor for your needs</p>
                   </div>
                 </div>
-                <div className="flex items-start gap-3">
-                  <div className="w-6 h-6 rounded-full bg-teal-500 text-white flex items-center justify-center text-sm font-bold flex-shrink-0">
-                    3
-                  </div>
+                <div style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
+                  <div style={{ width: 24, height: 24, borderRadius: "50%", background: "var(--sage)", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 600, flexShrink: 0 }}>3</div>
                   <div>
-                    <h4 className="font-medium text-gray-800">Reminder</h4>
-                    <p className="text-sm text-gray-600">Get session reminders 24 hours before</p>
+                    <h4 style={{ fontSize: 14, fontWeight: 600, marginBottom: 2, color: "var(--charcoal)" }}>Reminder</h4>
+                    <p style={{ fontSize: 13, color: "var(--body)" }}>Get session reminders 24 hours before</p>
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Support Info */}
-            <div className="bg-white rounded-2xl shadow-lg p-6">
-              <div className="flex items-center gap-3 mb-4">
-                <AlertCircle className="w-5 h-5 text-yellow-600" />
-                <h3 className="font-bold text-gray-800">Need Immediate Help?</h3>
+            {/* Crisis Support */}
+            <div className="card" style={{ padding: 24, background: "var(--charcoal)", border: "none" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16 }}>
+                <AlertCircle size={20} color="var(--sage)" />
+                <h3 style={{ fontSize: 16, fontWeight: 600, color: "#fff" }}>Need Immediate Help?</h3>
               </div>
-              <p className="text-sm text-gray-600 mb-4">
+              <p style={{ fontSize: 13, color: "rgba(255,255,255,0.7)", marginBottom: 16 }}>
                 If you're in crisis or need immediate support, please contact:
               </p>
-              <div className="bg-red-50 border border-red-200 rounded-xl p-4">
-                <p className="text-red-700 font-bold text-center">
-                  National Suicide Prevention Lifeline:{" "}
-                  <span className="text-lg">1-800-273-8255</span>
+              <div style={{ background: "rgba(255,255,255,0.1)", borderRadius: 12, padding: 16, textAlign: "center" }}>
+                <p style={{ color: "var(--sage)", fontWeight: 600, marginBottom: 4 }}>
+                  National Suicide Prevention Lifeline
                 </p>
-                <p className="text-red-600 text-sm text-center mt-1">Available 24/7</p>
+                <p style={{ color: "#fff", fontSize: 20, fontWeight: 600 }}>1-800-273-8255</p>
+                <p style={{ color: "rgba(255,255,255,0.5)", fontSize: 12, marginTop: 4 }}>Available 24/7</p>
               </div>
             </div>
           </motion.div>
@@ -543,16 +844,28 @@ const Book = () => {
       </main>
 
       {/* Footer */}
-      <footer className="mt-12 border-t border-gray-200">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="text-center text-sm text-gray-600">
-            <p>All counseling sessions are confidential and protected by HIPAA-compliant privacy measures.</p>
-            <p className="mt-2">
+      <footer style={{ background: "var(--charcoal)", padding: "40px 40px 24px", marginTop: 40 }}>
+        <div style={S.maxW}>
+          <div style={{ textAlign: "center" }}>
+            <p style={{ fontSize: 13, color: "rgba(255,255,255,0.5)", marginBottom: 12 }}>
+              All counseling sessions are confidential and protected by HIPAA-compliant privacy measures.
+            </p>
+            <p style={{ fontSize: 12, color: "rgba(255,255,255,0.3)" }}>
               © 2025 EchoCare Counseling Services. This service connects you with licensed mental health professionals.
             </p>
           </div>
         </div>
       </footer>
+
+      <style>{`
+        @keyframes spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+        .spin {
+          animation: spin 1s linear infinite;
+        }
+      `}</style>
     </div>
   );
 };

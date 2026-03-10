@@ -1,848 +1,903 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-  Sparkles, 
-  Brain, 
-  Users, 
-  Shield, 
-  Clock, 
-  BookOpen,
-  MessageSquare,
-  Calendar,
-  AlertTriangle,
-  GraduationCap,
-  ArrowRight,
-  Heart,
-  Menu,
-  X,
-  Video,
-  Headphones,
-  FileText,
-  Globe,
-  Award,
-  MessageCircle,
-  Zap,
-  Lock,
-  UserCheck,
-  Stethoscope,
-  Activity
+import {
+  Brain, Users, BookOpen, Calendar,
+  ArrowRight, Menu, X, Shield,
+  Heart, CheckCircle, Lock, TrendingUp,
+  Bell, Send, LayoutDashboard, Star,
 } from "lucide-react";
 
-const Home = () => {
+/* ── Google Fonts ── */
+(() => {
+  if (document.getElementById("echocare-fonts")) return;
+  const l = document.createElement("link");
+  l.id = "echocare-fonts";
+  l.href = "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Outfit:wght@300;400;500;600&display=swap";
+  l.rel = "stylesheet";
+  document.head.appendChild(l);
+})();
+
+/* ── Global CSS ── */
+(() => {
+  if (document.getElementById("echocare-css")) return;
+  const s = document.createElement("style");
+  s.id = "echocare-css";
+  s.textContent = `
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --sage: #6B9E6B;
+      --sage-hover: #598559;
+      --sage-light: #EEF5EE;
+      --sage-mid: #B8D4B8;
+      --cream: #FAFAF7;
+      --warm: #F6F0E8;
+      --charcoal: #1A1A1A;
+      --charcoal-2: #2C2C2C;
+      --charcoal-3: #3E3E3E;
+      --body: #4A4A4A;
+      --muted: #7A7A7A;
+      --light-muted: #A0A0A0;
+      --border: rgba(0,0,0,0.08);
+      --border-light: rgba(0,0,0,0.05);
+      --shadow-sm: 0 2px 12px rgba(0,0,0,0.06);
+      --shadow-md: 0 8px 32px rgba(0,0,0,0.08);
+      --shadow-lg: 0 20px 60px rgba(0,0,0,0.12);
+      --r-sm: 14px;
+      --r-md: 20px;
+      --r-lg: 28px;
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: var(--cream);
+      color: var(--charcoal);
+      -webkit-font-smoothing: antialiased;
+      line-height: 1.6;
+    }
+    a { text-decoration: none; color: inherit; }
+
+    .serif { font-family: 'Cormorant Garamond', serif; }
+
+    /* ── Nav links ── */
+    .nav-link {
+      font-size: 14px; font-weight: 400; color: var(--body);
+      padding: 4px 2px; position: relative; transition: color 0.22s ease;
+      white-space: nowrap;
+    }
+    .nav-link::after {
+      content: ''; position: absolute; bottom: -2px; left: 0;
+      width: 0; height: 1.5px; background: var(--sage);
+      transition: width 0.28s ease; border-radius: 2px;
+    }
+    .nav-link:hover { color: var(--charcoal); }
+    .nav-link:hover::after { width: 100%; }
+
+    /* ── Buttons ── */
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--charcoal); color: #fff;
+      padding: 13px 28px; border-radius: 100px;
+      font-family: 'Outfit', sans-serif; font-weight: 500; font-size: 14px;
+      border: none; cursor: pointer; white-space: nowrap;
+      transition: background 0.25s, transform 0.2s, box-shadow 0.25s;
+    }
+    .btn-primary:hover { background: var(--charcoal-2); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.2); }
+
+    .btn-ghost {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: transparent; color: var(--charcoal);
+      padding: 12px 26px; border-radius: 100px;
+      font-family: 'Outfit', sans-serif; font-weight: 400; font-size: 14px;
+      border: 1.5px solid var(--border); cursor: pointer; white-space: nowrap;
+      transition: all 0.25s ease;
+    }
+    .btn-ghost:hover { border-color: var(--charcoal); background: var(--charcoal); color: #fff; transform: translateY(-2px); }
+
+    .btn-sage {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--sage); color: #fff;
+      padding: 13px 28px; border-radius: 100px;
+      font-family: 'Outfit', sans-serif; font-weight: 500; font-size: 14px;
+      border: none; cursor: pointer; white-space: nowrap;
+      transition: all 0.25s ease;
+    }
+    .btn-sage:hover { background: var(--sage-hover); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(107,158,107,0.35); }
+
+    .btn-white {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: #fff; color: var(--charcoal);
+      padding: 13px 28px; border-radius: 100px;
+      font-family: 'Outfit', sans-serif; font-weight: 500; font-size: 14px;
+      border: none; cursor: pointer; white-space: nowrap;
+      transition: all 0.25s ease;
+    }
+    .btn-white:hover { background: var(--sage-light); transform: translateY(-2px); }
+
+    /* ── Cards ── */
+    .card {
+      background: #fff; border: 1px solid var(--border-light);
+      border-radius: var(--r-md); box-shadow: var(--shadow-sm);
+      transition: transform 0.32s cubic-bezier(.25,.1,.25,1), box-shadow 0.32s;
+    }
+    .card:hover { transform: translateY(-6px); box-shadow: var(--shadow-lg); }
+
+    /* ── Tag / Badge ── */
+    .badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 11px; font-weight: 600; letter-spacing: 0.09em;
+      text-transform: uppercase; padding: 5px 13px;
+      border-radius: 100px; font-family: 'Outfit', sans-serif;
+    }
+
+    /* ── Section label ── */
+    .section-eyebrow {
+      font-size: 11px; font-weight: 600; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--sage);
+      font-family: 'Outfit', sans-serif; display: block; margin-bottom: 14px;
+    }
+
+    /* ── Chat bubbles ── */
+    .bubble { padding: 10px 15px; border-radius: 14px; font-size: 13px; line-height: 1.55; max-width: 86%; }
+    .bubble-ai { background: var(--sage-light); color: var(--body); border-bottom-left-radius: 3px; }
+    .bubble-user { background: var(--charcoal); color: #fff; border-bottom-right-radius: 3px; margin-left: auto; }
+
+    /* ── Animations ── */
+    @keyframes softPulse { 0%,100%{opacity:1} 50%{opacity:0.45} }
+    .pulse { animation: softPulse 2s ease-in-out infinite; }
+
+    @keyframes gentleFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+    .float-a { animation: gentleFloat 5s ease-in-out infinite; }
+    .float-b { animation: gentleFloat 5s ease-in-out 1.6s infinite; }
+
+    /* ── Blobs ── */
+    .blob { position: absolute; border-radius: 50%; pointer-events: none; filter: blur(72px); }
+
+    /* ── Responsive ── */
+    @media (max-width: 900px) {
+      .mob-hide { display: none !important; }
+      .mob-show { display: flex !important; }
+    }
+    @media (max-width: 740px) {
+      .grid-2 { grid-template-columns: 1fr !important; }
+      .grid-3 { grid-template-columns: 1fr !important; }
+      .grid-4 { grid-template-columns: 1fr 1fr !important; }
+      .feat-grid { grid-template-columns: 1fr !important; grid-template-rows: auto !important; }
+      .feat-grid > *:first-child { grid-row: auto !important; }
+      .footer-grid { grid-template-columns: 1fr 1fr !important; }
+    }
+  `;
+  document.head.appendChild(s);
+})();
+
+/* ── Animation helpers ── */
+const up = (delay = 0) => ({
+  initial: { opacity: 0, y: 20 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true },
+  transition: { duration: 0.6, delay, ease: [0.25, 0.1, 0.25, 1] },
+});
+
+const zoomIn = (delay = 0) => ({
+  initial: { opacity: 0, scale: 0.95 },
+  whileInView: { opacity: 1, scale: 1 },
+  viewport: { once: true },
+  transition: { duration: 0.55, delay, ease: [0.25, 0.1, 0.25, 1] },
+});
+
+const slideRight = (delay = 0) => ({
+  initial: { opacity: 0, x: -24 },
+  whileInView: { opacity: 1, x: 0 },
+  viewport: { once: true },
+  transition: { duration: 0.6, delay, ease: [0.25, 0.1, 0.25, 1] },
+});
+
+const slideLeft = (delay = 0) => ({
+  initial: { opacity: 0, x: 24 },
+  whileInView: { opacity: 1, x: 0 },
+  viewport: { once: true },
+  transition: { duration: 0.6, delay, ease: [0.25, 0.1, 0.25, 1] },
+});
+
+const NAV_ITEMS = [
+  { label: "Home", path: "/" },
+  { label: "AI Chat", path: "/ai-chat" },
+  { label: "Book Session", path: "/book" },
+  { label: "Resources", path: "/resources" },
+  { label: "Community", path: "/community" },
+  { label: "About", path: "/about" },
+];
+
+/* ════════════════════════════════════════════════════
+   COMPONENT
+════════════════════════════════════════════════════ */
+export default function Home() {
   const [scrolled, setScrolled] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 50);
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    const fn = () => setScrolled(window.scrollY > 28);
+    window.addEventListener("scroll", fn);
+    return () => window.removeEventListener("scroll", fn);
   }, []);
 
-  const toggleMobileMenu = () => {
-    setMobileMenuOpen(!mobileMenuOpen);
+  /* ── shared style tokens ── */
+  const S = {
+    maxW: { maxWidth: 1160, margin: "0 auto", width: "100%" },
+    section: { padding: "96px 40px" },
+    sectionSm: { padding: "72px 40px" },
   };
 
-  // Navigation items
-  const navItems = [
-    { name: "Home", path: "/" },
-    { name: "AI Chat", path: "/ai-chat" },
-    { name: "Book Session", path: "/book" },
-    { name: "Resources", path: "/resources" },
-    { name: "Community", path: "/community" },
-    { name: "About", path: "/about" },
-  ];
-
-  // Features
-  const features = [
-    {
-      icon: <Brain className="w-8 h-8" />,
-      title: "AI Mental Health Chat",
-      description: "Talk freely with our empathetic AI that uses sentiment analysis to detect stress levels.",
-      gradient: "from-teal-500 to-blue-500",
-      delay: 0.1
-    },
-    {
-      icon: <Users className="w-8 h-8" />,
-      title: "Certified Counsellors",
-      description: "Connect with licensed professionals for private, confidential sessions.",
-      gradient: "from-blue-500 to-cyan-500",
-      delay: 0.2
-    },
-    {
-      icon: <MessageSquare className="w-8 h-8" />,
-      title: "Safe Community",
-      description: "Join moderated peer support groups in a stigma-free environment.",
-      gradient: "from-teal-600 to-emerald-500",
-      delay: 0.3
-    },
-    {
-      icon: <BookOpen className="w-8 h-8" />,
-      title: "Wellness Resources",
-      description: "Access guided meditations, mindfulness exercises, and educational content.",
-      gradient: "from-sky-500 to-blue-600",
-      delay: 0.4
-    }
-  ];
-
-  // Stats
-  const stats = [
-    { number: "24/7", label: "Available Support", icon: <Clock className="w-5 h-5" /> },
-    { number: "100%", label: "Confidential", icon: <Shield className="w-5 h-5" /> },
-    { number: "Certified", label: "Counsellors", icon: <Users className="w-5 h-5" /> },
-    { number: "Many", label: "Students Helped", icon: <Heart className="w-5 h-5" /> }
-  ];
-
-  // AI Features
-  const aiFeatures = [
-    {
-      icon: <Zap className="w-5 h-5" />,
-      title: "Instant Response",
-      description: "Available 24/7 with immediate coping strategies.",
-      color: "bg-blue-50 text-blue-600"
-    },
-    {
-      icon: <Lock className="w-5 h-5" />,
-      title: "Privacy First",
-      description: "Completely confidential with end-to-end encryption.",
-      color: "bg-teal-50 text-teal-600"
-    },
-    {
-      icon: <UserCheck className="w-5 h-5" />,
-      title: "Professional Referrals",
-      description: "Smart connections to mental health professionals.",
-      color: "bg-sky-50 text-sky-600"
-    }
-  ];
-
-  // Resource Hub Items
-  const resources = [
-    {
-      icon: <Video className="w-6 h-6" />,
-      title: "Video Guides",
-      description: "Expert-led wellness videos and tutorials.",
-      count: "50+ Videos",
-      color: "bg-blue-100 text-blue-600"
-    },
-    {
-      icon: <Headphones className="w-6 h-6" />,
-      title: "Guided Audios",
-      description: "Meditation and breathing exercises.",
-      count: "100+ Tracks",
-      color: "bg-teal-100 text-teal-600"
-    },
-    {
-      icon: <FileText className="w-6 h-6" />,
-      title: "Wellness Guides",
-      description: "Comprehensive mental health guides.",
-      count: "30+ Guides",
-      color: "bg-sky-100 text-sky-600"
-    },
-    {
-      icon: <Globe className="w-6 h-6" />,
-      title: "Multi-Language",
-      description: "Resources in 10+ languages.",
-      count: "Hindi, English, Tamil",
-      color: "bg-cyan-100 text-cyan-600"
-    }
-  ];
-
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50/50 to-white">
-      {/* Animated Background Elements */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <motion.div 
-          animate={{ 
-            x: [0, 100, 0],
-            y: [0, 50, 0]
-          }}
-          transition={{ 
-            duration: 20, 
-            repeat: Infinity,
-            ease: "linear"
-          }}
-          className="absolute top-20 left-10 w-72 h-72 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20"
-        />
-        <motion.div 
-          animate={{ 
-            x: [0, -100, 0],
-            y: [0, -50, 0]
-          }}
-          transition={{ 
-            duration: 15, 
-            repeat: Infinity,
-            ease: "linear"
-          }}
-          className="absolute bottom-20 right-10 w-96 h-96 bg-teal-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20"
-        />
-      </div>
+    <div style={{ background: "var(--cream)", minHeight: "100vh", overflowX: "hidden" }}>
 
-      {/* Navigation */}
-      <motion.nav 
-        initial={{ y: -100 }}
-        animate={{ y: 0 }}
-        className={`sticky top-0 z-50 flex items-center justify-between px-6 lg:px-10 py-4 transition-all duration-300 ${
-          scrolled 
-            ? "bg-white/95 backdrop-blur-lg shadow-lg" 
-            : "bg-white shadow-sm"
-        }`}
+      {/* ════ NAVBAR ════ */}
+      <motion.header
+        initial={{ opacity: 0, y: -18 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.55 }}
+        style={{
+          position: "sticky", top: 0, zIndex: 300,
+          height: 66, padding: "0 40px",
+          display: "flex", alignItems: "center", justifyContent: "space-between",
+          background: scrolled ? "rgba(250,250,247,0.94)" : "transparent",
+          backdropFilter: scrolled ? "blur(20px)" : "none",
+          borderBottom: scrolled ? "1px solid var(--border)" : "1px solid transparent",
+          transition: "all 0.38s ease",
+        }}
       >
-        <motion.div 
-          whileHover={{ scale: 1.05 }}
-          className="flex items-center gap-2"
-        >
-          <Activity className="w-6 h-6 text-teal-600" />
-          <span className="text-2xl font-bold bg-gradient-to-r from-teal-600 to-blue-600 bg-clip-text text-transparent">
+        {/* Logo */}
+        <Link to="/" style={{ display: "flex", alignItems: "center", gap: 10, flexShrink: 0 }}>
+          <div style={{ width: 34, height: 34, borderRadius: 10, background: "var(--charcoal)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <Heart size={16} color="white" />
+          </div>
+          <span className="serif" style={{ fontWeight: 500, fontSize: 21, color: "var(--charcoal)", letterSpacing: "0.01em" }}>
             EchoCare
           </span>
-        </motion.div>
+        </Link>
 
-        {/* Desktop Navigation */}
-        <div className="hidden md:flex gap-6">
-          {navItems.map((item, index) => (
-            <motion.div
-              key={item.name}
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.1 }}
-            >
-              <Link 
-                to={item.path}
-                className="relative text-gray-600 hover:text-teal-600 font-medium px-3 py-2 transition-colors group"
-              >
-                {item.name}
-                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-teal-600 group-hover:w-full transition-all duration-300" />
-              </Link>
-            </motion.div>
-          ))}
+        {/* Desktop nav */}
+        <nav className="mob-hide" style={{ display: "flex", gap: 30, alignItems: "center" }}>
+          {NAV_ITEMS.map(n => <Link key={n.label} to={n.path} className="nav-link">{n.label}</Link>)}
+        </nav>
+
+        {/* Desktop CTA */}
+        <div className="mob-hide" style={{ display: "flex", gap: 10, alignItems: "center" }}>
+          <Link to="/login" className="btn-ghost" style={{ padding: "10px 22px" }}>Sign in</Link>
+          <Link to="/register" className="btn-primary" style={{ padding: "10px 22px" }}>Get Started</Link>
         </div>
 
-        {/* Desktop Auth Buttons */}
-        <div className="hidden md:flex gap-3">
-          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-            <Link
-              to="/login"
-              className="px-5 py-2.5 rounded-full border-2 border-teal-500 text-teal-600 hover:bg-teal-50 font-medium transition-colors"
-            >
-              Sign In
-            </Link>
-          </motion.div>
-          <motion.div 
-            whileHover={{ scale: 1.05 }} 
-            whileTap={{ scale: 0.95 }}
-          >
-            <Link
-              to="/register"
-              className="px-5 py-2.5 rounded-full bg-gradient-to-r from-teal-600 to-blue-600 text-white font-medium hover:shadow-lg transition-shadow"
-            >
-              Sign Up Free
-            </Link>
-          </motion.div>
-        </div>
-
-        {/* Mobile Menu Button */}
-        <button
-          onClick={toggleMobileMenu}
-          className="md:hidden p-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors"
-          aria-label="Toggle menu"
-        >
-          {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+        {/* Mobile toggle */}
+        <button onClick={() => setMobileOpen(v => !v)} className="mob-show"
+          style={{ background: "none", border: "none", cursor: "pointer", display: "none", padding: 6, color: "var(--charcoal)" }}>
+          {mobileOpen ? <X size={22} /> : <Menu size={22} />}
         </button>
-      </motion.nav>
+      </motion.header>
 
-      {/* Mobile Menu */}
+      {/* Mobile menu */}
       <AnimatePresence>
-        {mobileMenuOpen && (
-          <>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={toggleMobileMenu}
-              className="fixed inset-0 bg-black/50 z-40 md:hidden"
-            />
-            <motion.div
-              initial={{ x: "100%" }}
-              animate={{ x: 0 }}
-              exit={{ x: "100%" }}
-              transition={{ type: "spring", damping: 25 }}
-              className="fixed top-0 right-0 bottom-0 w-64 bg-white shadow-2xl z-50 md:hidden overflow-y-auto"
-            >
-              <div className="p-6">
-                <div className="flex items-center justify-between mb-8">
-                  <div className="flex items-center gap-2">
-                    <Activity className="w-5 h-5 text-teal-600" />
-                    <span className="text-xl font-bold bg-gradient-to-r from-teal-600 to-blue-600 bg-clip-text text-transparent">
-                      EchoCare
-                    </span>
-                  </div>
-                  <button
-                    onClick={toggleMobileMenu}
-                    className="p-2 rounded-lg hover:bg-gray-100"
-                  >
-                    <X className="w-5 h-5" />
-                  </button>
-                </div>
-
-                <div className="space-y-1 mb-8">
-                  {navItems.map((item) => (
-                    <Link
-                      key={item.name}
-                      to={item.path}
-                      onClick={toggleMobileMenu}
-                      className="block p-3 rounded-lg hover:bg-teal-50 text-gray-700 hover:text-teal-600 transition-colors font-medium"
-                    >
-                      {item.name}
-                    </Link>
-                  ))}
-                </div>
-
-                <div className="space-y-3 pt-6 border-t border-gray-200">
-                  <Link
-                    to="/login"
-                    onClick={toggleMobileMenu}
-                    className="block w-full py-3 text-center border-2 border-teal-500 text-teal-600 rounded-lg font-medium hover:bg-teal-50 transition-colors"
-                  >
-                    Sign In
-                  </Link>
-                  <Link
-                    to="/register"
-                    onClick={toggleMobileMenu}
-                    className="block w-full py-3 text-center bg-gradient-to-r from-teal-600 to-blue-600 text-white rounded-lg font-medium hover:shadow-lg transition-shadow"
-                  >
-                    Sign Up Free
-                  </Link>
-                </div>
+        {mobileOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }}
+            style={{ background: "#fff", borderBottom: "1px solid var(--border)", padding: "0 24px", overflow: "hidden", position: "sticky", top: 66, zIndex: 299 }}
+          >
+            <div style={{ padding: "20px 0", display: "flex", flexDirection: "column", gap: 4 }}>
+              {NAV_ITEMS.map(n => (
+                <Link key={n.label} to={n.path} onClick={() => setMobileOpen(false)}
+                  style={{ padding: "12px 10px", color: "var(--body)", fontSize: 15, borderRadius: 8, display: "block" }}>
+                  {n.label}
+                </Link>
+              ))}
+              <div style={{ display: "flex", gap: 10, marginTop: 16, paddingTop: 16, borderTop: "1px solid var(--border)" }}>
+                <Link to="/login" className="btn-ghost" style={{ flex: 1, justifyContent: "center" }}>Sign in</Link>
+                <Link to="/register" className="btn-primary" style={{ flex: 1, justifyContent: "center" }}>Get Started</Link>
               </div>
-            </motion.div>
-          </>
+            </div>
+          </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Hero Section */}
-      <section className="relative px-6 lg:px-10 py-16">
-        <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center">
-          <motion.div
-            initial={{ opacity: 0, x: -50 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8 }}
-          >
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-teal-100 text-teal-600 text-sm font-medium mb-6">
-              <Stethoscope className="w-4 h-4" />
-              Trusted by 100+ Colleges
-            </div>
-            
-            <h1 className="text-5xl lg:text-6xl font-bold leading-tight mb-6">
-              <span className="block bg-gradient-to-r from-teal-600 to-blue-600 bg-clip-text text-transparent">
-                Your 24/7 Mental
-              </span>
-              <span className="block bg-gradient-to-r from-blue-500 to-cyan-500 bg-clip-text text-transparent">
-                Wellness Companion
-              </span>
-            </h1>
+      {/* ════ HERO ════ */}
+      <section style={{ position: "relative", padding: "90px 40px 110px", overflow: "hidden", minHeight: "92vh", display: "flex", alignItems: "center" }}>
+        {/* Background blobs */}
+        <div className="blob" style={{ width: 560, height: 560, background: "rgba(107,158,107,0.10)", top: -120, right: -100 }} />
+        <div className="blob" style={{ width: 360, height: 360, background: "rgba(246,240,232,0.9)", bottom: -60, left: -80 }} />
 
-            <p className="text-lg text-gray-600 mb-8 max-w-xl leading-relaxed">
-              Timely support, confidential care, and a strong student community. 
-              Talk to AI, book private counselling sessions, and access wellness resources.
-            </p>
+        <div style={{ ...S.maxW, position: "relative", zIndex: 1, display: "grid", gridTemplateColumns: "1fr auto", gap: 48, alignItems: "center" }}>
+          {/* Left */}
+          <div>
+            <motion.div {...up(0)} style={{ marginBottom: 32 }}>
+              <span className="badge" style={{ background: "var(--sage-light)", color: "var(--sage)" }}>
+                <span style={{ width: 6, height: 6, background: "var(--sage)", borderRadius: "50%", display: "inline-block", flexShrink: 0 }} />
+                Mental Wellness Platform for Colleges
+              </span>
+            </motion.div>
 
-            <div className="flex flex-col sm:flex-row gap-4 mb-10">
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                <Link
-                  to="/ai-chat"
-                  className="group inline-flex items-center justify-center gap-3 bg-gradient-to-r from-teal-600 to-blue-600 text-white px-8 py-4 rounded-full font-semibold hover:shadow-xl transition-all w-full sm:w-auto"
-                >
-                  Start AI Conversation
-                  <ArrowRight className="w-5 h-5 group-hover:translate-x-2 transition-transform" />
-                </Link>
-              </motion.div>
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                <Link
-                  to="/book"
-                  className="group inline-flex items-center justify-center gap-3 border-2 border-gray-300 px-8 py-4 rounded-full font-semibold hover:border-teal-400 hover:bg-teal-50 transition-all w-full sm:w-auto"
-                >
-                  <Calendar className="w-5 h-5" />
-                  Book Session
-                </Link>
-              </motion.div>
-            </div>
+            <motion.h1 {...up(0.07)} className="serif"
+              style={{ fontSize: "clamp(50px, 6.5vw, 88px)", fontWeight: 300, lineHeight: 1.08, letterSpacing: "-0.025em", marginBottom: 26 }}>
+              A calmer mind<br />
+              <em style={{ fontStyle: "italic", color: "var(--sage)" }}>begins here.</em>
+            </motion.h1>
+
+            <motion.p {...up(0.13)}
+              style={{ fontSize: 17, color: "var(--body)", lineHeight: 1.82, maxWidth: 500, marginBottom: 44, fontWeight: 300 }}>
+              AI-powered support, peer community, curated resources, and certified counsellors — all in one quiet, confidential space built for students.
+            </motion.p>
+
+            <motion.div {...up(0.18)} style={{ display: "flex", gap: 12, flexWrap: "wrap", marginBottom: 64 }}>
+              <Link to="/ai-chat" className="btn-primary">Begin your journey <ArrowRight size={16} /></Link>
+              <Link to="/book" className="btn-ghost"><Calendar size={15} /> Book a counsellor</Link>
+            </motion.div>
 
             {/* Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-              {stats.map((stat, index) => (
-                <motion.div
-                  key={stat.label}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.5 + index * 0.1 }}
-                  className="text-center"
-                >
-                  <div className="flex items-center justify-center gap-2 mb-2">
-                    {stat.icon}
-                    <span className="text-2xl font-bold text-gray-800">{stat.number}</span>
-                  </div>
-                  <div className="text-sm text-gray-600">{stat.label}</div>
+            <motion.div {...up(0.23)} style={{ display: "flex", gap: 44, flexWrap: "wrap" }}>
+              {[
+                { n: "15k+", l: "Students supported" },
+                { n: "98%", l: "Satisfaction rate" },
+                { n: "24/7", l: "Always available" },
+                { n: "100+", l: "Partner colleges" },
+              ].map(s => (
+                <div key={s.l}>
+                  <div className="serif" style={{ fontSize: 34, fontWeight: 400, color: "var(--charcoal)", lineHeight: 1, marginBottom: 5 }}>{s.n}</div>
+                  <div style={{ fontSize: 13, color: "var(--charcoal)", fontWeight: 300 }}>{s.l}</div>
+                </div>
+              ))}
+            </motion.div>
+          </div>
+
+          {/* Floating chat widget */}
+          <motion.div
+            initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.75, delay: 0.35 }}
+            className="float-a mob-hide"
+            style={{ width: 292, background: "#fff", border: "1px solid var(--border)", borderRadius: 24, boxShadow: "0 20px 56px rgba(0,0,0,0.1)", padding: 22, flexShrink: 0 }}
+          >
+            {/* Widget header */}
+            <div style={{ display: "flex", alignItems: "center", gap: 10, paddingBottom: 14, marginBottom: 16, borderBottom: "1px solid var(--border)" }}>
+              <div style={{ width: 36, height: 36, borderRadius: 10, background: "var(--charcoal)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                <Brain size={17} color="white" />
+              </div>
+              <div>
+                <div style={{ fontWeight: 600, fontSize: 13.5, color: "var(--charcoal)" }}>EchoCare AI</div>
+                <div style={{ fontSize: 12, color: "var(--muted)", display: "flex", alignItems: "center", gap: 5, marginTop: 1 }}>
+                  <span className="pulse" style={{ width: 6, height: 6, background: "#4CAF50", borderRadius: "50%", display: "inline-block" }} />
+                  Active now
+                </div>
+              </div>
+            </div>
+            {/* Chat messages */}
+            <div style={{ display: "flex", flexDirection: "column", gap: 9, marginBottom: 16 }}>
+              {[
+                { t: "ai", m: "How are you feeling today? I'm here to listen 🌿" },
+                { t: "user", m: "Really anxious about exams." },
+                { t: "ai", m: "That's common. Let's try a quick grounding exercise together." },
+              ].map((c, i) => (
+                <motion.div key={i} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.9 + i * 0.4 }}
+                  style={{ display: "flex", justifyContent: c.t === "user" ? "flex-end" : "flex-start" }}>
+                  <div className={`bubble bubble-${c.t}`}>{c.m}</div>
                 </motion.div>
               ))}
             </div>
-          </motion.div>
-
-          {/* Hero Image */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="relative"
-          >
-            <div className="bg-gradient-to-br from-teal-100 to-blue-100 rounded-3xl p-3 shadow-2xl">
-              <img
-                src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2"
-                alt="Students support"
-                className="rounded-2xl shadow-lg w-full h-auto"
-              />
+            {/* Input */}
+            <div style={{ display: "flex", alignItems: "center", gap: 10, background: "var(--sage-light)", borderRadius: 12, padding: "10px 14px" }}>
+              <span style={{ flex: 1, fontSize: 12.5, color: "var(--muted)" }}>Type your thoughts…</span>
+              <Send size={14} color="var(--sage)" />
             </div>
-            
-            {/* Floating Elements */}
-            <motion.div 
-              animate={{ y: [0, -8, 0] }}
-              transition={{ duration: 2, repeat: Infinity }}
-              className="absolute -top-4 -right-4 bg-white p-4 rounded-2xl shadow-lg"
-            >
-              <div className="flex items-center gap-2">
-                <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse" />
-                <span className="text-sm font-medium">AI Chat Active</span>
-              </div>
-            </motion.div>
           </motion.div>
         </div>
       </section>
 
-      {/* Features Section */}
-      <section className="px-6 lg:px-10 py-20">
-        <div className="max-w-7xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-12"
-          >
-            <h2 className="text-4xl font-bold mb-4">
-              Everything You Need for Your{" "}
-              <span className="bg-gradient-to-r from-teal-600 to-blue-600 bg-clip-text text-transparent">
-                Mental Wellness
-              </span>
+      {/* ════ FEATURE BAND ════ */}
+      <div style={{ background: "var(--charcoal)", padding: "18px 40px" }}>
+        <div style={{ ...S.maxW, display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12 }}>
+          {["AI Chat Support", "Peer Community", "Wellness Resources", "Counsellor Booking", "Admin Health Tracking"].map(t => (
+            <div key={t} style={{ display: "flex", alignItems: "center", gap: 9, color: "rgba(255,255,255,0.6)", fontSize: 13, fontWeight: 400 }}>
+              <div style={{ width: 5, height: 5, borderRadius: "50%", background: "var(--sage)", flexShrink: 0 }} />
+              {t}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* ════ 5 PILLARS ════ */}
+      <section style={S.section}>
+        <div style={S.maxW}>
+          <motion.div {...up(0)} style={{ marginBottom: 56 }}>
+            <span className="section-eyebrow">Five Pillars</span>
+            <h2 className="serif" style={{ fontSize: "clamp(34px, 4.5vw, 54px)", fontWeight: 300, letterSpacing: "-0.022em", lineHeight: 1.18, maxWidth: 560 }}>
+              Everything a student needs,{" "}
+              <em style={{ color: "var(--sage)" }}>beautifully unified.</em>
             </h2>
-            <p className="text-gray-600 max-w-2xl mx-auto text-lg">
-              A comprehensive platform combining AI technology with human empathy
-            </p>
           </motion.div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {features.map((feature, index) => (
-              <motion.div
-                key={feature.title}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: feature.delay }}
-                whileHover={{ y: -5, scale: 1.02 }}
-                className="group relative"
-              >
-                <div className={`absolute inset-0 bg-gradient-to-br ${feature.gradient} rounded-2xl opacity-0 group-hover:opacity-10 transition-opacity duration-300`} />
-                <div className="relative bg-white p-6 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100">
-                  <div className={`inline-flex p-3 rounded-lg bg-gradient-to-br ${feature.gradient} text-white mb-4`}>
-                    {feature.icon}
-                  </div>
-                  <h3 className="text-lg font-bold mb-3 text-gray-800">
-                    {feature.title}
-                  </h3>
-                  <p className="text-sm text-gray-600 mb-4">
-                    {feature.description}
-                  </p>
-                  <Link 
-                    to={`/${feature.title.toLowerCase().replace(/ /g, "-")}`}
-                    className="inline-flex items-center gap-2 text-teal-600 font-medium text-sm group-hover:gap-3 transition-all"
-                  >
-                    Learn more
-                    <ArrowRight className="w-4 h-4" />
-                  </Link>
+          {/* Bento grid */}
+          <div className="feat-grid" style={{ display: "grid", gridTemplateColumns: "1.1fr 1fr 1fr", gridTemplateRows: "auto auto", gap: 16 }}>
+
+            {/* ── 1. AI CHAT ── large, dark */}
+            <motion.div {...zoomIn(0.05)}
+              style={{
+                gridRow: "1 / 3", borderRadius: 24, padding: "40px 36px",
+                background: "var(--charcoal)", border: "none",
+                boxShadow: "0 16px 48px rgba(0,0,0,0.18)",
+                display: "flex", flexDirection: "column",
+                transition: "transform 0.35s ease, box-shadow 0.35s ease",
+              }}
+              whileHover={{ y: -6, boxShadow: "0 28px 72px rgba(0,0,0,0.28)" }}
+            >
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 28 }}>
+                <div style={{ width: 50, height: 50, borderRadius: 14, background: "rgba(255,255,255,0.1)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <Brain size={24} color="white" />
                 </div>
+                <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", padding: "5px 12px", borderRadius: 100, background: "rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.7)" }}>24 / 7</span>
+              </div>
+
+              <h3 className="serif" style={{ fontSize: 30, fontWeight: 400, color: "#fff", marginBottom: 14, lineHeight: 1.22 }}>
+                AI Mental<br />Health Chat
+              </h3>
+              <p style={{ fontSize: 14.5, color: "rgba(255,255,255,0.65)", lineHeight: 1.78, marginBottom: 32, fontWeight: 300 }}>
+                An empathetic AI companion powered by sentiment analysis. It listens, detects stress patterns, and guides you through evidence-based coping techniques — day or night.
+              </p>
+
+              {/* Chat preview */}
+              <div style={{ background: "rgba(255,255,255,0.06)", borderRadius: 16, padding: 18, marginBottom: 28, border: "1px solid rgba(255,255,255,0.08)", flex: 1 }}>
+                <div style={{ display: "flex", flexDirection: "column", gap: 9 }}>
+                  {[
+                    { t: "ai", m: "I notice you might be under pressure. Want to talk?" },
+                    { t: "user", m: "Yes, I'm overwhelmed with deadlines." },
+                    { t: "ai", m: "Let's try the 4-7-8 breathing technique. Just 2 minutes 🌿" },
+                  ].map((c, i) => (
+                    <div key={i} style={{ display: "flex", justifyContent: c.t === "user" ? "flex-end" : "flex-start" }}>
+                      <div style={{
+                        padding: "9px 14px", borderRadius: 12, fontSize: 13, lineHeight: 1.5, maxWidth: "86%",
+                        background: c.t === "ai" ? "rgba(255,255,255,0.11)" : "var(--sage)",
+                        color: "#fff",
+                        borderBottomLeftRadius: c.t === "ai" ? 3 : 12,
+                        borderBottomRightRadius: c.t === "user" ? 3 : 12,
+                      }}>
+                        {c.m}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Tags */}
+              <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 28 }}>
+                {["Sentiment Analysis", "CBT Techniques", "Crisis Detection", "Multilingual"].map(t => (
+                  <span key={t} style={{ fontSize: 11.5, padding: "5px 12px", borderRadius: 100, background: "rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.7)", fontWeight: 400 }}>{t}</span>
+                ))}
+              </div>
+
+              <Link to="/ai-chat" className="btn-sage" style={{ alignSelf: "flex-start" }}>
+                Start chatting <ArrowRight size={15} />
+              </Link>
+            </motion.div>
+
+            {/* ── 2. COMMUNITY ── */}
+            <motion.div {...zoomIn(0.1)}
+              style={{ borderRadius: 22, padding: "32px 28px", background: "var(--warm)", border: "1px solid rgba(0,0,0,0.04)", boxShadow: "var(--shadow-sm)", transition: "transform 0.32s, box-shadow 0.32s" }}
+              whileHover={{ y: -5, boxShadow: "var(--shadow-lg)" }}
+            >
+              <div style={{ width: 46, height: 46, borderRadius: 13, background: "#fff", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 22, boxShadow: "0 2px 10px rgba(0,0,0,0.07)" }}>
+                <Users size={21} color="var(--charcoal)" />
+              </div>
+              <h3 className="serif" style={{ fontSize: 26, fontWeight: 400, color: "var(--charcoal)", marginBottom: 10, lineHeight: 1.25 }}>Community<br />Connect</h3>
+              <p style={{ fontSize: 14, color: "var(--body)", lineHeight: 1.75, marginBottom: 20, fontWeight: 300 }}>
+                Moderated peer groups where students share, support, and grow — completely stigma-free.
+              </p>
+              <div style={{ display: "flex", gap: 7, marginBottom: 22, flexWrap: "wrap" }}>
+                {["Peer Circles", "Anonymous Mode", "Moderated"].map(t => (
+                  <span key={t} style={{ fontSize: 12, padding: "5px 11px", borderRadius: 100, background: "#fff", color: "var(--body)", fontWeight: 400 }}>{t}</span>
+                ))}
+              </div>
+              {/* Avatar stack */}
+              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 22 }}>
+                <div style={{ display: "flex" }}>
+                  {["#B8D4B8", "#9FC49F", "#8FAF8F", "#7a9e7a"].map((c, i) => (
+                    <div key={i} style={{ width: 30, height: 30, borderRadius: "50%", background: c, border: "2.5px solid var(--warm)", marginLeft: i === 0 ? 0 : -9, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                      <span style={{ fontSize: 10, color: "#fff", fontWeight: 700 }}>{["P","A","K","R"][i]}</span>
+                    </div>
+                  ))}
+                </div>
+                <span style={{ fontSize: 12.5, color: "var(--body)", fontWeight: 400 }}>+2,400 active members</span>
+              </div>
+              <Link to="/community" style={{ fontSize: 13.5, color: "var(--charcoal)", fontWeight: 600, display: "inline-flex", alignItems: "center", gap: 5 }}>
+                Join community <ArrowRight size={14} />
+              </Link>
+            </motion.div>
+
+            {/* ── 3. RESOURCES ── */}
+            <motion.div {...zoomIn(0.15)}
+              style={{ borderRadius: 22, padding: "32px 28px", background: "var(--sage-light)", border: "1px solid rgba(107,158,107,0.12)", boxShadow: "var(--shadow-sm)", transition: "transform 0.32s, box-shadow 0.32s" }}
+              whileHover={{ y: -5, boxShadow: "var(--shadow-lg)" }}
+            >
+              <div style={{ width: 46, height: 46, borderRadius: 13, background: "#fff", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 22, boxShadow: "0 2px 10px rgba(0,0,0,0.07)" }}>
+                <BookOpen size={21} color="var(--charcoal)" />
+              </div>
+              <h3 className="serif" style={{ fontSize: 26, fontWeight: 400, color: "var(--charcoal)", marginBottom: 10, lineHeight: 1.25 }}>Wellness<br />Resources</h3>
+              <p style={{ fontSize: 14, color: "var(--body)", lineHeight: 1.75, marginBottom: 20, fontWeight: 300 }}>
+                Guided meditations, mindfulness exercises, and psychoeducational guides in 10+ languages.
+              </p>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 9, marginBottom: 22 }}>
+                {[{ label: "Videos", n: "50+" }, { label: "Audios", n: "100+" }, { label: "Guides", n: "30+" }, { label: "Languages", n: "10+" }].map(s => (
+                  <div key={s.label} style={{ background: "#fff", borderRadius: 12, padding: "12px 14px" }}>
+                    <div className="serif" style={{ fontSize: 22, fontWeight: 400, color: "var(--charcoal)", lineHeight: 1 }}>{s.n}</div>
+                    <div style={{ fontSize: 12, color: "var(--muted)", marginTop: 3 }}>{s.label}</div>
+                  </div>
+                ))}
+              </div>
+              <Link to="/resources" style={{ fontSize: 13.5, color: "var(--charcoal)", fontWeight: 600, display: "inline-flex", alignItems: "center", gap: 5 }}>
+                Explore library <ArrowRight size={14} />
+              </Link>
+            </motion.div>
+
+            {/* ── 4. COUNSELLOR BOOKING ── */}
+            <motion.div {...zoomIn(0.2)}
+              style={{ borderRadius: 22, padding: "32px 28px", background: "#fff", border: "1px solid var(--border-light)", boxShadow: "var(--shadow-sm)", transition: "transform 0.32s, box-shadow 0.32s" }}
+              whileHover={{ y: -5, boxShadow: "var(--shadow-lg)" }}
+            >
+              <div style={{ width: 46, height: 46, borderRadius: 13, background: "var(--sage-light)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 22 }}>
+                <Calendar size={21} color="var(--sage)" />
+              </div>
+              <h3 className="serif" style={{ fontSize: 26, fontWeight: 400, color: "var(--charcoal)", marginBottom: 10, lineHeight: 1.25 }}>Counsellor<br />Booking</h3>
+              <p style={{ fontSize: 14, color: "var(--body)", lineHeight: 1.75, marginBottom: 20, fontWeight: 300 }}>
+                Book private, confidential sessions with certified mental health professionals. Same-day slots available.
+              </p>
+              {/* Time slots */}
+              <div style={{ background: "var(--sage-light)", borderRadius: 14, padding: "14px 16px", marginBottom: 18 }}>
+                <div style={{ fontSize: 11, color: "var(--sage)", marginBottom: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.07em" }}>Available today</div>
+                <div style={{ display: "flex", gap: 7, flexWrap: "wrap" }}>
+                  {["9:00 AM", "11:30 AM", "2:00 PM", "4:30 PM"].map((t, i) => (
+                    <span key={t} style={{
+                      fontSize: 12.5, padding: "6px 12px", borderRadius: 9, fontWeight: 500,
+                      background: i === 1 ? "var(--charcoal)" : "#fff",
+                      color: i === 1 ? "#fff" : "var(--body)",
+                    }}>{t}</span>
+                  ))}
+                </div>
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 22 }}>
+                <Shield size={13} color="var(--sage)" />
+                <span style={{ fontSize: 13, color: "var(--muted)", fontWeight: 400 }}>100% confidential · Licensed professionals</span>
+              </div>
+              <Link to="/book" className="btn-primary" style={{ padding: "10px 22px", fontSize: 13.5 }}>
+                Book a session <ArrowRight size={14} />
+              </Link>
+            </motion.div>
+
+            {/* ── 5. ADMIN DASHBOARD ── */}
+            <motion.div {...zoomIn(0.25)}
+              style={{ borderRadius: 22, padding: "32px 28px", background: "var(--charcoal-2)", border: "none", boxShadow: "0 12px 40px rgba(0,0,0,0.22)", transition: "transform 0.32s, box-shadow 0.32s" }}
+              whileHover={{ y: -5, boxShadow: "0 24px 64px rgba(0,0,0,0.3)" }}
+            >
+              <div style={{ width: 46, height: 46, borderRadius: 13, background: "rgba(255,255,255,0.1)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 22 }}>
+                <LayoutDashboard size={21} color="white" />
+              </div>
+              <h3 className="serif" style={{ fontSize: 26, fontWeight: 400, color: "#fff", marginBottom: 10, lineHeight: 1.25 }}>Admin Health<br />Dashboard</h3>
+              <p style={{ fontSize: 14, color: "rgba(255,255,255,0.65)", lineHeight: 1.75, marginBottom: 20, fontWeight: 300 }}>
+                Real-time anonymised wellbeing analytics to help institutions identify at-risk students early.
+              </p>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 9, marginBottom: 20 }}>
+                {[
+                  { label: "Avg. Mood", val: "7.2 / 10" },
+                  { label: "Sessions / wk", val: "142" },
+                  { label: "At-Risk Alerts", val: "3 flagged" },
+                  { label: "Response Time", val: "< 2 min" },
+                ].map(s => (
+                  <div key={s.label} style={{ background: "rgba(255,255,255,0.07)", borderRadius: 10, padding: "12px 13px" }}>
+                    <div style={{ fontSize: 15, fontWeight: 600, color: "#fff", lineHeight: 1, marginBottom: 4 }}>{s.val}</div>
+                    <div style={{ fontSize: 11.5, color: "rgba(255,255,255,0.5)", fontWeight: 300 }}>{s.label}</div>
+                  </div>
+                ))}
+              </div>
+              <div style={{ display: "flex", gap: 7, flexWrap: "wrap" }}>
+                {["Anonymous Data", "Early Alerts", "Trend Reports"].map(t => (
+                  <span key={t} style={{ fontSize: 11.5, padding: "5px 11px", borderRadius: 100, background: "rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.7)", fontWeight: 400 }}>{t}</span>
+                ))}
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* ════ HOW IT WORKS ════ */}
+      <section style={{ ...S.sectionSm, background: "var(--warm)" }}>
+        <div style={S.maxW}>
+          <motion.div {...up(0)} style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: 24, marginBottom: 52 }}>
+            <div>
+              <span className="section-eyebrow">Process</span>
+              <h2 className="serif" style={{ fontSize: "clamp(30px, 4vw, 48px)", fontWeight: 300, letterSpacing: "-0.02em", lineHeight: 1.22 }}>
+                Simple by design,{" "}
+                <em style={{ color: "var(--sage)" }}>powerful in practice.</em>
+              </h2>
+            </div>
+            <Link to="/register" className="btn-primary">Start free <ArrowRight size={15} /></Link>
+          </motion.div>
+
+          <div className="grid-4" style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16 }}>
+            {[
+              { n: "01", icon: <CheckCircle size={19} />, title: "Create account", body: "Private sign-up in under 2 minutes. No college ID needed." },
+              { n: "02", icon: <Brain size={19} />, title: "Talk to AI", body: "Chat anytime. The AI adapts to your emotional state in real time." },
+              { n: "03", icon: <Calendar size={19} />, title: "Book a counsellor", body: "Connect with a licensed professional for a private, confidential session." },
+              { n: "04", icon: <TrendingUp size={19} />, title: "Track your journey", body: "Log your mood daily and see how far you've come over time." },
+            ].map((s, i) => (
+              <motion.div key={s.n} {...up(i * 0.1)} className="card" style={{ padding: "28px 26px" }}>
+                <div style={{ fontSize: 11, color: "var(--light-muted)", fontWeight: 600, marginBottom: 22, letterSpacing: "0.09em", fontFamily: "'Outfit', sans-serif" }}>{s.n}</div>
+                <div style={{ width: 40, height: 40, borderRadius: 11, background: "var(--sage-light)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 18, color: "var(--sage)" }}>
+                  {s.icon}
+                </div>
+                <h4 style={{ fontWeight: 600, fontSize: 15, marginBottom: 10, color: "var(--charcoal)" }}>{s.title}</h4>
+                <p style={{ fontSize: 13.5, color: "var(--body)", lineHeight: 1.72, fontWeight: 300 }}>{s.body}</p>
               </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* AI First-Aid Section */}
-      <section className="px-6 lg:px-10 py-20 bg-gradient-to-br from-blue-50 to-cyan-50">
-        <div className="max-w-7xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-12"
-          >
-            <h2 className="text-4xl font-bold mb-4">
-              <span className="bg-gradient-to-r from-teal-600 to-blue-600 bg-clip-text text-transparent">
-                AI First-Aid Support
-              </span>
-            </h2>
-            <p className="text-gray-600 max-w-2xl mx-auto text-lg">
-              Get instant, personalized coping strategies and professional referrals.
-            </p>
-          </motion.div>
+      {/* ════ TRUST + TESTIMONIALS ════ */}
+      <section style={S.section}>
+        <div style={S.maxW}>
+          <div className="grid-2" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 80, alignItems: "start" }}>
 
-          <div className="bg-white rounded-3xl shadow-2xl overflow-hidden mb-16">
-            <div className="p-8">
-              <div className="grid md:grid-cols-3 gap-6 mb-8">
-                {aiFeatures.map((feature, index) => (
-                  <motion.div
-                    key={feature.title}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: index * 0.1 }}
-                    className="flex items-start gap-3 p-4 rounded-xl bg-gradient-to-br from-white to-gray-50 border border-gray-100"
-                  >
-                    <div className={`p-2 rounded-lg ${feature.color}`}>
-                      {feature.icon}
+            {/* Trust column */}
+            <motion.div {...slideRight(0)}>
+              <span className="section-eyebrow">Built on trust</span>
+              <h2 className="serif" style={{ fontSize: "clamp(30px, 4vw, 48px)", fontWeight: 300, letterSpacing: "-0.02em", lineHeight: 1.22, marginBottom: 24 }}>
+                Your privacy is{" "}
+                <em style={{ color: "var(--sage)" }}>non-negotiable.</em>
+              </h2>
+              <p style={{ fontSize: 15.5, color: "var(--body)", lineHeight: 1.85, fontWeight: 300, marginBottom: 36, maxWidth: 440 }}>
+                Everything you share stays between you and the platform. We use end-to-end encryption, anonymised data policies, and zero third-party advertising.
+              </p>
+              <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+                {[
+                  { icon: <Lock size={16} />, t: "End-to-end encrypted conversations" },
+                  { icon: <Shield size={16} />, t: "Anonymous community mode available" },
+                  { icon: <CheckCircle size={16} />, t: "No data sold to third parties — ever" },
+                  { icon: <Heart size={16} />, t: "HIPAA-compliant session records" },
+                ].map(item => (
+                  <div key={item.t} style={{ display: "flex", alignItems: "center", gap: 13 }}>
+                    <div style={{ width: 34, height: 34, borderRadius: 9, background: "var(--sage-light)", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--sage)", flexShrink: 0 }}>
+                      {item.icon}
                     </div>
-                    <div>
-                      <h3 className="font-bold text-gray-800 mb-1">{feature.title}</h3>
-                      <p className="text-sm text-gray-600">{feature.description}</p>
-                    </div>
-                  </motion.div>
+                    <span style={{ fontSize: 14.5, color: "var(--body)", fontWeight: 400, lineHeight: 1.5 }}>{item.t}</span>
+                  </div>
                 ))}
               </div>
+            </motion.div>
 
-              <div className="grid md:grid-cols-2 gap-8 items-center">
-                <div>
-                  <div className="flex items-center gap-2 mb-4">
-                    <div className="p-2 bg-gradient-to-r from-teal-500 to-blue-500 rounded-lg">
-                      <Brain className="w-5 h-5 text-white" />
+            {/* Testimonials column */}
+            <motion.div {...slideLeft(0.1)} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+              {[
+                { text: "EchoCare helped me through my worst semester. The AI was there at 3 AM when no one else was.", name: "Priya S.", role: "Engineering, Delhi", dark: false },
+                { text: "I was hesitant, but the counsellor I matched with completely changed how I handle stress.", name: "Arjun M.", role: "MBA, Mumbai", dark: true },
+                { text: "The community made me realise I wasn't alone. It's the safest online space I've ever been in.", name: "Kavya R.", role: "Law, Bangalore", dark: false },
+              ].map((t, i) => (
+                <motion.div key={i}
+                  initial={{ opacity: 0, x: 18 }} whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }} transition={{ delay: i * 0.12, duration: 0.55 }}
+                  whileHover={{ x: 5, transition: { duration: 0.22 } }}
+                  style={{
+                    background: t.dark ? "var(--charcoal)" : "#fff",
+                    border: `1px solid ${t.dark ? "transparent" : "var(--border-light)"}`,
+                    borderRadius: 18, padding: "24px 26px",
+                    boxShadow: t.dark ? "0 12px 40px rgba(0,0,0,0.18)" : "var(--shadow-sm)",
+                  }}
+                >
+                  <div style={{ display: "flex", gap: 3, marginBottom: 12 }}>
+                    {Array(5).fill(0).map((_, j) => (
+                      <Star key={j} size={13} fill={t.dark ? "var(--sage)" : "#F59E0B"} color={t.dark ? "var(--sage)" : "#F59E0B"} />
+                    ))}
+                  </div>
+                  <p style={{ fontSize: 14.5, lineHeight: 1.78, marginBottom: 18, color: t.dark ? "rgba(255,255,255,0.8)" : "var(--body)", fontWeight: 300 }}>
+                    "{t.text}"
+                  </p>
+                  <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                    <div style={{ width: 36, height: 36, borderRadius: "50%", background: t.dark ? "rgba(255,255,255,0.12)" : "var(--sage-light)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                      <span style={{ fontSize: 14, fontWeight: 700, color: t.dark ? "#fff" : "var(--sage)" }}>{t.name[0]}</span>
                     </div>
                     <div>
-                      <h3 className="font-bold text-gray-800">EchoCare AI Assistant</h3>
-                      <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                        <span className="text-sm text-gray-600">Online • Ready to chat</span>
-                      </div>
+                      <div style={{ fontSize: 13.5, fontWeight: 600, color: t.dark ? "#fff" : "var(--charcoal)" }}>{t.name}</div>
+                      <div style={{ fontSize: 12, color: t.dark ? "rgba(255,255,255,0.5)" : "var(--muted)", marginTop: 2 }}>{t.role}</div>
                     </div>
                   </div>
+                </motion.div>
+              ))}
+            </motion.div>
+          </div>
+        </div>
+      </section>
 
-                  <div className="space-y-3">
-                    {[
-                      "Hi! I'm here to help. How are you feeling today?",
-                      "I'm feeling really anxious about my exams",
-                      "I understand exam anxiety can be overwhelming. Let me share some breathing techniques..."
-                    ].map((msg, i) => (
-                      <div key={i} className={`flex ${i === 1 ? 'justify-end' : ''}`}>
-                        <div className={`max-w-[80%] p-3 rounded-2xl ${i === 1 ? 'bg-teal-100 text-gray-800' : 'bg-gray-100 text-gray-800'}`}>
-                          <p className="text-sm">{msg}</p>
-                        </div>
+      {/* ════ ADMIN / FOR COLLEGES ════ */}
+      <section style={{ ...S.section, background: "var(--charcoal)" }}>
+        <div style={S.maxW}>
+          <div className="grid-2" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 64, alignItems: "center" }}>
+
+            {/* Left copy */}
+            <motion.div {...slideRight(0)}>
+              <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--sage)", fontFamily: "'Outfit', sans-serif", display: "block", marginBottom: 14 }}>For Institutions</span>
+              <h2 className="serif" style={{ fontSize: "clamp(30px, 4vw, 50px)", fontWeight: 300, letterSpacing: "-0.02em", lineHeight: 1.2, color: "#fff", marginBottom: 22 }}>
+                Give your college<br />
+                <em style={{ color: "var(--sage)" }}>a pulse check.</em>
+              </h2>
+              <p style={{ fontSize: 15.5, color: "rgba(255,255,255,0.65)", lineHeight: 1.85, fontWeight: 300, marginBottom: 32, maxWidth: 430 }}>
+                The admin dashboard gives counselling teams and welfare officers anonymised, real-time insights into campus mental health — enabling proactive, not reactive, care.
+              </p>
+              <div style={{ display: "flex", flexDirection: "column", gap: 13, marginBottom: 36 }}>
+                {[
+                  "Anonymised wellbeing trend reports",
+                  "Early-alert system for at-risk students",
+                  "Session booking & counsellor load balancing",
+                  "Department-level mood analytics",
+                  "Custom resource deployment by campus",
+                ].map(item => (
+                  <div key={item} style={{ display: "flex", alignItems: "center", gap: 11 }}>
+                    <CheckCircle size={15} color="var(--sage)" style={{ flexShrink: 0 }} />
+                    <span style={{ fontSize: 14.5, color: "rgba(255,255,255,0.7)", fontWeight: 300 }}>{item}</span>
+                  </div>
+                ))}
+              </div>
+              <Link to="/colleges" className="btn-sage">Request a demo <ArrowRight size={15} /></Link>
+            </motion.div>
+
+            {/* Dashboard preview */}
+            <motion.div {...slideLeft(0.1)}>
+              <div style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.09)", borderRadius: 24, padding: 28 }}>
+
+                {/* Header */}
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
+                  <div>
+                    <div style={{ fontWeight: 600, color: "#fff", fontSize: 15 }}>Wellness Overview</div>
+                    <div style={{ fontSize: 12.5, color: "rgba(255,255,255,0.45)", marginTop: 3 }}>March 2025 · Anonymised</div>
+                  </div>
+                  <div style={{ display: "flex", gap: 6 }}>
+                    {["1W", "1M", "3M"].map((l, i) => (
+                      <span key={l} style={{
+                        fontSize: 12, padding: "5px 12px", borderRadius: 7, cursor: "pointer", fontWeight: 500,
+                        background: i === 1 ? "var(--sage)" : "rgba(255,255,255,0.07)",
+                        color: i === 1 ? "#fff" : "rgba(255,255,255,0.5)",
+                      }}>{l}</span>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Stat tiles */}
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 10, marginBottom: 20 }}>
+                  {[
+                    { label: "Avg. Mood Score", val: "7.4", sub: "↑ 0.3 this week", up: true },
+                    { label: "Active Users", val: "428", sub: "↑ 12% vs last month", up: true },
+                    { label: "Alerts", val: "3", sub: "↓ 2 resolved today", up: false },
+                  ].map(s => (
+                    <div key={s.label} style={{ background: "rgba(255,255,255,0.07)", borderRadius: 12, padding: "14px 13px" }}>
+                      <div className="serif" style={{ fontSize: 28, fontWeight: 400, color: "#fff", lineHeight: 1 }}>{s.val}</div>
+                      <div style={{ fontSize: 11, color: "rgba(255,255,255,0.45)", marginTop: 5, marginBottom: 6, lineHeight: 1.4 }}>{s.label}</div>
+                      <div style={{ fontSize: 11.5, color: s.up ? "var(--sage)" : "#FBBF24", fontWeight: 500 }}>{s.sub}</div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Bar chart */}
+                <div style={{ background: "rgba(255,255,255,0.04)", borderRadius: 14, padding: "16px 18px", marginBottom: 14 }}>
+                  <div style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", marginBottom: 14, textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 600 }}>Weekly Mood Trend</div>
+                  <div style={{ display: "flex", alignItems: "flex-end", gap: 7, height: 60 }}>
+                    {[55, 62, 58, 74, 70, 80, 76].map((h, i) => (
+                      <div key={i} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 5 }}>
+                        <div style={{ width: "100%", height: `${h}%`, borderRadius: "5px 5px 0 0", background: i === 5 ? "var(--sage)" : "rgba(255,255,255,0.15)" }} />
+                        <span style={{ fontSize: 10, color: "rgba(255,255,255,0.35)", fontWeight: 400 }}>{["M","T","W","T","F","S","S"][i]}</span>
                       </div>
                     ))}
                   </div>
                 </div>
 
-                <motion.div
-                  whileHover={{ scale: 1.02 }}
-                  className="bg-gradient-to-br from-teal-50 to-blue-50 p-6 rounded-2xl border border-teal-100"
-                >
-                  <div className="text-center mb-4">
-                    <div className="w-16 h-16 mx-auto mb-3 rounded-full bg-gradient-to-r from-teal-100 to-blue-100 flex items-center justify-center">
-                      <MessageCircle className="w-8 h-8 text-teal-600" />
+                {/* Bottom tiles */}
+                <div style={{ display: "flex", gap: 10 }}>
+                  {[
+                    { icon: <Bell size={14} />, label: "3 new alerts", sub: "Require review" },
+                    { icon: <Calendar size={14} />, label: "18 sessions", sub: "Booked this week" },
+                  ].map(item => (
+                    <div key={item.label} style={{ flex: 1, background: "rgba(255,255,255,0.05)", borderRadius: 11, padding: "13px 14px" }}>
+                      <div style={{ color: "var(--sage)", marginBottom: 8 }}>{item.icon}</div>
+                      <div style={{ fontSize: 13.5, color: "#fff", fontWeight: 600, marginBottom: 3 }}>{item.label}</div>
+                      <div style={{ fontSize: 12, color: "rgba(255,255,255,0.45)" }}>{item.sub}</div>
                     </div>
-                    <h4 className="font-bold text-gray-800 mb-2">Start a Conversation</h4>
-                    <p className="text-sm text-gray-600 mb-4">Our AI provides compassionate, evidence-based support</p>
-                  </div>
-                  <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                    <Link
-                      to="/ai-chat"
-                      className="block w-full py-3 text-center bg-gradient-to-r from-teal-600 to-blue-600 text-white rounded-xl font-bold hover:shadow-lg transition-shadow"
-                    >
-                      Start Free Chat
-                    </Link>
-                  </motion.div>
-                </motion.div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Book Session Section */}
-      <section className="px-6 lg:px-10 py-20">
-        <div className="max-w-7xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-12"
-          >
-            <h2 className="text-4xl font-bold mb-4">
-              Book Confidential Session
-            </h2>
-            <p className="text-gray-600 max-w-2xl mx-auto text-lg">
-              Schedule private appointments with certified counselors.
-            </p>
-          </motion.div>
-
-          <div className="grid md:grid-cols-2 gap-12 items-start">
-            <motion.div
-              initial={{ opacity: 0, x: -30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              className="bg-white rounded-3xl shadow-xl p-8"
-            >
-              <h3 className="text-2xl font-bold mb-6">Schedule Your Session</h3>
-              
-              <div className="space-y-6">
-                {[
-                  { label: "Preferred Date", placeholder: "dd-mm-yyyy", icon: <Calendar className="w-5 h-5 text-gray-400" /> },
-                  { label: "Preferred Time", placeholder: "Morning (9 AM - 12 PM)", icon: <Clock className="w-5 h-5 text-gray-400" /> },
-                  { label: "Session Type", placeholder: "Individual Counseling", icon: <Users className="w-5 h-5 text-gray-400" /> }
-                ].map((field, index) => (
-                  <div key={index}>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      {field.label}
-                    </label>
-                    <div className="relative">
-                      <input
-                        type="text"
-                        placeholder={field.placeholder}
-                        className="w-full p-4 pl-12 bg-gray-50 border-2 border-gray-200 rounded-xl focus:border-teal-500 focus:ring-2 focus:ring-teal-200 outline-none transition-all duration-300"
-                      />
-                      <div className="absolute left-4 top-1/2 transform -translate-y-1/2">
-                        {field.icon}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Brief Description (Optional)
-                  </label>
-                  <textarea
-                    placeholder="Briefly describe what you'd like to discuss..."
-                    rows="3"
-                    className="w-full p-4 bg-gray-50 border-2 border-gray-200 rounded-xl focus:border-teal-500 focus:ring-2 focus:ring-teal-200 outline-none transition-all duration-300"
-                  />
+                  ))}
                 </div>
-
-                <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-                  <button className="w-full py-4 bg-gradient-to-r from-teal-600 to-blue-600 text-white rounded-xl font-bold hover:shadow-lg transition-shadow">
-                    Book Appointment
-                  </button>
-                </motion.div>
               </div>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, x: 30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              className="space-y-6"
-            >
-              {[
-                {
-                  icon: <Shield className="w-5 h-5" />,
-                  title: "100% Confidential",
-                  description: "Your privacy is our top priority. All sessions are completely confidential and secure.",
-                  color: "text-blue-600 bg-blue-50"
-                },
-                {
-                  icon: <Award className="w-5 h-5" />,
-                  title: "Certified Professionals",
-                  description: "Connect with licensed counselors and mental health professionals.",
-                  color: "text-teal-600 bg-teal-50"
-                },
-                {
-                  icon: <Calendar className="w-5 h-5" />,
-                  title: "Flexible Scheduling",
-                  description: "Book sessions that fit your schedule, with same-day availability.",
-                  color: "text-cyan-600 bg-cyan-50"
-                }
-              ].map((benefit, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: index * 0.1 }}
-                  className="flex items-start gap-4 p-6 bg-white rounded-2xl shadow-lg"
-                >
-                  <div className={`p-2 rounded-lg ${benefit.color}`}>
-                    {benefit.icon}
-                  </div>
-                  <div>
-                    <h4 className="font-bold text-gray-800 mb-1">{benefit.title}</h4>
-                    <p className="text-sm text-gray-600">{benefit.description}</p>
-                  </div>
-                </motion.div>
-              ))}
             </motion.div>
           </div>
         </div>
       </section>
 
-      {/* Resource Hub */}
-      <section className="px-6 lg:px-10 py-20 bg-gradient-to-br from-gray-50 to-teal-50">
-        <div className="max-w-7xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-12"
+      {/* ════ CTA ════ */}
+      <section style={S.section}>
+        <div style={S.maxW}>
+          <motion.div {...zoomIn(0)}
+            style={{ background: "var(--sage-light)", borderRadius: 28, padding: "80px 64px", textAlign: "center", border: "1px solid rgba(107,158,107,0.15)", position: "relative", overflow: "hidden" }}
           >
-            <h2 className="text-4xl font-bold mb-4">
-              Wellness Resource Hub
-            </h2>
-            <p className="text-gray-600 max-w-2xl mx-auto text-lg">
-              Access psychoeducational materials in your preferred language.
-            </p>
-          </motion.div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-            {resources.map((resource, index) => (
-              <motion.div
-                key={resource.title}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-                whileHover={{ y: -5, scale: 1.02 }}
-                className="group bg-white p-6 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100"
-              >
-                <div className={`inline-flex p-3 rounded-lg ${resource.color} mb-4`}>
-                  {resource.icon}
-                </div>
-                <h3 className="font-bold text-gray-800 mb-2">{resource.title}</h3>
-                <p className="text-sm text-gray-600 mb-4">{resource.description}</p>
-                <div className={`text-sm font-bold ${resource.color.split(' ')[1]}`}>
-                  {resource.count}
-                </div>
+            <div className="blob" style={{ width: 400, height: 400, background: "rgba(107,158,107,0.12)", top: -100, left: "50%", transform: "translateX(-50%)" }} />
+            <div style={{ position: "relative", zIndex: 1 }}>
+              <motion.div animate={{ scale: [1, 1.07, 1] }} transition={{ duration: 4, repeat: Infinity }}
+                style={{ width: 60, height: 60, background: "#fff", borderRadius: 18, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 32px", boxShadow: "0 8px 28px rgba(0,0,0,0.09)" }}>
+                <Heart size={26} color="var(--sage)" />
               </motion.div>
-            ))}
-          </div>
-
-          <div className="text-center">
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.98 }}>
-              <Link
-                to="/resources"
-                className="inline-flex items-center gap-3 bg-gradient-to-r from-teal-600 to-blue-600 text-white px-8 py-4 rounded-full font-bold hover:shadow-xl transition-shadow"
-              >
-                <BookOpen className="w-5 h-5" />
-                Explore All Resources
-              </Link>
-            </motion.div>
-          </div>
+              <h2 className="serif" style={{ fontSize: "clamp(34px, 5vw, 60px)", fontWeight: 300, letterSpacing: "-0.025em", marginBottom: 18, color: "var(--charcoal)", lineHeight: 1.12 }}>
+                You are never alone.<br />
+                <em style={{ color: "var(--sage)" }}>We're always here.</em>
+              </h2>
+              <p style={{ fontSize: 16.5, color: "var(--body)", maxWidth: 480, margin: "0 auto 44px", lineHeight: 1.82, fontWeight: 300 }}>
+                Join thousands of students across India who've found support, clarity, and community through EchoCare.
+              </p>
+              <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
+                <Link to="/register" className="btn-primary">Begin for free <ArrowRight size={16} /></Link>
+                <Link to="/colleges" className="btn-ghost">For colleges</Link>
+              </div>
+              <p style={{ marginTop: 32, fontSize: 13, color: "var(--muted)" }}>
+                Crisis support:{" "}
+                <a href="mailto:echocare25@gmail.com" style={{ color: "var(--charcoal)", textDecoration: "underline", textUnderlineOffset: 3 }}>
+                  echocare25@gmail.com
+                </a>{" "}
+                · 24 / 7
+              </p>
+            </div>
+          </motion.div>
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="px-6 lg:px-10 py-20">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="max-w-4xl mx-auto text-center"
-        >
-          <div className="bg-gradient-to-br from-teal-500 via-blue-500 to-cyan-500 rounded-3xl p-12 text-white relative overflow-hidden">
-            <div className="relative z-10">
-              <Heart className="w-16 h-16 mx-auto mb-6 text-white/20" />
-              <h2 className="text-5xl font-bold mb-6">
-                You're Never Alone
-              </h2>
-              <p className="text-xl mb-8 max-w-2xl mx-auto text-white/90">
-                Join thousands of students who've found support and care through EchoCare.
-              </p>
-              
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.98 }}>
-                  <Link
-                    to="/register"
-                    className="inline-block px-8 py-4 bg-white text-teal-600 rounded-full font-bold hover:shadow-2xl transition-shadow"
-                  >
-                    Start Your Journey Free
-                  </Link>
-                </motion.div>
-                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.98 }}>
-                  <Link
-                    to="/colleges"
-                    className="inline-block px-8 py-4 border-2 border-white text-white rounded-full font-bold hover:bg-white/10 transition-colors"
-                  >
-                    For Colleges
-                  </Link>
-                </motion.div>
-              </div>
-            </div>
-          </div>
-        </motion.div>
-      </section>
+      {/* ════ FOOTER ════ */}
+      <footer style={{ background: "var(--charcoal)", padding: "60px 40px 32px" }}>
+        <div style={S.maxW}>
+          <div className="footer-grid" style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr 1fr 1fr", gap: 40, marginBottom: 52, paddingBottom: 44, borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
 
-      {/* Footer */}
-      <footer className="px-6 lg:px-10 py-12 bg-gray-900 text-white">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+            {/* Brand */}
             <div>
-              <div className="flex items-center gap-2 mb-4">
-                <Activity className="w-6 h-6 text-teal-400" />
-                <span className="text-2xl font-bold">EchoCare</span>
+              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
+                <div style={{ width: 32, height: 32, borderRadius: 9, background: "var(--sage)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <Heart size={15} color="white" />
+                </div>
+                <span className="serif" style={{ fontWeight: 500, fontSize: 19, color: "#fff" }}>EchoCare</span>
               </div>
-              <p className="text-gray-400 text-sm">
-                Empowering student mental wellness through AI and human connection.
+              <p style={{ fontSize: 14, color: "rgba(255,255,255,0.45)", lineHeight: 1.75, maxWidth: 220, fontWeight: 300 }}>
+                Empowering student mental wellness through compassionate AI and human connection.
               </p>
             </div>
-            
-            {["Product", "Company", "Resources", "Legal"].map((section) => (
-              <div key={section}>
-                <h4 className="font-bold mb-4">{section}</h4>
-                <ul className="space-y-2 text-gray-400 text-sm">
-                  {section === "Product" && ["AI Chat", "Counselling", "Community", "Resources"].map(item => (
-                    <li key={item}>
-                      <Link to={`/${item.toLowerCase()}`} className="hover:text-white transition-colors">
-                        {item}
-                      </Link>
-                    </li>
-                  ))}
-                  {section === "Company" && ["About", "Careers", "Contact"].map(item => (
-                    <li key={item}>
-                      <Link to={`/${item.toLowerCase()}`} className="hover:text-white transition-colors">
-                        {item}
-                      </Link>
-                    </li>
-                  ))}
-                  {section === "Resources" && ["Blog", "Guides", "Help Center"].map(item => (
-                    <li key={item}>
-                      <Link to={`/${item.toLowerCase().replace(" ", "-")}`} className="hover:text-white transition-colors">
-                        {item}
-                      </Link>
-                    </li>
-                  ))}
-                  {section === "Legal" && ["Privacy", "Terms", "Security"].map(item => (
-                    <li key={item}>
-                      <Link to={`/${item.toLowerCase()}`} className="hover:text-white transition-colors">
-                        {item}
-                      </Link>
+
+            {/* Footer columns */}
+            {[
+              { h: "Platform", items: [["AI Chat", "/ai-chat"], ["Community", "/community"], ["Resources", "/resources"], ["Book Session", "/book"]] },
+              { h: "Company", items: [["About", "/about"], ["Careers", "/careers"], ["Contact", "/contact"]] },
+              { h: "Institutions", items: [["For Colleges", "/colleges"], ["Admin Panel", "/admin"], ["Request Demo", "/demo"]] },
+              { h: "Legal", items: [["Privacy", "/privacy"], ["Terms", "/terms"], ["Security", "/security"]] },
+            ].map(col => (
+              <div key={col.h}>
+                <h4 style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.11em", color: "rgba(255,255,255,0.4)", marginBottom: 18 }}>
+                  {col.h}
+                </h4>
+                <ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: 11 }}>
+                  {col.items.map(([label, path]) => (
+                    <li key={label}>
+                      <Link to={path}
+                        style={{ fontSize: 14, color: "rgba(255,255,255,0.55)", fontWeight: 300, transition: "color 0.22s" }}
+                        onMouseEnter={e => e.target.style.color = "#fff"}
+                        onMouseLeave={e => e.target.style.color = "rgba(255,255,255,0.55)"}
+                      >{label}</Link>
                     </li>
                   ))}
                 </ul>
               </div>
             ))}
           </div>
-          
-          <div className="pt-8 border-t border-gray-800 text-center text-gray-400 text-sm">
-            <p>© 2025 EchoCare • Mental Wellness System for Colleges • Made with ❤️ for students</p>
-            <p className="mt-2">Crisis Line: echocare25@gmail.com • Available 24/7</p>
+
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12 }}>
+            <p style={{ fontSize: 13, color: "rgba(255,255,255,0.3)", fontWeight: 300 }}>
+              © 2025 EchoCare · Made with care for students
+            </p>
+            <p className="serif" style={{ fontSize: 14, color: "rgba(255,255,255,0.3)", fontStyle: "italic" }}>
+              A calmer mind begins here.
+            </p>
           </div>
         </div>
       </footer>
+
     </div>
   );
-};
-
-export default Home;
+}

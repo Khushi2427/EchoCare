@@ -33,6 +33,7 @@ import AdminUsers from "./pages/admin/AdminUsers";
 import AdminAnalytics from "./pages/admin/AdminAnalytics";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
+import Flagged from "./pages/admin/Flagged";
 function App() {
   return (<>
   <Toaster richColors position="top-center" closeButton />
@@ -68,6 +69,14 @@ function App() {
         }
       />
       <Route path="/admin/resources" element={<AdminResources />} />
+      <Route
+        path="/admin/flagged-students"
+        element={
+          <ProtectedRoute roles={["admin"]}>
+            <Flagged />
+          </ProtectedRoute>
+        }
+      />
       <Route
   path="/admin/counsellors"
   element={
@@ -158,23 +167,8 @@ function App() {
 />
 
       {/* Counsellor */}
-      <Route
-  path="/counsellor"
-  element={
-    <CounsellorProtectedRoute>
-      <CounsellorDashboard1 />
-    </CounsellorProtectedRoute>
-  }
-/>
-      <Route
-        path="/counsellor/resources/upload"
-        element={
-          <ProtectedRoute roles={["counsellor"]}>
-            <CounsellorResourceUpload />
-          </ProtectedRoute>
-        }
-      />
-      <Route path="/counsellor/appointments" element={<CounsellorAppointments />} />
+
+
 
       {/* Unauthorized / 404 */}
       <Route path="/unauthorized" element={<Unauthorized />} />

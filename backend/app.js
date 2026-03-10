@@ -19,7 +19,7 @@ const app = express();
 // 1. CORRECTED CORS MIDDLEWARE
 // Allow your specific frontend origin with proper headers
 app.use(cors({
-  origin: "https://echo-care-omega.vercel.app", // Your exact frontend URL
+  origin: "https://echo-care-omega.vercel.app/", // Your exact frontend URL
   credentials: true, // Allow cookies/auth tokens
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
   allowedHeaders: ["Content-Type", "Authorization", "Cache-Control", "Accept", "Origin", "X-Requested-With"],

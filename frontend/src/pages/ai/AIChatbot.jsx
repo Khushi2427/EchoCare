@@ -112,6 +112,14 @@ import {
 })();
 
 const AIChatbot = () => {
+
+  const storedUser = localStorage.getItem("user");
+  const user = storedUser ? JSON.parse(storedUser) : null;
+  const userId = user?.id;
+  
+  console.log("User:", user);
+  console.log("UserId:", userId);
+
   const [messages, setMessages] = useState([
     { 
       role: "ai", 
@@ -153,6 +161,7 @@ const AIChatbot = () => {
         try {
           const res = await axios.post(`${import.meta.env.VITE_API_URL}/ai/chat`, {
             message: input,
+            userId: userId
           });
 
           const aiMessage = {

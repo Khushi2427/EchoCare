@@ -332,7 +332,7 @@ const Communities = () => {
       background: "var(--cream)"
     }}>
       <Loader2 size={40} color="var(--sage)" style={{ animation: "spin 1s linear infinite", marginBottom: 16 }} />
-      <p style={{ color: "var(--muted)", fontWeight: 500 }}>Connecting to your circles...</p>
+      <p style={{ color: "var(--charcoal)", fontWeight: 500 }}>Connecting to your circles...</p>
       <style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
     </div>
   );
@@ -378,7 +378,7 @@ const Communities = () => {
           
           <div className="scroll-area" style={{ flex: 1, padding: "16px" }}>
             <div style={{ marginBottom: 24 }}>
-              <p style={{ fontSize: 11, fontWeight: 600, color: "var(--muted)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 12 }}>
+              <p style={{ fontSize: 11, fontWeight: 600, color: "var(--charcoal)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 12 }}>
                 Joined
               </p>
               {myCommunities.map(c => (
@@ -453,14 +453,14 @@ const Communities = () => {
                   <Hash size={16} color="var(--sage)" />
                   {communityDetails?.name}
                 </h2>
-                <p style={{ fontSize: 12, color: "var(--muted)" }}>{communityDetails?.description}</p>
+                <p style={{ fontSize: 12, color: "var(--charcoal)" }}>{communityDetails?.description}</p>
               </div>
             </div>
             
             <button
               onClick={() => leaveCommunity(selectedCommunity)}
               className="btn-outline"
-              style={{ padding: "8px 16px", fontSize: 13, color: "#ef4444", borderColor: "#fee2e2" }}
+              style={{ padding: "8px 16px", fontSize: 13, color: "var(--sage)", borderColor: "#fee2e2" }}
             >
               <LogOut size={14} />
               Leave
@@ -496,7 +496,7 @@ const Communities = () => {
             <h1 className="serif" style={{ fontSize: "clamp(32px, 5vw, 42px)", fontWeight: 300, marginBottom: 8 }}>
               Community <span style={{ color: "var(--sage)" }}>Connect</span>
             </h1>
-            <p style={{ fontSize: 16, color: "var(--muted)" }}>
+            <p style={{ fontSize: 16, color: "var(--charcoal)" }}>
               Join circles that matter to you. Speak, listen, and heal together.
             </p>
           </div>
@@ -541,7 +541,7 @@ const Communities = () => {
                 <Users size={32} color="var(--muted)" />
               </div>
               <p style={{ color: "var(--body)", fontWeight: 500, marginBottom: 4 }}>You haven't joined any circles yet.</p>
-              <p style={{ fontSize: 13, color: "var(--muted)" }}>Discover communities below to get started.</p>
+              <p style={{ fontSize: 13, color: "var(--charcoal)" }}>Discover communities below to get started.</p>
             </div>
           ) : (
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: 20 }}>
@@ -581,7 +581,7 @@ const Communities = () => {
                         paddingTop: 12,
                         borderTop: "1px solid var(--border)"
                       }}>
-                        <span style={{ fontSize: 11, fontWeight: 600, color: "var(--muted)", textTransform: "uppercase" }}>
+                        <span style={{ fontSize: 11, fontWeight: 600, color: "var(--sage)", textTransform: "uppercase" }}>
                           Open Chat
                         </span>
                         <ArrowRight size={16} color="var(--sage)" />
@@ -597,7 +597,7 @@ const Communities = () => {
         {/* Discovery Circles */}
         <motion.section {...fadeUp(0.2)}>
           <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 24 }}>
-            <div style={{ width: 4, height: 24, background: "var(--muted)", borderRadius: 4 }} />
+            <div style={{ width: 4, height: 24, background: "var(--charcoal)", borderRadius: 4 }} />
             <h2 className="serif" style={{ fontSize: 24, fontWeight: 400 }}>Explore New Circles</h2>
           </div>
           

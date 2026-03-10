@@ -56,7 +56,6 @@ import {
       line-height: 1.6;
     }
     a { text-decoration: none; color: inherit; }
-
     .serif { font-family: 'Cormorant Garamond', serif; }
 
     /* ── Nav links ── */
@@ -153,18 +152,105 @@ import {
     /* ── Blobs ── */
     .blob { position: absolute; border-radius: 50%; pointer-events: none; filter: blur(72px); }
 
-    /* ── Responsive ── */
+    /* ─────────────────────────────────────────
+       RESPONSIVE BREAKPOINTS
+    ───────────────────────────────────────── */
+
+    /* Tablet & below: ≤900px */
     @media (max-width: 900px) {
       .mob-hide { display: none !important; }
       .mob-show { display: flex !important; }
+
+      /* Hero: stack columns */
+      .hero-grid { grid-template-columns: 1fr !important; }
+
+      /* Feature band: wrap */
+      .feature-band-inner { flex-wrap: wrap; gap: 10px !important; justify-content: flex-start !important; }
+
+      /* Pillars bento: 2 col */
+      .feat-grid {
+        grid-template-columns: 1fr 1fr !important;
+        grid-template-rows: auto !important;
+      }
+      .feat-grid > *:first-child {
+        grid-column: span 2 !important;
+        grid-row: span 1 !important;
+      }
+
+      /* How it works: 2 col */
+      .steps-grid { grid-template-columns: 1fr 1fr !important; }
+
+      /* Trust + testimonials: stack */
+      .trust-grid { grid-template-columns: 1fr !important; gap: 48px !important; }
+
+      /* Admin / colleges: stack */
+      .admin-grid { grid-template-columns: 1fr !important; gap: 40px !important; }
+
+      /* Footer: 2 col */
+      .footer-grid { grid-template-columns: 1fr 1fr !important; gap: 32px !important; }
+      .footer-brand { grid-column: span 2 !important; }
+
+      /* CTA box padding */
+      .cta-box { padding: 56px 36px !important; }
+
+      /* Section padding */
+      .section-pad { padding: 72px 24px !important; }
+      .section-pad-sm { padding: 56px 24px !important; }
     }
-    @media (max-width: 740px) {
-      .grid-2 { grid-template-columns: 1fr !important; }
-      .grid-3 { grid-template-columns: 1fr !important; }
-      .grid-4 { grid-template-columns: 1fr 1fr !important; }
-      .feat-grid { grid-template-columns: 1fr !important; grid-template-rows: auto !important; }
-      .feat-grid > *:first-child { grid-row: auto !important; }
-      .footer-grid { grid-template-columns: 1fr 1fr !important; }
+
+    /* Mobile: ≤600px */
+    @media (max-width: 600px) {
+      /* Navbar */
+      .navbar-inner { padding: 0 20px !important; }
+
+      /* Hero */
+      .hero-section { padding: 72px 20px 80px !important; min-height: auto !important; }
+      .hero-stats { gap: 24px !important; flex-wrap: wrap; }
+      .hero-cta-row { flex-direction: column !important; }
+      .hero-cta-row a, .hero-cta-row button { width: 100% !important; justify-content: center !important; }
+
+      /* Feature band */
+      .feature-band { padding: 14px 20px !important; }
+      .feature-band-inner { gap: 8px !important; }
+      .feature-band-item { font-size: 12px !important; }
+
+      /* Pillars: single col */
+      .feat-grid {
+        grid-template-columns: 1fr !important;
+        grid-template-rows: auto !important;
+      }
+      .feat-grid > *:first-child {
+        grid-column: span 1 !important;
+      }
+
+      /* How it works: single col */
+      .steps-grid { grid-template-columns: 1fr !important; }
+
+      /* Footer: single col */
+      .footer-grid { grid-template-columns: 1fr !important; }
+      .footer-brand { grid-column: span 1 !important; }
+      .footer-bottom { flex-direction: column !important; gap: 8px !important; align-items: flex-start !important; }
+
+      /* CTA */
+      .cta-box { padding: 44px 24px !important; border-radius: 20px !important; }
+      .cta-buttons { flex-direction: column !important; }
+      .cta-buttons a, .cta-buttons button { width: 100% !important; justify-content: center !important; }
+
+      /* Admin dashboard preview: reduce padding */
+      .admin-preview { padding: 18px !important; }
+      .admin-stat-grid { grid-template-columns: 1fr 1fr !important; }
+      .admin-bottom-tiles { flex-direction: column !important; }
+
+      /* Testimonials: reduce horizontal movement */
+      .section-pad { padding: 60px 20px !important; }
+      .section-pad-sm { padding: 48px 20px !important; }
+    }
+
+    /* Very small: ≤380px */
+    @media (max-width: 380px) {
+      .hero-stats > div { min-width: 80px; }
+      .feat-grid > *:first-child { padding: 24px !important; }
+      .admin-stat-grid { grid-template-columns: 1fr !important; }
     }
   `;
   document.head.appendChild(s);
@@ -221,11 +307,8 @@ export default function Home() {
     return () => window.removeEventListener("scroll", fn);
   }, []);
 
-  /* ── shared style tokens ── */
   const S = {
     maxW: { maxWidth: 1160, margin: "0 auto", width: "100%" },
-    section: { padding: "96px 40px" },
-    sectionSm: { padding: "72px 40px" },
   };
 
   return (
@@ -238,13 +321,15 @@ export default function Home() {
         transition={{ duration: 0.55 }}
         style={{
           position: "sticky", top: 0, zIndex: 300,
-          height: 66, padding: "0 40px",
+          height: 66,
           display: "flex", alignItems: "center", justifyContent: "space-between",
           background: scrolled ? "rgba(250,250,247,0.94)" : "transparent",
           backdropFilter: scrolled ? "blur(20px)" : "none",
           borderBottom: scrolled ? "1px solid var(--border)" : "1px solid transparent",
           transition: "all 0.38s ease",
+          padding: "0 40px",
         }}
+        className="navbar-inner"
       >
         {/* Logo */}
         <Link to="/" style={{ display: "flex", alignItems: "center", gap: 10, flexShrink: 0 }}>
@@ -268,8 +353,11 @@ export default function Home() {
         </div>
 
         {/* Mobile toggle */}
-        <button onClick={() => setMobileOpen(v => !v)} className="mob-show"
-          style={{ background: "none", border: "none", cursor: "pointer", display: "none", padding: 6, color: "var(--charcoal)" }}>
+        <button
+          onClick={() => setMobileOpen(v => !v)}
+          className="mob-show"
+          style={{ background: "none", border: "none", cursor: "pointer", display: "none", padding: 6, color: "var(--charcoal)" }}
+        >
           {mobileOpen ? <X size={22} /> : <Menu size={22} />}
         </button>
       </motion.header>
@@ -278,8 +366,14 @@ export default function Home() {
       <AnimatePresence>
         {mobileOpen && (
           <motion.div
-            initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }}
-            style={{ background: "#fff", borderBottom: "1px solid var(--border)", padding: "0 24px", overflow: "hidden", position: "sticky", top: 66, zIndex: 299 }}
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            style={{
+              background: "#fff", borderBottom: "1px solid var(--border)",
+              padding: "0 24px", overflow: "hidden",
+              position: "sticky", top: 66, zIndex: 299,
+            }}
           >
             <div style={{ padding: "20px 0", display: "flex", flexDirection: "column", gap: 4 }}>
               {NAV_ITEMS.map(n => (
@@ -298,384 +392,394 @@ export default function Home() {
       </AnimatePresence>
 
       {/* ════ HERO ════ */}
-      <section style={{ position: "relative", padding: "90px 40px 110px", overflow: "hidden", minHeight: "92vh", display: "flex", alignItems: "center" }}>
-        {/* Background blobs */}
+      <section
+        className="hero-section section-pad"
+        style={{
+          position: "relative",
+          padding: "90px 40px 110px",
+          overflow: "hidden",
+          minHeight: "92vh",
+          display: "flex",
+          alignItems: "center",
+        }}
+      >
         <div className="blob" style={{ width: 560, height: 560, background: "rgba(107,158,107,0.10)", top: -120, right: -100 }} />
         <div className="blob" style={{ width: 360, height: 360, background: "rgba(246,240,232,0.9)", bottom: -60, left: -80 }} />
 
-        <div style={{ ...S.maxW, position: "relative", zIndex: 1, display: "grid", gridTemplateColumns: "1fr auto", gap: 48, alignItems: "center" }}>
-          {/* Left */}
-          <div>
-            <motion.div {...up(0)} style={{ marginBottom: 32 }}>
-              <span className="badge" style={{ background: "var(--sage-light)", color: "var(--sage)" }}>
-                <span style={{ width: 6, height: 6, background: "var(--sage)", borderRadius: "50%", display: "inline-block", flexShrink: 0 }} />
-                Mental Wellness Platform for Colleges
-              </span>
-            </motion.div>
+        <div style={{ ...S.maxW, position: "relative", zIndex: 1 }}>
+          <div
+            className="hero-grid"
+            style={{
+              display: "grid",
+              gridTemplateColumns: "1fr auto",
+              gap: 48,
+              alignItems: "center",
+            }}
+          >
+            {/* Left */}
+            <div>
+              <motion.div {...up(0)} style={{ marginBottom: 32 }}>
+                <span className="badge" style={{ background: "var(--sage-light)", color: "var(--sage)" }}>
+                  <span style={{ width: 6, height: 6, background: "var(--sage)", borderRadius: "50%", display: "inline-block", flexShrink: 0 }} />
+                  Mental Wellness Platform for Colleges
+                </span>
+              </motion.div>
 
-            <motion.h1 {...up(0.07)} className="serif"
-              style={{ fontSize: "clamp(50px, 6.5vw, 88px)", fontWeight: 300, lineHeight: 1.08, letterSpacing: "-0.025em", marginBottom: 26 }}>
-              A calmer mind<br />
-              <em style={{ fontStyle: "italic", color: "var(--sage)" }}>begins here.</em>
-            </motion.h1>
+              <motion.h1 {...up(0.07)} className="serif"
+                style={{ fontSize: "clamp(42px, 6.5vw, 88px)", fontWeight: 300, lineHeight: 1.08, letterSpacing: "-0.025em", marginBottom: 26 }}>
+                A calmer mind<br />
+                <em style={{ fontStyle: "italic", color: "var(--sage)" }}>begins here.</em>
+              </motion.h1>
 
-            <motion.p {...up(0.13)}
-              style={{ fontSize: 17, color: "var(--body)", lineHeight: 1.82, maxWidth: 500, marginBottom: 44, fontWeight: 300 }}>
-              AI-powered support, peer community, curated resources, and certified counsellors — all in one quiet, confidential space built for students.
-            </motion.p>
+              <motion.p {...up(0.13)}
+                style={{ fontSize: "clamp(15px, 1.8vw, 17px)", color: "var(--body)", lineHeight: 1.82, maxWidth: 500, marginBottom: 44, fontWeight: 300 }}>
+                AI-powered support, peer community, curated resources, and certified counsellors — all in one quiet, confidential space built for students.
+              </motion.p>
 
-            <motion.div {...up(0.18)} style={{ display: "flex", gap: 12, flexWrap: "wrap", marginBottom: 64 }}>
-              <Link to="/ai-chat" className="btn-primary">Begin your journey <ArrowRight size={16} /></Link>
-              <Link to="/book" className="btn-ghost"><Calendar size={15} /> Book a counsellor</Link>
-            </motion.div>
+              <motion.div {...up(0.18)}
+                className="hero-cta-row"
+                style={{ display: "flex", gap: 12, flexWrap: "wrap", marginBottom: 64 }}
+              >
+                <Link to="/ai-chat" className="btn-primary">Begin your journey <ArrowRight size={16} /></Link>
+                <Link to="/book" className="btn-ghost"><Calendar size={15} /> Book a counsellor</Link>
+              </motion.div>
 
-            {/* Stats */}
-            <motion.div {...up(0.23)} style={{ display: "flex", gap: 44, flexWrap: "wrap" }}>
-              {[
-                { n: "15k+", l: "Students supported" },
-                { n: "98%", l: "Satisfaction rate" },
-                { n: "24/7", l: "Always available" },
-                { n: "100+", l: "Partner colleges" },
-              ].map(s => (
-                <div key={s.l}>
-                  <div className="serif" style={{ fontSize: 34, fontWeight: 400, color: "var(--charcoal)", lineHeight: 1, marginBottom: 5 }}>{s.n}</div>
-                  <div style={{ fontSize: 13, color: "var(--charcoal)", fontWeight: 300 }}>{s.l}</div>
+              {/* Stats */}
+              <motion.div {...up(0.23)}
+                className="hero-stats"
+                style={{ display: "flex", gap: 44, flexWrap: "wrap" }}
+              >
+                {[
+                  { n: "15k+", l: "Students supported" },
+                  { n: "98%", l: "Satisfaction rate" },
+                  { n: "24/7", l: "Always available" },
+                  { n: "100+", l: "Partner colleges" },
+                ].map(s => (
+                  <div key={s.l}>
+                    <div className="serif" style={{ fontSize: "clamp(26px, 3.5vw, 34px)", fontWeight: 400, color: "var(--charcoal)", lineHeight: 1, marginBottom: 5 }}>{s.n}</div>
+                    <div style={{ fontSize: 13, color: "var(--charcoal)", fontWeight: 300 }}>{s.l}</div>
+                  </div>
+                ))}
+              </motion.div>
+            </div>
+
+            {/* Floating chat widget — desktop only */}
+            <motion.div
+              initial={{ opacity: 0, y: 24 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.75, delay: 0.35 }}
+              className="float-a mob-hide"
+              style={{
+                width: 292,
+                background: "#fff",
+                border: "1px solid var(--border)",
+                borderRadius: 24,
+                boxShadow: "0 20px 56px rgba(0,0,0,0.1)",
+                padding: 22,
+                flexShrink: 0,
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "center", gap: 10, paddingBottom: 14, marginBottom: 16, borderBottom: "1px solid var(--border)" }}>
+                <div style={{ width: 36, height: 36, borderRadius: 10, background: "var(--charcoal)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                  <Brain size={17} color="white" />
                 </div>
-              ))}
+                <div>
+                  <div style={{ fontWeight: 600, fontSize: 13.5, color: "var(--charcoal)" }}>EchoCare AI</div>
+                  <div style={{ fontSize: 12, color: "var(--muted)", display: "flex", alignItems: "center", gap: 5, marginTop: 1 }}>
+                    <span className="pulse" style={{ width: 6, height: 6, background: "#4CAF50", borderRadius: "50%", display: "inline-block" }} />
+                    Active now
+                  </div>
+                </div>
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 9, marginBottom: 16 }}>
+                {[
+                  { t: "ai", m: "How are you feeling today? I'm here to listen 🌿" },
+                  { t: "user", m: "Really anxious about exams." },
+                  { t: "ai", m: "That's common. Let's try a quick grounding exercise together." },
+                ].map((c, i) => (
+                  <motion.div key={i} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.9 + i * 0.4 }}
+                    style={{ display: "flex", justifyContent: c.t === "user" ? "flex-end" : "flex-start" }}>
+                    <div className={`bubble bubble-${c.t}`}>{c.m}</div>
+                  </motion.div>
+                ))}
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: 10, background: "var(--sage-light)", borderRadius: 12, padding: "10px 14px" }}>
+                <span style={{ flex: 1, fontSize: 12.5, color: "var(--muted)" }}>Type your thoughts…</span>
+                <Send size={14} color="var(--sage)" />
+              </div>
             </motion.div>
           </div>
-
-          {/* Floating chat widget */}
-          <motion.div
-            initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.75, delay: 0.35 }}
-            className="float-a mob-hide"
-            style={{ width: 292, background: "#fff", border: "1px solid var(--border)", borderRadius: 24, boxShadow: "0 20px 56px rgba(0,0,0,0.1)", padding: 22, flexShrink: 0 }}
-          >
-            {/* Widget header */}
-            <div style={{ display: "flex", alignItems: "center", gap: 10, paddingBottom: 14, marginBottom: 16, borderBottom: "1px solid var(--border)" }}>
-              <div style={{ width: 36, height: 36, borderRadius: 10, background: "var(--charcoal)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                <Brain size={17} color="white" />
-              </div>
-              <div>
-                <div style={{ fontWeight: 600, fontSize: 13.5, color: "var(--charcoal)" }}>EchoCare AI</div>
-                <div style={{ fontSize: 12, color: "var(--muted)", display: "flex", alignItems: "center", gap: 5, marginTop: 1 }}>
-                  <span className="pulse" style={{ width: 6, height: 6, background: "#4CAF50", borderRadius: "50%", display: "inline-block" }} />
-                  Active now
-                </div>
-              </div>
-            </div>
-            {/* Chat messages */}
-            <div style={{ display: "flex", flexDirection: "column", gap: 9, marginBottom: 16 }}>
-              {[
-                { t: "ai", m: "How are you feeling today? I'm here to listen 🌿" },
-                { t: "user", m: "Really anxious about exams." },
-                { t: "ai", m: "That's common. Let's try a quick grounding exercise together." },
-              ].map((c, i) => (
-                <motion.div key={i} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.9 + i * 0.4 }}
-                  style={{ display: "flex", justifyContent: c.t === "user" ? "flex-end" : "flex-start" }}>
-                  <div className={`bubble bubble-${c.t}`}>{c.m}</div>
-                </motion.div>
-              ))}
-            </div>
-            {/* Input */}
-            <div style={{ display: "flex", alignItems: "center", gap: 10, background: "var(--sage-light)", borderRadius: 12, padding: "10px 14px" }}>
-              <span style={{ flex: 1, fontSize: 12.5, color: "var(--muted)" }}>Type your thoughts…</span>
-              <Send size={14} color="var(--sage)" />
-            </div>
-          </motion.div>
         </div>
       </section>
 
       {/* ════ FEATURE BAND ════ */}
-      <div style={{ background: "var(--charcoal)", padding: "18px 40px" }}>
-        <div style={{ ...S.maxW, display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12 }}>
-          {["AI Chat Support", "Peer Community", "Wellness Resources", "Counsellor Booking", "Admin Health Tracking"].map(t => (
-            <div key={t} style={{ display: "flex", alignItems: "center", gap: 9, color: "rgba(255,255,255,0.6)", fontSize: 13, fontWeight: 400 }}>
-              <div style={{ width: 5, height: 5, borderRadius: "50%", background: "var(--sage)", flexShrink: 0 }} />
-              {t}
-            </div>
-          ))}
+      <div
+        className="feature-band"
+        style={{ background: "var(--charcoal)", padding: "18px 40px" }}
+      >
+        <div style={{ ...S.maxW }}>
+          <div
+            className="feature-band-inner"
+            style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12 }}
+          >
+            {["AI Chat Support", "Peer Community", "Wellness Resources", "Counsellor Booking", "Admin Health Tracking"].map(t => (
+              <div
+                key={t}
+                className="feature-band-item"
+                style={{ display: "flex", alignItems: "center", gap: 9, color: "rgba(255,255,255,0.6)", fontSize: 13, fontWeight: 400 }}
+              >
+                <div style={{ width: 5, height: 5, borderRadius: "50%", background: "var(--sage)", flexShrink: 0 }} />
+                {t}
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
       {/* ════ 5 PILLARS ════ */}
-   {/* ════ 5 PILLARS ════ */}
-<section style={S.section}>
-  <div style={S.maxW}>
-    <motion.div {...up(0)} style={{ marginBottom: 56, textAlign: "center" }}>
-      <span className="section-eyebrow">Five Pillars</span>
-      <h2 className="serif" style={{ fontSize: "clamp(34px, 4.5vw, 54px)", fontWeight: 300, letterSpacing: "-0.022em", lineHeight: 1.18, maxWidth: 700, margin: "0 auto" }}>
-        Everything a student needs,{" "}
-        <em style={{ color: "var(--sage)" }}>beautifully unified.</em>
-      </h2>
-    </motion.div>
+      <section className="section-pad" style={{ padding: "96px 40px" }}>
+        <div style={S.maxW}>
+          <motion.div {...up(0)} style={{ marginBottom: 56, textAlign: "center" }}>
+            <span className="section-eyebrow">Five Pillars</span>
+            <h2 className="serif" style={{ fontSize: "clamp(28px, 4.5vw, 54px)", fontWeight: 300, letterSpacing: "-0.022em", lineHeight: 1.18, maxWidth: 700, margin: "0 auto" }}>
+              Everything a student needs,{" "}
+              <em style={{ color: "var(--sage)" }}>beautifully unified.</em>
+            </h2>
+          </motion.div>
 
-    {/* Improved Bento Grid */}
-    <div className="feat-grid" style={{ 
-      display: "grid", 
-      gridTemplateColumns: "repeat(4, 1fr)", 
-      gridTemplateRows: "auto auto",
-      gap: 20 
-    }}>
+          {/* Bento Grid */}
+          <div
+            className="feat-grid"
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(4, 1fr)",
+              gridTemplateRows: "auto auto",
+              gap: 20,
+            }}
+          >
+            {/* ── 1. AI CHAT ── */}
+            <motion.div {...zoomIn(0.05)}
+              style={{
+                gridColumn: "span 2",
+                gridRow: "span 2",
+                borderRadius: 24,
+                padding: "36px",
+                background: "var(--charcoal)",
+                boxShadow: "0 16px 48px rgba(0,0,0,0.18)",
+                display: "flex",
+                flexDirection: "column",
+                transition: "transform 0.35s ease, box-shadow 0.35s ease",
+              }}
+              whileHover={{ y: -6, boxShadow: "0 28px 72px rgba(0,0,0,0.28)" }}
+            >
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 24 }}>
+                <div style={{ width: 48, height: 48, borderRadius: 12, background: "rgba(255,255,255,0.1)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <Brain size={24} color="white" />
+                </div>
+                <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", padding: "4px 12px", borderRadius: 100, background: "rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.7)" }}>24 / 7</span>
+              </div>
 
-      {/* ── 1. AI CHAT ── large, spans 2 columns and 2 rows */}
-      <motion.div {...zoomIn(0.05)}
-        style={{
-          gridColumn: "span 2",
-          gridRow: "span 2",
-          borderRadius: 24,
-          padding: "36px",
-          background: "var(--charcoal)",
-          border: "none",
-          boxShadow: "0 16px 48px rgba(0,0,0,0.18)",
-          display: "flex",
-          flexDirection: "column",
-          transition: "transform 0.35s ease, box-shadow 0.35s ease",
-        }}
-        whileHover={{ y: -6, boxShadow: "0 28px 72px rgba(0,0,0,0.28)" }}
-      >
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 24 }}>
-          <div style={{ width: 48, height: 48, borderRadius: 12, background: "rgba(255,255,255,0.1)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <Brain size={24} color="white" />
-          </div>
-          <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", padding: "4px 12px", borderRadius: 100, background: "rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.7)" }}>24 / 7</span>
-        </div>
+              <h3 className="serif" style={{ fontSize: "clamp(22px, 2.5vw, 28px)", fontWeight: 400, color: "#fff", marginBottom: 12, lineHeight: 1.2 }}>
+                AI Mental Health Chat
+              </h3>
+              <p style={{ fontSize: 14, color: "rgba(255,255,255,0.65)", lineHeight: 1.7, marginBottom: 24, maxWidth: "90%" }}>
+                An empathetic AI companion powered by sentiment analysis. It listens, detects stress patterns, and guides you through evidence-based coping techniques — day or night.
+              </p>
 
-        <h3 className="serif" style={{ fontSize: 28, fontWeight: 400, color: "#fff", marginBottom: 12, lineHeight: 1.2 }}>
-          AI Mental Health Chat
-        </h3>
-        <p style={{ fontSize: 14, color: "rgba(255,255,255,0.65)", lineHeight: 1.7, marginBottom: 24, maxWidth: "90%" }}>
-          An empathetic AI companion powered by sentiment analysis. It listens, detects stress patterns, and guides you through evidence-based coping techniques — day or night.
-        </p>
-
-        {/* Chat preview - smaller and more compact */}
-        <div style={{ background: "rgba(255,255,255,0.06)", borderRadius: 14, padding: 16, marginBottom: 20, border: "1px solid rgba(255,255,255,0.08)" }}>
-          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            {[
-              { t: "ai", m: "I notice you might be under pressure. Want to talk?" },
-              { t: "user", m: "Yes, I'm overwhelmed with deadlines." },
-              { t: "ai", m: "Let's try the 4-7-8 breathing technique. Just 2 minutes 🌿" },
-            ].map((c, i) => (
-              <div key={i} style={{ display: "flex", justifyContent: c.t === "user" ? "flex-end" : "flex-start" }}>
-                <div style={{
-                  padding: "8px 12px", borderRadius: 10, fontSize: 12, lineHeight: 1.4, maxWidth: "90%",
-                  background: c.t === "ai" ? "rgba(255,255,255,0.11)" : "var(--sage)",
-                  color: "#fff",
-                  borderBottomLeftRadius: c.t === "ai" ? 3 : 10,
-                  borderBottomRightRadius: c.t === "user" ? 3 : 10,
-                }}>
-                  {c.m}
+              <div style={{ background: "rgba(255,255,255,0.06)", borderRadius: 14, padding: 16, marginBottom: 20, border: "1px solid rgba(255,255,255,0.08)" }}>
+                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                  {[
+                    { t: "ai", m: "I notice you might be under pressure. Want to talk?" },
+                    { t: "user", m: "Yes, I'm overwhelmed with deadlines." },
+                    { t: "ai", m: "Let's try the 4-7-8 breathing technique. Just 2 minutes 🌿" },
+                  ].map((c, i) => (
+                    <div key={i} style={{ display: "flex", justifyContent: c.t === "user" ? "flex-end" : "flex-start" }}>
+                      <div style={{
+                        padding: "8px 12px", borderRadius: 10, fontSize: 12, lineHeight: 1.4, maxWidth: "90%",
+                        background: c.t === "ai" ? "rgba(255,255,255,0.11)" : "var(--sage)",
+                        color: "#fff",
+                        borderBottomLeftRadius: c.t === "ai" ? 3 : 10,
+                        borderBottomRightRadius: c.t === "user" ? 3 : 10,
+                      }}>
+                        {c.m}
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
-            ))}
-          </div>
-        </div>
 
-        {/* Tags - smaller */}
-        <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 20 }}>
-          {["Sentiment Analysis", "CBT Techniques", "Crisis Detection"].map(t => (
-            <span key={t} style={{ fontSize: 10, padding: "4px 10px", borderRadius: 100, background: "rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.7)" }}>{t}</span>
-          ))}
-        </div>
-
-        <Link to="/ai-chat" className="btn-sage" style={{ alignSelf: "flex-start", padding: "10px 22px", fontSize: 13 }}>
-          Start chatting <ArrowRight size={14} />
-        </Link>
-      </motion.div>
-
-      {/* ── 2. COMMUNITY ── */}
-      <motion.div {...zoomIn(0.1)}
-        style={{
-          gridColumn: "span 1",
-          borderRadius: 22,
-          padding: "28px",
-          background: "var(--warm)",
-          border: "1px solid rgba(0,0,0,0.04)",
-          boxShadow: "var(--shadow-sm)",
-          transition: "transform 0.32s, box-shadow 0.32s",
-          display: "flex",
-          flexDirection: "column",
-          height: "100%"
-        }}
-        whileHover={{ y: -5, boxShadow: "var(--shadow-lg)" }}
-      >
-        <div style={{ width: 44, height: 44, borderRadius: 12, background: "#fff", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 18, boxShadow: "0 2px 8px rgba(0,0,0,0.05)" }}>
-          <Users size={20} color="var(--charcoal)" />
-        </div>
-        
-        <h3 className="serif" style={{ fontSize: 22, fontWeight: 400, color: "var(--charcoal)", marginBottom: 8 }}>Community</h3>
-        
-        <p style={{ fontSize: 13, color: "var(--body)", lineHeight: 1.6, marginBottom: 16, flex: 1 }}>
-          Moderated peer groups where students share, support, and grow — completely stigma-free.
-        </p>
-        
-        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 20 }}>
-          <div style={{ display: "flex" }}>
-            {["#B8D4B8", "#9FC49F", "#8FAF8F"].map((c, i) => (
-              <div key={i} style={{ width: 26, height: 26, borderRadius: "50%", background: c, border: "2px solid var(--warm)", marginLeft: i === 0 ? 0 : -8, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <span style={{ fontSize: 9, color: "#fff", fontWeight: 600 }}>{["P","A","K"][i]}</span>
+              <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 20 }}>
+                {["Sentiment Analysis", "CBT Techniques", "Crisis Detection"].map(t => (
+                  <span key={t} style={{ fontSize: 10, padding: "4px 10px", borderRadius: 100, background: "rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.7)" }}>{t}</span>
+                ))}
               </div>
-            ))}
+
+              <Link to="/ai-chat" className="btn-sage" style={{ alignSelf: "flex-start", padding: "10px 22px", fontSize: 13 }}>
+                Start chatting <ArrowRight size={14} />
+              </Link>
+            </motion.div>
+
+            {/* ── 2. COMMUNITY ── */}
+            <motion.div {...zoomIn(0.1)}
+              style={{
+                gridColumn: "span 1",
+                borderRadius: 22, padding: "28px",
+                background: "var(--warm)",
+                border: "1px solid rgba(0,0,0,0.04)",
+                boxShadow: "var(--shadow-sm)",
+                transition: "transform 0.32s, box-shadow 0.32s",
+                display: "flex", flexDirection: "column",
+              }}
+              whileHover={{ y: -5, boxShadow: "var(--shadow-lg)" }}
+            >
+              <div style={{ width: 44, height: 44, borderRadius: 12, background: "#fff", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 18, boxShadow: "0 2px 8px rgba(0,0,0,0.05)" }}>
+                <Users size={20} color="var(--charcoal)" />
+              </div>
+              <h3 className="serif" style={{ fontSize: 22, fontWeight: 400, color: "var(--charcoal)", marginBottom: 8 }}>Community</h3>
+              <p style={{ fontSize: 13, color: "var(--body)", lineHeight: 1.6, marginBottom: 16, flex: 1 }}>
+                Moderated peer groups where students share, support, and grow — completely stigma-free.
+              </p>
+              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 20 }}>
+                <div style={{ display: "flex" }}>
+                  {["#B8D4B8", "#9FC49F", "#8FAF8F"].map((c, i) => (
+                    <div key={i} style={{ width: 26, height: 26, borderRadius: "50%", background: c, border: "2px solid var(--warm)", marginLeft: i === 0 ? 0 : -8, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                      <span style={{ fontSize: 9, color: "#fff", fontWeight: 600 }}>{["P","A","K"][i]}</span>
+                    </div>
+                  ))}
+                </div>
+                <span style={{ fontSize: 12, color: "var(--body)" }}>+2.4k members</span>
+              </div>
+              <Link to="/community" style={{ fontSize: 13, color: "var(--sage)", fontWeight: 500, display: "inline-flex", alignItems: "center", gap: 4, marginTop: "auto" }}>
+                Join community <ArrowRight size={12} />
+              </Link>
+            </motion.div>
+
+            {/* ── 3. RESOURCES ── */}
+            <motion.div {...zoomIn(0.15)}
+              style={{
+                gridColumn: "span 1",
+                borderRadius: 22, padding: "28px",
+                background: "var(--sage-light)",
+                border: "1px solid rgba(107,158,107,0.12)",
+                boxShadow: "var(--shadow-sm)",
+                transition: "transform 0.32s, box-shadow 0.32s",
+                display: "flex", flexDirection: "column",
+              }}
+              whileHover={{ y: -5, boxShadow: "var(--shadow-lg)" }}
+            >
+              <div style={{ width: 44, height: 44, borderRadius: 12, background: "#fff", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 18, boxShadow: "0 2px 8px rgba(0,0,0,0.05)" }}>
+                <BookOpen size={20} color="var(--charcoal)" />
+              </div>
+              <h3 className="serif" style={{ fontSize: 22, fontWeight: 400, color: "var(--charcoal)", marginBottom: 8 }}>Resources</h3>
+              <p style={{ fontSize: 13, color: "var(--body)", lineHeight: 1.6, marginBottom: 16, flex: 1 }}>
+                Guided meditations, exercises, and guides in 10+ languages.
+              </p>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: 20 }}>
+                {[
+                  { label: "Videos", n: "50+" },
+                  { label: "Audios", n: "100+" },
+                  { label: "Guides", n: "30+" },
+                  { label: "Languages", n: "10+" },
+                ].map(s => (
+                  <div key={s.label} style={{ background: "#fff", borderRadius: 8, padding: "10px" }}>
+                    <div className="serif" style={{ fontSize: 18, fontWeight: 400, color: "var(--charcoal)", lineHeight: 1 }}>{s.n}</div>
+                    <div style={{ fontSize: 10, color: "var(--muted)" }}>{s.label}</div>
+                  </div>
+                ))}
+              </div>
+              <Link to="/resources" style={{ fontSize: 13, color: "var(--sage)", fontWeight: 500, display: "inline-flex", alignItems: "center", gap: 4, marginTop: "auto" }}>
+                Explore library <ArrowRight size={12} />
+              </Link>
+            </motion.div>
+
+            {/* ── 4. COUNSELLOR BOOKING ── */}
+            <motion.div {...zoomIn(0.2)}
+              style={{
+                gridColumn: "span 1",
+                borderRadius: 22, padding: "28px",
+                background: "#fff",
+                border: "1px solid var(--border-light)",
+                boxShadow: "var(--shadow-sm)",
+                transition: "transform 0.32s, box-shadow 0.32s",
+                display: "flex", flexDirection: "column",
+              }}
+              whileHover={{ y: -5, boxShadow: "var(--shadow-lg)" }}
+            >
+              <div style={{ width: 44, height: 44, borderRadius: 12, background: "var(--sage-light)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 18 }}>
+                <Calendar size={20} color="var(--sage)" />
+              </div>
+              <h3 className="serif" style={{ fontSize: 22, fontWeight: 400, color: "var(--charcoal)", marginBottom: 8 }}>Counsellor</h3>
+              <p style={{ fontSize: 13, color: "var(--body)", lineHeight: 1.6, marginBottom: 16 }}>
+                Private, confidential sessions with certified professionals.
+              </p>
+              <div style={{ background: "var(--sage-light)", borderRadius: 10, padding: "12px", marginBottom: 16 }}>
+                <div style={{ fontSize: 10, color: "var(--sage)", marginBottom: 8, fontWeight: 600, textTransform: "uppercase" }}>Available today</div>
+                <div style={{ display: "flex", gap: 5, flexWrap: "wrap" }}>
+                  {["9:00", "11:30", "2:00", "4:30"].map((t, i) => (
+                    <span key={t} style={{
+                      fontSize: 11, padding: "4px 8px", borderRadius: 6, fontWeight: 500,
+                      background: i === 1 ? "var(--charcoal)" : "#fff",
+                      color: i === 1 ? "#fff" : "var(--body)",
+                    }}>{t}</span>
+                  ))}
+                </div>
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: 5, marginBottom: 16 }}>
+                <Shield size={12} color="var(--sage)" />
+                <span style={{ fontSize: 11, color: "var(--muted)" }}>100% confidential</span>
+              </div>
+              <Link to="/book" className="btn-primary" style={{ padding: "8px 16px", fontSize: 12, justifyContent: "center" }}>
+                Book now <ArrowRight size={12} />
+              </Link>
+            </motion.div>
+
+            {/* ── 5. ADMIN DASHBOARD ── */}
+            <motion.div {...zoomIn(0.25)}
+              style={{
+                gridColumn: "span 1",
+                borderRadius: 22, padding: "28px",
+                background: "var(--charcoal-2)",
+                boxShadow: "0 12px 40px rgba(0,0,0,0.22)",
+                transition: "transform 0.32s, box-shadow 0.32s",
+                display: "flex", flexDirection: "column",
+              }}
+              whileHover={{ y: -5, boxShadow: "0 24px 64px rgba(0,0,0,0.3)" }}
+            >
+              <div style={{ width: 44, height: 44, borderRadius: 12, background: "rgba(255,255,255,0.1)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 18 }}>
+                <LayoutDashboard size={20} color="white" />
+              </div>
+              <h3 className="serif" style={{ fontSize: 22, fontWeight: 400, color: "#fff", marginBottom: 8 }}>Admin</h3>
+              <p style={{ fontSize: 13, color: "rgba(255,255,255,0.65)", lineHeight: 1.6, marginBottom: 16 }}>
+                Real-time anonymised analytics to identify at-risk students early.
+              </p>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: 16 }}>
+                {[
+                  { label: "Avg. Mood", val: "7.2" },
+                  { label: "Sessions", val: "142" },
+                ].map(s => (
+                  <div key={s.label} style={{ background: "rgba(255,255,255,0.07)", borderRadius: 8, padding: "10px" }}>
+                    <div style={{ fontSize: 14, fontWeight: 600, color: "#fff", lineHeight: 1, marginBottom: 2 }}>{s.val}</div>
+                    <div style={{ fontSize: 9, color: "rgba(255,255,255,0.5)" }}>{s.label}</div>
+                  </div>
+                ))}
+              </div>
+              <div style={{ display: "flex", gap: 5, flexWrap: "wrap" }}>
+                {["Early Alerts", "Trends"].map(t => (
+                  <span key={t} style={{ fontSize: 10, padding: "4px 8px", borderRadius: 100, background: "rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.7)" }}>{t}</span>
+                ))}
+              </div>
+            </motion.div>
           </div>
-          <span style={{ fontSize: 12, color: "var(--body)" }}>+2.4k members</span>
         </div>
-        
-        <Link to="/community" style={{ fontSize: 13, color: "var(--sage)", fontWeight: 500, display: "inline-flex", alignItems: "center", gap: 4, marginTop: "auto" }}>
-          Join community <ArrowRight size={12} />
-        </Link>
-      </motion.div>
-
-      {/* ── 3. RESOURCES ── */}
-      <motion.div {...zoomIn(0.15)}
-        style={{
-          gridColumn: "span 1",
-          borderRadius: 22,
-          padding: "28px",
-          background: "var(--sage-light)",
-          border: "1px solid rgba(107,158,107,0.12)",
-          boxShadow: "var(--shadow-sm)",
-          transition: "transform 0.32s, box-shadow 0.32s",
-          display: "flex",
-          flexDirection: "column",
-          height: "100%"
-        }}
-        whileHover={{ y: -5, boxShadow: "var(--shadow-lg)" }}
-      >
-        <div style={{ width: 44, height: 44, borderRadius: 12, background: "#fff", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 18, boxShadow: "0 2px 8px rgba(0,0,0,0.05)" }}>
-          <BookOpen size={20} color="var(--charcoal)" />
-        </div>
-        
-        <h3 className="serif" style={{ fontSize: 22, fontWeight: 400, color: "var(--charcoal)", marginBottom: 8 }}>Resources</h3>
-        
-        <p style={{ fontSize: 13, color: "var(--body)", lineHeight: 1.6, marginBottom: 16, flex: 1 }}>
-          Guided meditations, exercises, and guides in 10+ languages.
-        </p>
-        
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: 20 }}>
-          {[
-            { label: "Videos", n: "50+" },
-            { label: "Audios", n: "100+" },
-            { label: "Guides", n: "30+" },
-            { label: "Languages", n: "10+" }
-          ].map(s => (
-            <div key={s.label} style={{ background: "#fff", borderRadius: 8, padding: "10px" }}>
-              <div className="serif" style={{ fontSize: 18, fontWeight: 400, color: "var(--charcoal)", lineHeight: 1 }}>{s.n}</div>
-              <div style={{ fontSize: 10, color: "var(--muted)" }}>{s.label}</div>
-            </div>
-          ))}
-        </div>
-        
-        <Link to="/resources" style={{ fontSize: 13, color: "var(--sage)", fontWeight: 500, display: "inline-flex", alignItems: "center", gap: 4, marginTop: "auto" }}>
-          Explore library <ArrowRight size={12} />
-        </Link>
-      </motion.div>
-
-      {/* ── 4. COUNSELLOR BOOKING ── */}
-      <motion.div {...zoomIn(0.2)}
-        style={{
-          gridColumn: "span 1",
-          borderRadius: 22,
-          padding: "28px",
-          background: "#fff",
-          border: "1px solid var(--border-light)",
-          boxShadow: "var(--shadow-sm)",
-          transition: "transform 0.32s, box-shadow 0.32s",
-          display: "flex",
-          flexDirection: "column",
-          height: "100%"
-        }}
-        whileHover={{ y: -5, boxShadow: "var(--shadow-lg)" }}
-      >
-        <div style={{ width: 44, height: 44, borderRadius: 12, background: "var(--sage-light)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 18 }}>
-          <Calendar size={20} color="var(--sage)" />
-        </div>
-        
-        <h3 className="serif" style={{ fontSize: 22, fontWeight: 400, color: "var(--charcoal)", marginBottom: 8 }}>Counsellor</h3>
-        
-        <p style={{ fontSize: 13, color: "var(--body)", lineHeight: 1.6, marginBottom: 16 }}>
-          Private, confidential sessions with certified professionals.
-        </p>
-        
-        {/* Time slots - simplified */}
-        <div style={{ background: "var(--sage-light)", borderRadius: 10, padding: "12px", marginBottom: 16 }}>
-          <div style={{ fontSize: 10, color: "var(--sage)", marginBottom: 8, fontWeight: 600, textTransform: "uppercase" }}>Available today</div>
-          <div style={{ display: "flex", gap: 5, flexWrap: "wrap" }}>
-            {["9:00", "11:30", "2:00", "4:30"].map((t, i) => (
-              <span key={t} style={{
-                fontSize: 11, padding: "4px 8px", borderRadius: 6, fontWeight: 500,
-                background: i === 1 ? "var(--charcoal)" : "#fff",
-                color: i === 1 ? "#fff" : "var(--body)",
-              }}>{t}</span>
-            ))}
-          </div>
-        </div>
-        
-        <div style={{ display: "flex", alignItems: "center", gap: 5, marginBottom: 16 }}>
-          <Shield size={12} color="var(--sage)" />
-          <span style={{ fontSize: 11, color: "var(--muted)" }}>100% confidential</span>
-        </div>
-        
-        <Link to="/book" className="btn-primary" style={{ padding: "8px 16px", fontSize: 12, justifyContent: "center" }}>
-          Book now <ArrowRight size={12} />
-        </Link>
-      </motion.div>
-
-      {/* ── 5. ADMIN DASHBOARD ── */}
-      <motion.div {...zoomIn(0.25)}
-        style={{
-          gridColumn: "span 1",
-          borderRadius: 22,
-          padding: "28px",
-          background: "var(--charcoal-2)",
-          border: "none",
-          boxShadow: "0 12px 40px rgba(0,0,0,0.22)",
-          transition: "transform 0.32s, box-shadow 0.32s",
-          display: "flex",
-          flexDirection: "column",
-          height: "100%"
-        }}
-        whileHover={{ y: -5, boxShadow: "0 24px 64px rgba(0,0,0,0.3)" }}
-      >
-        <div style={{ width: 44, height: 44, borderRadius: 12, background: "rgba(255,255,255,0.1)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 18 }}>
-          <LayoutDashboard size={20} color="white" />
-        </div>
-        
-        <h3 className="serif" style={{ fontSize: 22, fontWeight: 400, color: "#fff", marginBottom: 8 }}>Admin</h3>
-        
-        <p style={{ fontSize: 13, color: "rgba(255,255,255,0.65)", lineHeight: 1.6, marginBottom: 16 }}>
-          Real-time anonymised analytics to identify at-risk students early.
-        </p>
-        
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: 16 }}>
-          {[
-            { label: "Avg. Mood", val: "7.2" },
-            { label: "Sessions", val: "142" },
-          ].map(s => (
-            <div key={s.label} style={{ background: "rgba(255,255,255,0.07)", borderRadius: 8, padding: "10px" }}>
-              <div style={{ fontSize: 14, fontWeight: 600, color: "#fff", lineHeight: 1, marginBottom: 2 }}>{s.val}</div>
-              <div style={{ fontSize: 9, color: "rgba(255,255,255,0.5)" }}>{s.label}</div>
-            </div>
-          ))}
-        </div>
-        
-        <div style={{ display: "flex", gap: 5, flexWrap: "wrap" }}>
-          {["Early Alerts", "Trends"].map(t => (
-            <span key={t} style={{ fontSize: 10, padding: "4px 8px", borderRadius: 100, background: "rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.7)" }}>{t}</span>
-          ))}
-        </div>
-      </motion.div>
-    </div>
-  </div>
-</section>
+      </section>
 
       {/* ════ HOW IT WORKS ════ */}
-      <section style={{ ...S.sectionSm, background: "var(--warm)" }}>
+      <section className="section-pad-sm" style={{ padding: "72px 40px", background: "var(--warm)" }}>
         <div style={S.maxW}>
           <motion.div {...up(0)} style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: 24, marginBottom: 52 }}>
             <div>
               <span className="section-eyebrow">Process</span>
-              <h2 className="serif" style={{ fontSize: "clamp(30px, 4vw, 48px)", fontWeight: 300, letterSpacing: "-0.02em", lineHeight: 1.22 }}>
+              <h2 className="serif" style={{ fontSize: "clamp(26px, 4vw, 48px)", fontWeight: 300, letterSpacing: "-0.02em", lineHeight: 1.22 }}>
                 Simple by design,{" "}
                 <em style={{ color: "var(--sage)" }}>powerful in practice.</em>
               </h2>
@@ -683,7 +787,10 @@ export default function Home() {
             <Link to="/register" className="btn-primary">Start free <ArrowRight size={15} /></Link>
           </motion.div>
 
-          <div className="grid-4" style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16 }}>
+          <div
+            className="steps-grid"
+            style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16 }}
+          >
             {[
               { n: "01", icon: <CheckCircle size={19} />, title: "Create account", body: "Private sign-up in under 2 minutes. No college ID needed." },
               { n: "02", icon: <Brain size={19} />, title: "Talk to AI", body: "Chat anytime. The AI adapts to your emotional state in real time." },
@@ -704,18 +811,20 @@ export default function Home() {
       </section>
 
       {/* ════ TRUST + TESTIMONIALS ════ */}
-      <section style={S.section}>
+      <section className="section-pad" style={{ padding: "96px 40px" }}>
         <div style={S.maxW}>
-          <div className="grid-2" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 80, alignItems: "start" }}>
-
+          <div
+            className="trust-grid"
+            style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 80, alignItems: "start" }}
+          >
             {/* Trust column */}
             <motion.div {...slideRight(0)}>
               <span className="section-eyebrow">Built on trust</span>
-              <h2 className="serif" style={{ fontSize: "clamp(30px, 4vw, 48px)", fontWeight: 300, letterSpacing: "-0.02em", lineHeight: 1.22, marginBottom: 24 }}>
+              <h2 className="serif" style={{ fontSize: "clamp(26px, 4vw, 48px)", fontWeight: 300, letterSpacing: "-0.02em", lineHeight: 1.22, marginBottom: 24 }}>
                 Your privacy is{" "}
                 <em style={{ color: "var(--sage)" }}>non-negotiable.</em>
               </h2>
-              <p style={{ fontSize: 15.5, color: "var(--body)", lineHeight: 1.85, fontWeight: 300, marginBottom: 36, maxWidth: 440 }}>
+              <p style={{ fontSize: "clamp(14px, 1.5vw, 15.5px)", color: "var(--body)", lineHeight: 1.85, fontWeight: 300, marginBottom: 36, maxWidth: 440 }}>
                 Everything you share stays between you and the platform. We use end-to-end encryption, anonymised data policies, and zero third-party advertising.
               </p>
               <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
@@ -778,18 +887,20 @@ export default function Home() {
       </section>
 
       {/* ════ ADMIN / FOR COLLEGES ════ */}
-      <section style={{ ...S.section, background: "var(--charcoal)" }}>
+      <section className="section-pad" style={{ padding: "96px 40px", background: "var(--charcoal)" }}>
         <div style={S.maxW}>
-          <div className="grid-2" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 64, alignItems: "center" }}>
-
+          <div
+            className="admin-grid"
+            style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 64, alignItems: "center" }}
+          >
             {/* Left copy */}
             <motion.div {...slideRight(0)}>
               <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--sage)", fontFamily: "'Outfit', sans-serif", display: "block", marginBottom: 14 }}>For Institutions</span>
-              <h2 className="serif" style={{ fontSize: "clamp(30px, 4vw, 50px)", fontWeight: 300, letterSpacing: "-0.02em", lineHeight: 1.2, color: "#fff", marginBottom: 22 }}>
+              <h2 className="serif" style={{ fontSize: "clamp(26px, 4vw, 50px)", fontWeight: 300, letterSpacing: "-0.02em", lineHeight: 1.2, color: "#fff", marginBottom: 22 }}>
                 Give your college<br />
                 <em style={{ color: "var(--sage)" }}>a pulse check.</em>
               </h2>
-              <p style={{ fontSize: 15.5, color: "rgba(255,255,255,0.65)", lineHeight: 1.85, fontWeight: 300, marginBottom: 32, maxWidth: 430 }}>
+              <p style={{ fontSize: "clamp(14px, 1.5vw, 15.5px)", color: "rgba(255,255,255,0.65)", lineHeight: 1.85, fontWeight: 300, marginBottom: 32, maxWidth: 430 }}>
                 The admin dashboard gives counselling teams and welfare officers anonymised, real-time insights into campus mental health — enabling proactive, not reactive, care.
               </p>
               <div style={{ display: "flex", flexDirection: "column", gap: 13, marginBottom: 36 }}>
@@ -811,10 +922,11 @@ export default function Home() {
 
             {/* Dashboard preview */}
             <motion.div {...slideLeft(0.1)}>
-              <div style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.09)", borderRadius: 24, padding: 28 }}>
-
-                {/* Header */}
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
+              <div
+                className="admin-preview"
+                style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.09)", borderRadius: 24, padding: 28 }}
+              >
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24, flexWrap: "wrap", gap: 12 }}>
                   <div>
                     <div style={{ fontWeight: 600, color: "#fff", fontSize: 15 }}>Wellness Overview</div>
                     <div style={{ fontSize: 12.5, color: "rgba(255,255,255,0.45)", marginTop: 3 }}>March 2025 · Anonymised</div>
@@ -830,22 +942,23 @@ export default function Home() {
                   </div>
                 </div>
 
-                {/* Stat tiles */}
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 10, marginBottom: 20 }}>
+                <div
+                  className="admin-stat-grid"
+                  style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 10, marginBottom: 20 }}
+                >
                   {[
                     { label: "Avg. Mood Score", val: "7.4", sub: "↑ 0.3 this week", up: true },
                     { label: "Active Users", val: "428", sub: "↑ 12% vs last month", up: true },
                     { label: "Alerts", val: "3", sub: "↓ 2 resolved today", up: false },
                   ].map(s => (
                     <div key={s.label} style={{ background: "rgba(255,255,255,0.07)", borderRadius: 12, padding: "14px 13px" }}>
-                      <div className="serif" style={{ fontSize: 28, fontWeight: 400, color: "#fff", lineHeight: 1 }}>{s.val}</div>
+                      <div className="serif" style={{ fontSize: "clamp(20px, 3vw, 28px)", fontWeight: 400, color: "#fff", lineHeight: 1 }}>{s.val}</div>
                       <div style={{ fontSize: 11, color: "rgba(255,255,255,0.45)", marginTop: 5, marginBottom: 6, lineHeight: 1.4 }}>{s.label}</div>
                       <div style={{ fontSize: 11.5, color: s.up ? "var(--sage)" : "#FBBF24", fontWeight: 500 }}>{s.sub}</div>
                     </div>
                   ))}
                 </div>
 
-                {/* Bar chart */}
                 <div style={{ background: "rgba(255,255,255,0.04)", borderRadius: 14, padding: "16px 18px", marginBottom: 14 }}>
                   <div style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", marginBottom: 14, textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 600 }}>Weekly Mood Trend</div>
                   <div style={{ display: "flex", alignItems: "flex-end", gap: 7, height: 60 }}>
@@ -858,8 +971,10 @@ export default function Home() {
                   </div>
                 </div>
 
-                {/* Bottom tiles */}
-                <div style={{ display: "flex", gap: 10 }}>
+                <div
+                  className="admin-bottom-tiles"
+                  style={{ display: "flex", gap: 10 }}
+                >
                   {[
                     { icon: <Bell size={14} />, label: "3 new alerts", sub: "Require review" },
                     { icon: <Calendar size={14} />, label: "18 sessions", sub: "Booked this week" },
@@ -878,35 +993,44 @@ export default function Home() {
       </section>
 
       {/* ════ CTA ════ */}
-      <section style={S.section}>
+      <section className="section-pad" style={{ padding: "96px 40px" }}>
         <div style={S.maxW}>
-          <motion.div {...zoomIn(0)}
-            style={{ background: "var(--sage-light)", borderRadius: 28, padding: "80px 64px", textAlign: "center", border: "1px solid rgba(107,158,107,0.15)", position: "relative", overflow: "hidden" }}
-          >
-            <div className="blob" style={{ width: 400, height: 400, background: "rgba(107,158,107,0.12)", top: -100, left: "50%", transform: "translateX(-50%)" }} />
-            <div style={{ position: "relative", zIndex: 1 }}>
-              <motion.div animate={{ scale: [1, 1.07, 1] }} transition={{ duration: 4, repeat: Infinity }}
-                style={{ width: 60, height: 60, background: "#fff", borderRadius: 18, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 32px", boxShadow: "0 8px 28px rgba(0,0,0,0.09)" }}>
-                <Heart size={26} color="var(--sage)" />
-              </motion.div>
-              <h2 className="serif" style={{ fontSize: "clamp(34px, 5vw, 60px)", fontWeight: 300, letterSpacing: "-0.025em", marginBottom: 18, color: "var(--charcoal)", lineHeight: 1.12 }}>
-                You are never alone.<br />
-                <em style={{ color: "var(--sage)" }}>We're always here.</em>
-              </h2>
-              <p style={{ fontSize: 16.5, color: "var(--body)", maxWidth: 480, margin: "0 auto 44px", lineHeight: 1.82, fontWeight: 300 }}>
-                Join thousands of students across India who've found support, clarity, and community through EchoCare.
-              </p>
-              <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
-                <Link to="/register" className="btn-primary">Begin for free <ArrowRight size={16} /></Link>
-                <Link to="/colleges" className="btn-ghost">For colleges</Link>
+          <motion.div {...zoomIn(0)}>
+            <div
+              className="cta-box"
+              style={{ background: "var(--sage-light)", borderRadius: 28, padding: "80px 64px", textAlign: "center", border: "1px solid rgba(107,158,107,0.15)", position: "relative", overflow: "hidden" }}
+            >
+              <div className="blob" style={{ width: 400, height: 400, background: "rgba(107,158,107,0.12)", top: -100, left: "50%", transform: "translateX(-50%)" }} />
+              <div style={{ position: "relative", zIndex: 1 }}>
+                <motion.div
+                  animate={{ scale: [1, 1.07, 1] }}
+                  transition={{ duration: 4, repeat: Infinity }}
+                  style={{ width: 60, height: 60, background: "#fff", borderRadius: 18, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 32px", boxShadow: "0 8px 28px rgba(0,0,0,0.09)" }}
+                >
+                  <Heart size={26} color="var(--sage)" />
+                </motion.div>
+                <h2 className="serif" style={{ fontSize: "clamp(30px, 5vw, 60px)", fontWeight: 300, letterSpacing: "-0.025em", marginBottom: 18, color: "var(--charcoal)", lineHeight: 1.12 }}>
+                  You are never alone.<br />
+                  <em style={{ color: "var(--sage)" }}>We're always here.</em>
+                </h2>
+                <p style={{ fontSize: "clamp(14px, 1.5vw, 16.5px)", color: "var(--body)", maxWidth: 480, margin: "0 auto 44px", lineHeight: 1.82, fontWeight: 300 }}>
+                  Join thousands of students across India who've found support, clarity, and community through EchoCare.
+                </p>
+                <div
+                  className="cta-buttons"
+                  style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}
+                >
+                  <Link to="/register" className="btn-primary">Begin for free <ArrowRight size={16} /></Link>
+                  <Link to="/colleges" className="btn-ghost">For colleges</Link>
+                </div>
+                <p style={{ marginTop: 32, fontSize: 13, color: "var(--muted)" }}>
+                  Crisis support:{" "}
+                  <a href="mailto:echocare25@gmail.com" style={{ color: "var(--charcoal)", textDecoration: "underline", textUnderlineOffset: 3 }}>
+                    echocare25@gmail.com
+                  </a>{" "}
+                  · 24 / 7
+                </p>
               </div>
-              <p style={{ marginTop: 32, fontSize: 13, color: "var(--muted)" }}>
-                Crisis support:{" "}
-                <a href="mailto:echocare25@gmail.com" style={{ color: "var(--charcoal)", textDecoration: "underline", textUnderlineOffset: 3 }}>
-                  echocare25@gmail.com
-                </a>{" "}
-                · 24 / 7
-              </p>
             </div>
           </motion.div>
         </div>
@@ -915,10 +1039,12 @@ export default function Home() {
       {/* ════ FOOTER ════ */}
       <footer style={{ background: "var(--charcoal)", padding: "60px 40px 32px" }}>
         <div style={S.maxW}>
-          <div className="footer-grid" style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr 1fr 1fr", gap: 40, marginBottom: 52, paddingBottom: 44, borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
-
+          <div
+            className="footer-grid"
+            style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr 1fr 1fr", gap: 40, marginBottom: 52, paddingBottom: 44, borderBottom: "1px solid rgba(255,255,255,0.08)" }}
+          >
             {/* Brand */}
-            <div>
+            <div className="footer-brand">
               <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
                 <div style={{ width: 32, height: 32, borderRadius: 9, background: "var(--sage)", display: "flex", alignItems: "center", justifyContent: "center" }}>
                   <Heart size={15} color="white" />
@@ -930,7 +1056,6 @@ export default function Home() {
               </p>
             </div>
 
-            {/* Footer columns */}
             {[
               { h: "Platform", items: [["AI Chat", "/ai-chat"], ["Community", "/community"], ["Resources", "/resources"], ["Book Session", "/book"]] },
               { h: "Company", items: [["About", "/about"], ["Careers", "/careers"], ["Contact", "/contact"]] },
@@ -956,7 +1081,10 @@ export default function Home() {
             ))}
           </div>
 
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12 }}>
+          <div
+            className="footer-bottom"
+            style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12 }}
+          >
             <p style={{ fontSize: 13, color: "rgba(255,255,255,0.3)", fontWeight: 300 }}>
               © 2025 EchoCare · Made with care for students
             </p>

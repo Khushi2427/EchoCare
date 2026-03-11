@@ -311,26 +311,15 @@ const CommunityChat = () => {
   /* ================= SEND MESSAGE ================= */
   const sendMessage = useCallback(() => {
     if (!text.trim() || !userId) return;
-
-    const optimisticMsg = {
-      _id: `temp-${Date.now()}`,
-      senderId: userId,
-      senderName: user.name,
-      text,
-      communityId,
-      createdAt: new Date().toISOString(),
-    };
-
-    setMessages((prev) => [...prev, optimisticMsg]);
-    setText("");
-    scrollToBottom();
-
+  
     socket.emit("sendMessage", {
+      token,
       text,
       communityId,
     });
-  }, [text, userId, communityId, scrollToBottom, user?.name]);
-
+  
+    setText("");
+  }, [text, userId, communityId, token]);
   /* ================= GUARD ================= */
   if (!userId || !token) {
     return (
@@ -386,7 +375,7 @@ const CommunityChat = () => {
           <>
             <AnimatePresence>
               {messages.map((msg) => {
-                const isMe = msg.senderId === userId;
+                const isMe = msg.senderId?.toString() === userId;
 
                 return (
                   <motion.div

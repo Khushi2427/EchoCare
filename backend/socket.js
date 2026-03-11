@@ -1,6 +1,6 @@
 import { Server } from "socket.io";
 import jwt from "jsonwebtoken";
-import Message from "./models/Message.js";
+import CommunityChat from "./models/CommunityChat.js";
 import User from "./models/User.js";
 
 export const initSocket = (server) => {
@@ -8,55 +8,63 @@ export const initSocket = (server) => {
     cors: {
       origin: "https://echo-care-omega.vercel.app",
       methods: ["GET", "POST"],
-      credentials: true, // ✅ Allow cookies/auth headers
-      allowedHeaders: ["Content-Type", "Authorization"], // ✅ Explicitly allow headers
+      credentials: true,
+      allowedHeaders: ["Content-Type", "Authorization"],
     },
-    transports: ["websocket", "polling"], // ✅ Ensure both transports work
+    transports: ["websocket", "polling"],
   });
 
   io.on("connection", (socket) => {
     console.log("Socket connected:", socket.id);
 
+    /* ===============================
+       JOIN COMMUNITY ROOM
+    =============================== */
     socket.on("joinCommunity", (communityId) => {
       if (!communityId) {
         console.error("No communityId provided for joinCommunity");
         return;
       }
+
       socket.join(communityId);
       console.log(`${socket.id} joined community: ${communityId}`);
     });
 
+    /* ===============================
+       SEND MESSAGE
+    =============================== */
     socket.on("sendMessage", async ({ token, text, communityId }) => {
       try {
         if (!token) {
-          console.error("Token missing");
           socket.emit("error", { message: "Authentication required" });
           return;
         }
 
         if (!text || !text.trim()) {
-          console.error("Message text is empty");
           socket.emit("error", { message: "Message cannot be empty" });
           return;
         }
 
         if (!communityId) {
-          console.error("Community ID missing");
           socket.emit("error", { message: "Community ID required" });
           return;
         }
 
+        // Verify token
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        
+
+        // Find user
         const user = await User.findById(decoded.id).select("name avatar");
-        
+
         if (!user) {
-          console.error("User not found");
           socket.emit("error", { message: "User not found" });
           return;
         }
 
-        const message = await Message.create({
+        /* ===============================
+           SAVE MESSAGE IN DATABASE
+        =============================== */
+        const message = await CommunityChat.create({
           senderId: user._id,
           senderName: user.name,
           senderAvatar: user.avatar,
@@ -65,49 +73,58 @@ export const initSocket = (server) => {
           isAnonymous: false,
         });
 
-        // Populate the message for better frontend display
-        const populatedMessage = await Message.findById(message._id)
+        const populatedMessage = await CommunityChat.findById(message._id)
           .select("-__v")
           .lean();
 
-        console.log(`Message sent to community ${communityId} by ${user.name}`);
-        
-        // Emit to all in the community room
+        console.log(
+          `Message sent to community ${communityId} by ${user.name}`
+        );
+
+        /* ===============================
+           BROADCAST MESSAGE
+        =============================== */
         io.to(communityId).emit("receiveMessage", populatedMessage);
 
-        // ✅ Also emit back to sender for confirmation
-        socket.emit("messageSent", { 
-          success: true, 
-          message: populatedMessage 
+        // confirmation for sender
+        socket.emit("messageSent", {
+          success: true,
+          message: populatedMessage,
         });
 
       } catch (err) {
         console.error("Socket message error:", err.message);
-        
+
         if (err.name === "JsonWebTokenError") {
           socket.emit("error", { message: "Invalid token" });
         } else if (err.name === "TokenExpiredError") {
           socket.emit("error", { message: "Token expired" });
         } else {
-          socket.emit("error", { 
-            message: "Failed to send message", 
-            details: err.message 
+          socket.emit("error", {
+            message: "Failed to send message",
+            details: err.message,
           });
         }
       }
     });
 
-    // ✅ Add error handling for frontend
+    /* ===============================
+       CLIENT ERROR HANDLING
+    =============================== */
     socket.on("error", (error) => {
       console.error("Client-side error:", error);
     });
 
-    // ✅ Add heartbeat/ping for connection monitoring
+    /* ===============================
+       HEARTBEAT (OPTIONAL)
+    =============================== */
     socket.on("ping", () => {
       socket.emit("pong", { timestamp: Date.now() });
     });
 
-    // ✅ Handle leaving community
+    /* ===============================
+       LEAVE COMMUNITY
+    =============================== */
     socket.on("leaveCommunity", (communityId) => {
       if (communityId) {
         socket.leave(communityId);
@@ -115,12 +132,17 @@ export const initSocket = (server) => {
       }
     });
 
+    /* ===============================
+       DISCONNECT
+    =============================== */
     socket.on("disconnect", (reason) => {
       console.log("Socket disconnected:", socket.id, "Reason:", reason);
     });
   });
 
-  // ✅ Add global error handling
+  /* ===============================
+     GLOBAL SOCKET ERROR
+  =============================== */
   io.engine.on("connection_error", (err) => {
     console.error("Socket.io connection error:", err);
   });

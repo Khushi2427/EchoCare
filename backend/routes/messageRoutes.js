@@ -1,12 +1,12 @@
 import express from "express";
-import Message from "../models/Message.js";
+import CommunityChat from "../models/CommunityChat.js";
 
 const router = express.Router();
 
 // fetch old messages
 router.get("/:communityId", async (req, res) => {
   try {
-    const messages = await Message.find({
+    const messages = await CommunityChat.find({
       communityId: req.params.communityId,
     }).sort({ createdAt: 1 });
 

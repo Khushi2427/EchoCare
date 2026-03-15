@@ -249,9 +249,6 @@ npm install
 cd ../server
 npm install
 
-# Install Python AI dependencies
-cd ../ai
-pip install -r requirements.txt
 ```
 
 ### Environment Variables

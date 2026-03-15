@@ -21,7 +21,7 @@
 
 <br/>
 
-![EchoCare Landing Page](./screenshots/home.png)
+![EchoCare Landing Page](/home.png)
 
 </div>
 

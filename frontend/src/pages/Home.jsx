@@ -450,10 +450,10 @@ export default function Home() {
                 style={{ display: "flex", gap: 44, flexWrap: "wrap" }}
               >
                 {[
-                  { n: "15k+", l: "Students supported" },
+                  { n: "500+", l: "Students supported" },
                   { n: "98%", l: "Satisfaction rate" },
                   { n: "24/7", l: "Always available" },
-                  { n: "100+", l: "Partner colleges" },
+                  { n: "5+", l: "Partner colleges" },
                 ].map(s => (
                   <div key={s.l}>
                     <div className="serif" style={{ fontSize: "clamp(26px, 3.5vw, 34px)", fontWeight: 400, color: "var(--charcoal)", lineHeight: 1, marginBottom: 5 }}>{s.n}</div>

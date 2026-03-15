@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="https://img.shields.io/badge/EchoCare-Mental%20Wellness%20Platform-6aaa64?style=for-the-badge&logo=heart&logoColor=white" alt="EchoCare" />
+<a href="https://echo-care-omega.vercel.app/" target="_blank"><img src="https://img.shields.io/badge/EchoCare-Mental%20Wellness%20Platform-6aaa64?style=for-the-badge&logo=heart&logoColor=white" alt="EchoCare" /></a>
 
 # 🌿 EchoCare — *A calmer mind begins here.*
 

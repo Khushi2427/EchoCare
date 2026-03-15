@@ -9,7 +9,6 @@
 [![React](https://img.shields.io/badge/React-20232A?style=flat-square&logo=react&logoColor=61DAFB)](https://reactjs.org/)
 [![Node.js](https://img.shields.io/badge/Node.js-339933?style=flat-square&logo=nodedotjs&logoColor=white)](https://nodejs.org/)
 [![MongoDB](https://img.shields.io/badge/MongoDB-4EA94B?style=flat-square&logo=mongodb&logoColor=white)](https://www.mongodb.com/)
-[![Python](https://img.shields.io/badge/Python-3776AB?style=flat-square&logo=python&logoColor=white)](https://python.org/)
 [![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=flat-square&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
 [![JWT](https://img.shields.io/badge/JWT-000000?style=flat-square&logo=JSON%20web%20tokens&logoColor=white)](https://jwt.io/)
 [![Llama](https://img.shields.io/badge/LLM-Llama%204%20Maverick-6aaa64?style=flat-square&logo=meta&logoColor=white)](https://ai.meta.com/)
@@ -231,7 +230,6 @@ For colleges and institutions to monitor overall student wellbeing trends — an
 ### Prerequisites
 
 - Node.js `v18+`
-- Python `3.9+`
 - MongoDB (local or Atlas)
 
 ### Installation
@@ -266,13 +264,11 @@ PORT=5000
 
 ```bash
 # Start backend server
-cd server && npm run dev
+cd backend && npm run dev
 
 # Start frontend (new terminal)
-cd client && npm start
+cd frontend && npm run dev
 
-# Start AI service (new terminal)
-cd ai && python app.py
 ```
 
 Open [http://localhost:3000](http://localhost:3000) to view the app.

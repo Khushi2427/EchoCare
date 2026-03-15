@@ -302,10 +302,10 @@ EchoCare is built with student privacy as a non-negotiable core principle.
 
 | Metric | Value |
 |--------|-------|
-| 👩‍🎓 Students Supported | **15,000+** |
+| 👩‍🎓 Students Supported | **100+** |
 | ⭐ Satisfaction Rate | **98%** |
 | ⏰ AI Availability | **24/7** |
-| 🏫 Partner Colleges | **100+** |
+| 🏫 Partner Colleges | **5+** |
 
 </div>
 

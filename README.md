@@ -137,17 +137,17 @@ For colleges and institutions to monitor overall student wellbeing trends — an
 <div align="center">
 
 ### 🏠 Landing Page
-![Landing Page](./screenshots/home.png)
+![Landing Page](/home.png)
 
 <br/>
 
 ### 🖥️ Student Dashboard
-![Student Dashboard](./screenshots/dashboard.png)
+![Student Dashboard](/dashboard.png)
 
 <br/>
 
 ### 🤖 AI Wellness Chat
-![AI Chat Interface](./screenshots/chat.png)
+![AI Chat Interface](/chat.png)
 
 </div>
 
